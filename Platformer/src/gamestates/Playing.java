@@ -61,9 +61,9 @@ public class Playing extends State implements Statemethods {
     }
 
     public void loadNextLevel() {
-        resetAll();
         levelManager.loadNextLevel();
         player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+        resetAll();
     }
 
     private void loadStartLevel() {
@@ -182,6 +182,8 @@ public class Playing extends State implements Statemethods {
                 levelCompletedOverlay.mousePressed(e);
             } else if (e.getButton() == MouseEvent.BUTTON1) {
                 player.setAttacking(true);
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                player.powerAttack();
             }
         } else {
             gameOverOverlay.mousePressed(e);
@@ -294,6 +296,9 @@ public class Playing extends State implements Statemethods {
 
     public void setLevelCompleted(boolean levelCompleted) {
         this.lvlCompleted = levelCompleted;
+        if(levelCompleted) {
+            game.getAudioPlayer().lvlCompleted();
+        }
     }
 
     public ObjectManager getObjectManager() {

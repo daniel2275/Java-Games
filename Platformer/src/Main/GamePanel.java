@@ -44,4 +44,15 @@ public class GamePanel extends JPanel {
     public Game getGame() {
         return game;
     }
+
+
+//    public void transparentCursor() {
+//        int[] pixels = new int[16 * 16];
+//        Image image = Toolkit.getDefaultToolkit().createImage(
+//                new MemoryImageSource(16, 16, pixels, 0, 16));
+//        Cursor transparentCursor =
+//                Toolkit.getDefaultToolkit().createCustomCursor
+//                        (image, new Point(0, 0), "invisibleCursor");
+//        setCursor(transparentCursor);
+//    }
 }

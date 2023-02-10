@@ -155,6 +155,7 @@ public class HelpMethods {
                 if (value >= 48)
                     value = 0;
                 lvlData[j][i] = value;
+
             }
         }
         return lvlData;

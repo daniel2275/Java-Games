@@ -9,12 +9,13 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
+import com.danielr.subgame.SubGame;
+import utilz.HelpMethods;
 import utilz.LoadSave;
 
-import static com.danielr.subgame.SubGame.camera;
+import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.shapeRendered;
-import static utilz.Constants.Game.SKY_SIZE;
-import static utilz.Constants.Game.WORLD_HEIGHT;
+import static utilz.Constants.Game.*;
 
 public class Enemy {
 
@@ -27,7 +28,7 @@ public class Enemy {
     private Animation<TextureRegion> shipIdle;
     private static Texture boatAtlas;
 
-    private SpriteBatch batch;
+//    private SpriteBatch batch;
     private float enemySpeed;
     private String spriteAtlas;
     boolean first = true;
@@ -54,7 +55,7 @@ public class Enemy {
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
         loadAnimations(spriteAtlas);
-        this.hitbox = LoadSave.initHitBox(spawnPos, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f , ENEMY_WIDTH, ENEMY_HEIGHT);
+        this.hitbox = HelpMethods.initHitBox(spawnPos, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f , ENEMY_WIDTH, ENEMY_HEIGHT);
 
         create();
     }
@@ -107,22 +108,24 @@ public class Enemy {
 
 
     public void create() {
-        batch = new SpriteBatch();
+//        batch = new SpriteBatch();
     }
 
     public void render () {
         batch.begin();
         stateTime += Gdx.graphics.getDeltaTime();
         currentFrame =  shipIdle.getKeyFrame(stateTime, true);
-        hitbox = LoadSave.updateHitbox(hitbox,spawnPos - xPos + xOffset , hitbox.getY(), hitbox.getWidth() , hitbox.getHeight() );
+        hitbox = HelpMethods.updateHitbox(hitbox,spawnPos - xPos + xOffset , hitbox.getY());
         batch.draw(currentFrame, hitbox.getX(), hitbox.getY() , hitbox.getWidth() * flip,hitbox.getHeight());
         batch.end();
 
-        shapeRendered.setProjectionMatrix(camera.combined);
-        shapeRendered.begin();
-        hitbox = LoadSave.updateHitbox(hitbox,spawnPos - xPos , hitbox.getY(), hitbox.getWidth() , hitbox.getHeight() );
-        shapeRendered.rect(hitbox.getX()  , hitbox.getY(), hitbox.getWidth() , hitbox.getHeight());
-        shapeRendered.end();
+        if (VISIBLE_HITBOXES) {
+            shapeRendered.setProjectionMatrix(SubGame.camera.combined);
+            shapeRendered.begin();
+            hitbox = HelpMethods.updateHitbox(hitbox, spawnPos - xPos, hitbox.getY());
+            shapeRendered.rect(hitbox.getX(), hitbox.getY(), hitbox.getWidth(), hitbox.getHeight());
+            shapeRendered.end();
+        }
     }
 
     public SpriteBatch getBatch() {

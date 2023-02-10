@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.danielr.subgame.SubGame;
 import gamestates.Playing;
+import utilz.HelpMethods;
 import utilz.LoadSave;
 
 import static com.danielr.subgame.SubGame.shapeRendered;
@@ -65,8 +66,8 @@ public class Player {
         this.playing = playing;
 //        this.camera = camera;
         loadAnimations("Uboat-atlas2.png");
-        this.uBoatHitBox = LoadSave.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT );
-        this.hitbox = LoadSave.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT );
+        this.uBoatHitBox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT );
+        this.hitbox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT );
         create();
     }
 
@@ -128,15 +129,17 @@ public class Player {
         batch.begin();
         background.draw(batch);
 
-        uBoatHitBox = LoadSave.updateHitbox(uBoatHitBox,SPAWN_X + xPos - xOffset ,  SPAWN_Y + yPos, uBoatHitBox.width, uBoatHitBox.height);
+        uBoatHitBox = HelpMethods.updateHitbox(uBoatHitBox,SPAWN_X + xPos - xOffset ,  SPAWN_Y + yPos);
         batch.draw(currentFrame, uBoatHitBox.getX(), uBoatHitBox.getY(), uBoatHitBox.width * flip,uBoatHitBox.height);
         batch.end();
 
 //        shapeRendered.setProjectionMatrix(camera.combined);
-        shapeRendered.begin();
-        hitbox = LoadSave.updateHitbox(hitbox, SPAWN_X + xPos - PLAYER_WIDTH  ,  SPAWN_Y + yPos, hitbox.width, hitbox.height);
-        shapeRendered.rect(hitbox.getX() , hitbox.getY() ,  hitbox.getWidth() , hitbox.getHeight());
-        shapeRendered.end();
+        if (VISIBLE_HITBOXES) {
+            shapeRendered.begin();
+            hitbox = HelpMethods.updateHitbox(hitbox, SPAWN_X + xPos - PLAYER_WIDTH, SPAWN_Y + yPos);
+            shapeRendered.rect(hitbox.getX(), hitbox.getY(), hitbox.getWidth(), hitbox.getHeight());
+            shapeRendered.end();
+        }
     }
 
     private void checkAnimation() {

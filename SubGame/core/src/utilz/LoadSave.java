@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import entities.Enemy;
 
 import java.util.Iterator;
@@ -91,13 +90,13 @@ public class LoadSave {
 //        }
 //    }
 
-    public static Rectangle initHitBox(float x,float y,int width,int height) {
-        return new Rectangle(x,y,width,height);
-    }
-
-    public static Rectangle updateHitbox(Rectangle hitbox, float x,float y, float width, float height) {
-        hitbox.x = x;
-        hitbox.y = y;
-        return hitbox;
-    }
+//    public static Rectangle initHitBox(float x,float y,int width,int height) {
+//        return new Rectangle(x,y,width,height);
+//    }
+//
+//    public static Rectangle updateHitbox(Rectangle hitbox, float x,float y) {
+//        hitbox.x = x;
+//        hitbox.y = y;
+//        return hitbox;
+//    }
 }

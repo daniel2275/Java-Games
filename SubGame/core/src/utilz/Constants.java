@@ -3,6 +3,7 @@ package utilz;
 public class Constants {
 
     public static class Game {
+        public static final boolean VISIBLE_HITBOXES = true ;
 //        public static final int TILES_DEFAULT_SIZE = 32;
 //        public static final float SCALE = 2f;
 //        public static final int TILES_IN_WIDTH = 26;

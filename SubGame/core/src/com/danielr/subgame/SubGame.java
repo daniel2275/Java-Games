@@ -3,13 +3,12 @@ package com.danielr.subgame;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import entities.Enemy;
-import entities.Player;
 import gamestates.Playing;
 
 import java.util.ArrayList;
@@ -25,12 +24,13 @@ public class SubGame extends ApplicationAdapter {
 	public static OrthographicCamera camera;
 	public static Viewport viewport;
 	public static ShapeRenderer shapeRendered;
+	public static SpriteBatch batch;
 
-	private Player player;
+//	private Player player;
 	private Playing playing;
 
 
-	private long startTime = TimeUtils.nanoTime();
+//	private long startTime = TimeUtils.nanoTime();
 
 	public ArrayList<Enemy> listOfEnemies = new ArrayList<>();
 
@@ -46,6 +46,7 @@ public class SubGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 
+		batch = new SpriteBatch();
 //		LoadSave.loadBinary();
 
 //		lvls = LoadSave.GetAllLevels();

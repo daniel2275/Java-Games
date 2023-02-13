@@ -77,7 +77,9 @@ public class LoadSave {
     public static void iterateEnemies(Iterator<Enemy> enemyIterator) {
         while (enemyIterator.hasNext()) {
             Enemy enemy =  enemyIterator.next();
+
             enemy.update();
+
         }
     }
 

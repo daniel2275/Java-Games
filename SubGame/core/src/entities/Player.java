@@ -3,7 +3,6 @@ package entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -13,7 +12,7 @@ import gamestates.Playing;
 import utilz.HelpMethods;
 import utilz.LoadSave;
 
-import static com.danielr.subgame.SubGame.shapeRendered;
+import static com.danielr.subgame.SubGame.*;
 import static utilz.Constants.Game.*;
 
 public class Player {
@@ -23,7 +22,7 @@ public class Player {
     public static final float SPAWN_X = WORLD_WIDTH/2;
     public static final float SPAWN_Y = WORLD_HEIGHT/2;
 
-    private TextureRegion[][] uBoatSprites =  new TextureRegion[6][6];
+    private final TextureRegion[][] uBoatSprites =  new TextureRegion[6][6];
 
     private Animation<TextureRegion> idleAnimations;
     private Animation<TextureRegion> movingAnimations;
@@ -32,54 +31,44 @@ public class Player {
     private Animation<TextureRegion> hitAnimations;
     private Animation<TextureRegion> sunkAnimations;
 
-    private static Texture uBoatAtlas;
-    private Rectangle uBoatHitBox;
-
-//    private OrthographicCamera camera;
-    private SpriteBatch batch;
-    private Sprite background;
-
-
     private float stateTime;
 
     private TextureRegion currentFrame;
 
-//    private ShapeRenderer shapeRendered;
     private Rectangle hitbox;
-//    private int set;
+    private float playerHealth = 100f;
+    private float collisionDamage = 5f;
 
+    private String lastDirection;
     private boolean left;
     private boolean right;
     private boolean up;
     private boolean down;
     private int flip = 1;
 
-    private int xPos = 0;
-    private int xOffset = PLAYER_WIDTH;
-    private int yPos = 0;
+    private int xOffset = 0;
 
     private SubGame subGame;
 
-    private Playing playing;
+    private final Playing playing;
 
     public Player(Playing playing) {
         this.playing = playing;
-//        this.camera = camera;
         loadAnimations("Uboat-atlas2.png");
-        this.uBoatHitBox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT );
         this.hitbox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT );
-        create();
     }
 
     public void update() {
-        checkDirection();
-        checkAnimation();
-        checkCollision();
+        if (!pause) {
+            checkDirection();
+            checkAnimation();
+            checkCollision();
+        }
         render();
     }
 
     private void loadAnimations(String sprites) {
-        uBoatAtlas = new Texture(sprites);
+        Texture uBoatAtlas = new Texture(sprites);
 
         for (int i= 0; i <= 5; i++) {
             for (int j= 0; j <= 5; j++) {
@@ -94,73 +83,50 @@ public class Player {
     }
 
 
-//    private Animation<TextureRegion> boatAnimation(int file, int sprites, TextureRegion[][] boatSprites, float frameDuration) {
-//        TextureRegion  animation[] = new TextureRegion[sprites];
-//        for (int i = 0; i < sprites; i++) {
-//            animation[i] = boatSprites[file][i];
-//        }
-//        Animation animations = new Animation<TextureRegion>(frameDuration, animation);
-//        return animations;
-//    }
-
-    public void create() {
-        background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
-//        ship = new Texture(Gdx.files.internal("tanker.png"));
-
-        background.setPosition(0,0);
-        background.setSize(800f,600f);
-
-//        ship.setPosition(100,450 - 8);
-
-//        shapeRendered = new ShapeRenderer();
-////        hitbox = getuBoatHitBox();
-//        shapeRendered.setAutoShapeType(true);
-
-        batch = new SpriteBatch();
-
-    }
-
 
     public void render () {
-//        batch.setProjectionMatrix(camera.combined);
-
-        checkAnimation();
-
-        batch.begin();
-        background.draw(batch);
-
-        uBoatHitBox = HelpMethods.updateHitbox(uBoatHitBox,SPAWN_X + xPos - xOffset ,  SPAWN_Y + yPos);
-        batch.draw(currentFrame, uBoatHitBox.getX(), uBoatHitBox.getY(), uBoatHitBox.width * flip,uBoatHitBox.height);
-        batch.end();
-
-//        shapeRendered.setProjectionMatrix(camera.combined);
-        if (VISIBLE_HITBOXES) {
-            shapeRendered.begin();
-            hitbox = HelpMethods.updateHitbox(hitbox, SPAWN_X + xPos - PLAYER_WIDTH, SPAWN_Y + yPos);
-            shapeRendered.rect(hitbox.getX(), hitbox.getY(), hitbox.getWidth(), hitbox.getHeight());
-            shapeRendered.end();
-        }
+        hitbox = HelpMethods.drawObject(currentFrame, hitbox, -xOffset, flip, playerHealth);
     }
 
     private void checkAnimation() {
         stateTime += Gdx.graphics.getDeltaTime();
-        if (left | right) {
+        if ((left | right) && !(up || down)) {
             currentFrame = getMovingAnimations().getKeyFrame(stateTime, true);
+            lastDirection = "left or right";
         } else if (up) {
-            currentFrame = getUpAnimations().getKeyFrame(stateTime, true);
+            if(lastDirection != "up") {
+                stateTime=0;
+            }
+            currentFrame = getUpAnimations().getKeyFrame(stateTime, false);
+            lastDirection = "up";
         } else if (down) {
-            currentFrame = getDownAnimations().getKeyFrame(stateTime, true);
+            if(lastDirection != "down") {
+                stateTime=0;
+            }
+            currentFrame = getDownAnimations().getKeyFrame(stateTime, false);
+            lastDirection = "down";
         } else {
             currentFrame = getIdleAnimations().getKeyFrame(stateTime, true);
+            lastDirection = "idle";
         }
     }
 
     private void checkCollision() {
-        playing.checkCollision(this.hitbox);
+        if (playing.checkCollision(this.hitbox, collisionDamage)) {
+            if (playerHealth > 0) {
+                playerHealth -= collisionDamage;
+            } else {
+                // game over
+            }
+        }
     }
 
     public Animation<TextureRegion> getIdleAnimations() {
         return idleAnimations;
+    }
+
+    public void setPlayerHealth(float playerHealth) {
+        this.playerHealth = playerHealth;
     }
 
     public Animation<TextureRegion> getMovingAnimations() {
@@ -175,6 +141,10 @@ public class Player {
         return downAnimations;
     }
 
+    public float getPlayerHealth() {
+        return playerHealth;
+    }
+
     public Animation<TextureRegion> getHitAnimations() {
         return hitAnimations;
     }
@@ -184,32 +154,33 @@ public class Player {
     }
 
     public Rectangle getuBoatHitBox() {
-        return uBoatHitBox;
+        return hitbox;
+//        return uBoatHitBox;
     }
 
     public void checkDirection() {
         if (up) {
-            if (WORLD_HEIGHT/2 + yPos + PLAYER_HEIGHT < WORLD_HEIGHT - SKY_SIZE + PLAYER_HEIGHT /2 ) {
-                yPos++;
+            if ( hitbox.getY() + PLAYER_HEIGHT < WORLD_HEIGHT - SKY_SIZE + PLAYER_HEIGHT / 2.0f ) {
+                hitbox.y++;
             }
         }
         if (down) {
-            if (WORLD_HEIGHT/2 + yPos > 1) {
-                yPos--;
+            if ( hitbox.getY() > 1) {
+                hitbox.y--;
             }
         }
         if (left) {
             flip = 1;
-            xOffset = PLAYER_WIDTH;
-            if (WORLD_WIDTH/2 + xPos - PLAYER_WIDTH > 1) {
-                xPos--;
+            xOffset = 0;
+            if (hitbox.getX() > 1) {
+                hitbox.x--;
             }
         }
         if (right) {
             flip = -1;
-            xOffset = 0 ;
-            if (WORLD_WIDTH/2 + xPos < WORLD_WIDTH) {
-                xPos++;
+            xOffset = -PLAYER_WIDTH ;
+            if (hitbox.getX() < WORLD_WIDTH + xOffset ) {
+                hitbox.x++;
             }
         }
 

@@ -3,33 +3,34 @@ package gamestates;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
-import com.danielr.subgame.SubGame;
 import entities.Enemy;
+import entities.EnemyManager;
 import entities.Player;
 import objects.ObjectManager;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Playing  implements InputProcessor  {
+import static com.danielr.subgame.SubGame.pause;
+
+public class Playing  implements InputProcessor {
     private Player player;
-    private OrthographicCamera camera;
-    private SubGame subGame;
-    private ArrayList<Enemy> listOfEnemies = new ArrayList<>();
 
     private ObjectManager objectManager;
+    private EnemyManager enemyManager;
 
-    public Playing(SubGame subGame, ArrayList<Enemy> listOfEnemies) {
-        this.listOfEnemies = listOfEnemies;
-        this.subGame = subGame;
-        initClases();
+
+
+
+    public Playing() {
+        initClasses();
     }
 
-    private void initClases() {
+    private void initClasses() {
         player = new Player(this);
         objectManager =  new ObjectManager(this);
+        enemyManager = new EnemyManager(this);
+        enemyManager.create();
         Gdx.input.setInputProcessor(this);
     }
 
@@ -38,8 +39,9 @@ public class Playing  implements InputProcessor  {
     }
 
     public void update() {
-        player.update();
-        objectManager.update();
+            player.update();
+            objectManager.update();
+            enemyManager.update();
     }
 
     @Override
@@ -63,6 +65,10 @@ public class Playing  implements InputProcessor  {
             break;
             case Input.Keys.SPACE: {
                 objectManager.fireProjectile();
+            }
+            break;
+            case Input.Keys.P: {
+                pause = !pause;
             }
             break;
         }
@@ -122,17 +128,20 @@ public class Playing  implements InputProcessor  {
         return false;
     }
 
-    public void checkCollision(Rectangle uBoatHitBox) {
 
-        Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
+    // Check collisions
+    public boolean checkCollision(Rectangle hitBox, float damage) {
+        Iterator<Enemy> enemyIterator = enemyManager.getListOfEnemies().iterator();
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
-            if (enemy.checkHit(uBoatHitBox)) {
-                System.out.println("remove");
-                enemyIterator.remove();
-//                LoadSave.removeEnemy(enemyIterator, enemy);
+            if (enemy.checkHit(hitBox, damage)) {
+                if (enemy.getEnemyHeath() <= 0) {
+                    enemy.setExplode(true);
+                }
+                return true;
             }
 
         }
+        return false;
     }
 }

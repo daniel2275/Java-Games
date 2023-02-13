@@ -3,48 +3,41 @@ package com.danielr.subgame;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import entities.Enemy;
 import gamestates.Playing;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import static utilz.Constants.Game.WORLD_HEIGHT;
 import static utilz.Constants.Game.WORLD_WIDTH;
-import static utilz.LoadSave.iterateEnemies;
 
 public class SubGame extends ApplicationAdapter {
 
+	private Sprite background;
+	private Sprite pauseSprite;
 
 	public static OrthographicCamera camera;
 	public static Viewport viewport;
 	public static ShapeRenderer shapeRendered;
 	public static SpriteBatch batch;
 
-//	private Player player;
+	public static boolean pause = false;
+
+//	public static float pauseTime = 0;
+//	public static long startTime = 0;
+
 	private Playing playing;
-
-
-//	private long startTime = TimeUtils.nanoTime();
-
-	public ArrayList<Enemy> listOfEnemies = new ArrayList<>();
-
-	private Enemy enemy1;
-	private Enemy enemy2;
-	private Enemy enemy3;
-
 
 
 //	BufferedImage[] lvls;
 //	private Level[] level;
 
 	@Override
-	public void create () {
+	public void create() {
 
 		batch = new SpriteBatch();
 //		LoadSave.loadBinary();
@@ -56,71 +49,67 @@ public class SubGame extends ApplicationAdapter {
 //			level[i] = new Level(lvls[i]);
 //		}
 
+		background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
+		background.setPosition(0, 0);
+		background.setSize(800f, 600f);
 
+		pauseSprite = new Sprite(new Texture(Gdx.files.internal("paused.png")));
+		pauseSprite.setPosition(WORLD_WIDTH/2 - 100f, 500);
+		pauseSprite.setSize(200f, 80f);
 
-		float aspectRatio = (float) Gdx.graphics.getHeight()/(float)Gdx.graphics.getWidth();
-		camera =  new OrthographicCamera();
+		float aspectRatio = (float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth();
+		camera = new OrthographicCamera();
 
-//		player = new Player(camera);
-
-		enemy1 = new Enemy(2,-65,-1,"tanker.png", 15f);
-		enemy2 = new Enemy(20,865,1,"tanker.png", 15f);
-		enemy3 = new Enemy(10,865,1,"tanker2.png",25f);
-
-		listOfEnemies.add(enemy1);
-		listOfEnemies.add(enemy2);
-		listOfEnemies.add(enemy3);
-
-
-		viewport = new ExtendViewport(WORLD_WIDTH * aspectRatio,WORLD_HEIGHT, camera);
+		viewport = new ExtendViewport(WORLD_WIDTH * aspectRatio, WORLD_HEIGHT, camera);
 		viewport.apply();
 
-		camera.position.set(WORLD_WIDTH/2,WORLD_HEIGHT/2,0);
+		camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
 
-		playing = new Playing(this, listOfEnemies);
+		playing = new Playing();
 
 		shapeRendered = new ShapeRenderer();
 
 		shapeRendered.setAutoShapeType(true);
-
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		viewport.update(width,height);
-		camera.position.set(WORLD_WIDTH/2,WORLD_HEIGHT/2,0);
+		viewport.update(width, height);
+		camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
 	}
+
 
 	@Override
-	public void render () {
+	public void render() {
 		ScreenUtils.clear(0, 0, 0.2f, 1);
 
-		camera.update();
+			batch.begin();
+			background.draw(batch);
+			if (pause) {
+				pauseSprite.draw(batch);
+			}
+			batch.end();
 
-		shapeRendered.setProjectionMatrix(camera.combined);
+			camera.update();
 
-		playing.update();
+			shapeRendered.setProjectionMatrix(camera.combined);
 
-		// update enemies
-		Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
-		iterateEnemies(enemyIterator);
+			playing.update();
+
 	}
-
 
 	@Override
 	public void dispose () {
-		enemy1.getBatch().dispose();
-		enemy1.getCurrentFrame().getTexture().dispose();
-		enemy2.getBatch().dispose();
-		enemy2.getCurrentFrame().getTexture().dispose();
-		enemy3.getBatch().dispose();
-		enemy3.getCurrentFrame().getTexture().dispose();
+//		enemy1.getBatch().dispose();
+//		enemy1.getCurrentFrame().getTexture().dispose();
+//		enemy2.getBatch().dispose();
+//		enemy2.getCurrentFrame().getTexture().dispose();
+//		enemy3.getBatch().dispose();
+//		enemy3.getCurrentFrame().getTexture().dispose();
 	}
 
 
-	public OrthographicCamera getCamera() {
-		return camera;
-	}
+
 }
 
 

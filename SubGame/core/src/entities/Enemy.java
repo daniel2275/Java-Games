@@ -8,13 +8,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Timer;
-import utilz.HelpMethods;
-import utilz.LoadSave;
 
 import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.pause;
 import static utilz.Constants.Game.SKY_SIZE;
 import static utilz.Constants.Game.WORLD_HEIGHT;
+import static utilz.HelpMethods.*;
+import static utilz.LoadSave.boatAnimation;
 
 public class Enemy {
 
@@ -27,6 +27,9 @@ public class Enemy {
     private final TextureRegion[][] boatSprites =  new TextureRegion[2][6];;
     private Animation<TextureRegion> shipIdle;
     private Animation<TextureRegion> shipExplode;
+    private Animation<TextureRegion> shipHit;
+
+    private boolean doHitAnimation = false;
     private boolean explode = false;
     private boolean sunk = false;
 
@@ -35,33 +38,38 @@ public class Enemy {
 
     private final float delay;
 
-    private final int flip;
-    private final int spawnPos;
+    private int flipX;
+
     private float xOffset = ENEMY_WIDTH;
 
-    private float xPos = 0;
+    private boolean aggro;
 
     private float stateTime;
 
     private TextureRegion currentFrame;
 
-    public Enemy(float delay, int spawnPos , int flip, String spriteAtlas, float speed) {
-        this.flip = flip;
-        this.spawnPos = spawnPos;
+    public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro) {
+        this.flipX = flipX;
         this.delay = delay;
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
+        this.aggro = aggro;
         loadAnimations(spriteAtlas);
-        this.hitbox = HelpMethods.initHitBox(spawnPos, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f , ENEMY_WIDTH, ENEMY_HEIGHT);
+        this.hitbox = initHitBox(spawnPosX, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f , ENEMY_WIDTH, ENEMY_HEIGHT);
     }
 
-    public void update() {
+
+    public void update(Player player) {
+        if ((aggro) && (!explode)) {
+            turnTowardsPlayer(player);
+        }
         if (!explode) {
-            scheduleAnimation();
+            scheduleAnimation(player);
         }
         render();
     }
 
+    // load animations (pending: migrate to helper class)
     private void loadAnimations(String sprites) {
         Texture boatAtlas = new Texture(sprites);
 
@@ -71,46 +79,66 @@ public class Enemy {
             }
         }
 
-        shipIdle = LoadSave.boatAnimation(0,5, boatSprites, 0.2f);
-        shipExplode = LoadSave.boatAnimation(1,5, boatSprites, 1.0f);
+        shipIdle = boatAnimation(0,5, boatSprites, 0.2f);
+        shipExplode = boatAnimation(1,5, boatSprites, 1.0f);
+        shipHit = boatAnimation(1,3, boatSprites, 0.2f);
     }
 
 
-    public String getSpriteAtlas() {
-        return spriteAtlas;
-    }
-
-    public void scheduleAnimation(){
+    public void scheduleAnimation(Player player){
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 if (!pause) {
-//                    if (first) {
-//                        startTime = TimeUtils.nanoTime();
-//                        first = false;
-//                    }
-//                    firstPause = true;
-//                    long elapsedTime = TimeUtils.nanoTime() - startTime;
-//                    float elapsedSeconds = (elapsedTime / 1000000000f) - pauseTime;
-                    if (flip == -1 && xPos > -865) {
-                        xPos = (xPos - enemySpeed) ;
-//                        xPos = enemySpeed * -elapsedSeconds;
+                    if (flipX == -1 && hitbox.getX() <= 800) {
+                        hitbox.x += enemySpeed ;
                         xOffset = ENEMY_WIDTH;
-                    } else if (flip == 1 && xPos < 930 ) {
-                        xPos = enemySpeed + xPos;
-//                        xPos = enemySpeed * elapsedSeconds;
+                    } else if (flipX == -1 && hitbox.getX() > 800) {
+                        flipX = 1;
+                    }
+                    if (flipX == 1 && hitbox.getX() >= -65 ) {
+                        hitbox.x -= enemySpeed ;
                         xOffset = 0;
+                    } else if (flipX == 1 && hitbox.getX() <= -65) {
+                        flipX = -1;
                     }
                 }
             }
         },delay);
     }
 
+    // aggro behavior
+    public void turnTowardsPlayer(Player player) {
+        float playerX = player.getuBoatHitBox().getX();
+        float playerDistX = Math.abs(playerX - this.hitbox.getX());
+        float playerDistY = Math.abs(player.getuBoatHitBox().getY() - this.hitbox.getY());
+        // check player in radar range
+        if ((playerDistX  < 180) && (playerDistY) < 180) {
+            // patrol above player
+            if ((playerDistX) > 70) {
+                if (playerX > hitbox.getX()) {
+                    flipX = -1;
+                    xOffset = ENEMY_WIDTH;
+                } else {
+                    flipX = 1;
+                    xOffset = 0;
+                }
+                stateTime = 0;
+            }
+        }
+    }
+
+    public boolean deployCharges() {
+        java.util.Random rnd = new java.util.Random();
+        int launch = rnd.nextInt(1000);
+        return launch < 10;
+    }
+
+
     public void render () {
     if(!pause) {
-        hitbox = HelpMethods.updateHitbox(hitbox, spawnPos - xPos, hitbox.getY());
-
+        hitbox = updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
         stateTime += Gdx.graphics.getDeltaTime();
         if (explode) {
             enemySpeed = 0;
@@ -119,14 +147,23 @@ public class Enemy {
             }
             currentFrame = shipExplode.getKeyFrame(stateTime, false);
             if (hitbox.y <= -16f) {
-                sunk = true;
+               this.sunk = true;
+            }
+        } else if (doHitAnimation) {
+            currentFrame = shipHit.getKeyFrame(stateTime, false);
+            if (stateTime > 1) {
+                doHitAnimation = false;
             }
         } else {
             currentFrame = shipIdle.getKeyFrame(stateTime, true);
         }
     }
-        HelpMethods.drawObject(currentFrame, hitbox, xOffset, flip, enemyHeath);
+        drawObject(currentFrame, hitbox, xOffset, 0, flipX,1, enemyHeath);
     }
+
+
+
+
 
     public SpriteBatch getBatch() {
         return batch;
@@ -142,6 +179,8 @@ public class Enemy {
             this.enemyHeath -= damage;
             if (enemySpeed > 0) {
                 enemySpeed -= 0.1f;
+                doHitAnimation = true;
+                stateTime = 0;
             }
             return true;
         }
@@ -166,6 +205,10 @@ public class Enemy {
         stateTime = 0; // reset animation time
     }
 
+    public boolean isExplode() {
+        return explode;
+    }
+
     public void setEnemySpeed(float enemySpeed) {
         this.enemySpeed = enemySpeed;
     }
@@ -173,4 +216,14 @@ public class Enemy {
     public boolean isSunk() {
         return sunk;
     }
+
+    public Rectangle getHitbox() {
+        return hitbox;
+    }
+
+    public boolean isAggro() {
+        return aggro;
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package entities;
 
 import gamestates.Playing;
+import objects.ObjectManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,26 +14,29 @@ public class EnemyManager {
     }
 
     public void create() {
-        Enemy enemy1 = new Enemy(2, -65, -1, "tanker-atlas.png", 0.5f);
-        Enemy enemy2 = new Enemy(20, 865, 1, "tanker-atlas.png", 0.5f);
-        Enemy enemy3 = new Enemy(10, 865, 1, "tanker2-atlas.png", 1f);
+        Enemy enemy1 = new Enemy(2, -65, -1, "tanker-atlas.png", 0.5f, false);
+        Enemy enemy2 = new Enemy(20, 865, 1, "tanker-atlas.png", 0.5f,false);
+        Enemy enemy3 = new Enemy(10, 865, 1, "tanker2-atlas.png", 1f,false);
+        Enemy enemy4 = new Enemy(1, 865, 1, "destroyer-atlas.png", 1.5f,true);
+
 
         listOfEnemies.add(enemy1);
         listOfEnemies.add(enemy2);
         listOfEnemies.add(enemy3);
+        listOfEnemies.add(enemy4);
     }
 
-    public void update() {
+    public void update(Player player, ObjectManager objectManager) {
         // update enemies
         Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
 //        iterateEnemies(enemyIterator);
         while (enemyIterator.hasNext()) {
             Enemy enemy =  enemyIterator.next();
             if (enemy.isSunk()) {
-                System.out.println("remove?");
                 enemyIterator.remove();
             } else {
-                enemy.update();
+                enemy.update(player);
+                objectManager.dropCharge(enemy);
             }
         }
     }

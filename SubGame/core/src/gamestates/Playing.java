@@ -13,13 +13,12 @@ import java.util.Iterator;
 
 import static com.danielr.subgame.SubGame.pause;
 
-public class Playing  implements InputProcessor {
+public class Playing implements InputProcessor {
     private Player player;
-
     private ObjectManager objectManager;
     private EnemyManager enemyManager;
 
-
+    int x,y;
 
 
     public Playing() {
@@ -41,7 +40,7 @@ public class Playing  implements InputProcessor {
     public void update() {
             player.update();
             objectManager.update();
-            enemyManager.update();
+            enemyManager.update(player, objectManager);
     }
 
     @Override
@@ -71,6 +70,10 @@ public class Playing  implements InputProcessor {
                 pause = !pause;
             }
             break;
+            case Input.Keys.R: {
+                reset();
+            }
+            break;
         }
         return false;
     }
@@ -94,6 +97,10 @@ public class Playing  implements InputProcessor {
                 player.setUp(false);
             }
             break;
+            case Input.Keys.BACK: {
+                pause = true;
+            }
+            break;
         }
         return false;
     }
@@ -108,8 +115,11 @@ public class Playing  implements InputProcessor {
         return false;
     }
 
-    @Override
+//    @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+//        if (!Gdx.input.isTouched()) {
+//            pause = true;
+//         }
         return false;
     }
 
@@ -143,5 +153,18 @@ public class Playing  implements InputProcessor {
 
         }
         return false;
+    }
+
+
+    public void reset() {
+        initClasses();
+    }
+
+    public EnemyManager getEnemyManager() {
+        return enemyManager;
+    }
+
+    public ObjectManager getObjectManager() {
+        return objectManager;
     }
 }

@@ -10,12 +10,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import gamestates.Gamestate;
 import gamestates.Playing;
 
 import static utilz.Constants.Game.WORLD_HEIGHT;
 import static utilz.Constants.Game.WORLD_WIDTH;
 
-public class SubGame extends ApplicationAdapter {
+public class SubGame extends ApplicationAdapter  {
 
 	private Sprite background;
 	private Sprite pauseSprite;
@@ -25,10 +26,7 @@ public class SubGame extends ApplicationAdapter {
 	public static ShapeRenderer shapeRendered;
 	public static SpriteBatch batch;
 
-	public static boolean pause = false;
-
-//	public static float pauseTime = 0;
-//	public static long startTime = 0;
+	public static boolean pause = true;
 
 	private Playing playing;
 
@@ -82,33 +80,49 @@ public class SubGame extends ApplicationAdapter {
 	@Override
 	public void render() {
 		ScreenUtils.clear(0, 0, 0.2f, 1);
+		shapeRendered.setProjectionMatrix(camera.combined);
+		camera.update();
 
-			batch.begin();
-			background.draw(batch);
-			if (pause) {
-				pauseSprite.draw(batch);
+		batch.begin();
+		background.draw(batch);
+		if (pause) {
+			pauseSprite.draw(batch);
+		}
+		batch.end();
+
+		switch (Gamestate.state) {
+			case PLAYING:{
+				playing.update();
+			}break;
+			case MENU:{
+				System.out.println("Menu");
 			}
-			batch.end();
+			break;
+			case OPTIONS:{
+				System.out.println("Options");
+			}break;
+			case QUIT:{
+				System.out.println("Quit");
+			}break;
+		}
+	}
 
-			camera.update();
+	@Override
+	public void pause(){
+		System.out.println("pause");
+		pause = true;
+	}
 
-			shapeRendered.setProjectionMatrix(camera.combined);
-
-			playing.update();
-
+	public void resume() {
+//		System.out.println("resume");
+//		pause = false;
 	}
 
 	@Override
 	public void dispose () {
-//		enemy1.getBatch().dispose();
-//		enemy1.getCurrentFrame().getTexture().dispose();
-//		enemy2.getBatch().dispose();
-//		enemy2.getCurrentFrame().getTexture().dispose();
-//		enemy3.getBatch().dispose();
-//		enemy3.getCurrentFrame().getTexture().dispose();
+		playing.getPlayer().getBatch().dispose();
+		shapeRendered.dispose();
 	}
-
-
 
 }
 

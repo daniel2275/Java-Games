@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import entities.Enemy;
+import entities.Player;
 
 import java.util.Iterator;
 
@@ -74,11 +75,11 @@ public class LoadSave {
     }
 
 
-    public static void iterateEnemies(Iterator<Enemy> enemyIterator) {
+    public static void iterateEnemies(Iterator<Enemy> enemyIterator, Player player) {
         while (enemyIterator.hasNext()) {
             Enemy enemy =  enemyIterator.next();
 
-            enemy.update();
+            enemy.update(player);
 
         }
     }

@@ -1,5 +1,6 @@
 package objects;
 
+import entities.Enemy;
 import gamestates.Playing;
 
 import java.util.ArrayList;
@@ -8,26 +9,34 @@ import java.util.Iterator;
 import static com.danielr.subgame.SubGame.pause;
 import static entities.Player.PLAYER_WIDTH;
 import static objects.Torpedo.TORPEDO_HEIGHT;
-import static utilz.Constants.Game.*;
+import static utilz.Constants.Game.SKY_SIZE;
+import static utilz.Constants.Game.WORLD_HEIGHT;
 
 public class ObjectManager {
     private final Playing playing;
     private final ArrayList<Torpedo> torpedoes;
+    private ArrayList<DepthCharge> depthCharges;
 
     public ObjectManager(Playing playing) {
         torpedoes = new ArrayList<>();
+        depthCharges = new ArrayList<>();
         this.playing = playing;
     }
 
     public void fireProjectile() {
         if (!pause) {
-            torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() + PLAYER_WIDTH / 2.0f, playing.getPlayer().getuBoatHitBox().getY()));
+            torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() + PLAYER_WIDTH / 2.0f, playing.getPlayer().getuBoatHitBox().getY(), playing.getPlayer().direction()));
+        }
+    }
+
+    public void dropCharge(Enemy enemy) {
+        if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode()) {
+            depthCharges.add(new DepthCharge(enemy.getHitbox().getX(), enemy.getHitbox().getY()));
         }
     }
 
     public void update() {
         render();
-
     }
 
     // sets up an iterator with the list of torpedoes, call to check boundaries and manages explosion/removal
@@ -36,7 +45,6 @@ public class ObjectManager {
             Iterator<Torpedo> torpedoIterator = torpedoes.iterator();
             while (torpedoIterator.hasNext()) {
                 Torpedo torpedo = torpedoIterator.next();
-                torpedo.update();
                 if (!checkProjectileLimit(torpedoIterator, torpedo)) {
                     if (playing.checkCollision(torpedo.getHitbox(), torpedo.getTorpedoDamage())) {
                         torpedo.setExplode(true);
@@ -44,10 +52,32 @@ public class ObjectManager {
                         torpedoIterator.remove();
                     }
                 }
+                torpedo.update();
             }
         }
-    }
 
+        if (depthCharges.size() > 0) {
+            Iterator<DepthCharge> depthChargeIterator = depthCharges.iterator();
+            while (depthChargeIterator.hasNext()) {
+                DepthCharge depthCharge = depthChargeIterator.next();
+                if (!checkDpcLimit(depthChargeIterator, depthCharge)) {
+                    if (playing.getPlayer().getHitbox().overlaps(depthCharge.getHitbox())) {
+                        if (!depthCharge.isExplode()) {
+                            playing.getPlayer().setPlayerHealth(playing.getPlayer().getPlayerHealth() - depthCharge.getDpcDamage());
+                        }
+                        depthCharge.setExplode(true);
+                        depthCharge.setSpeed(0);
+                    }
+                }
+                if (depthCharge.getAnimationFinished() && depthCharge.isExplode()) {
+                    depthChargeIterator.remove();
+                }
+                depthCharge.update();
+            }
+
+        }
+
+    }
 
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
@@ -58,9 +88,25 @@ public class ObjectManager {
         return false;
     }
 
+    public boolean checkDpcLimit(Iterator<DepthCharge> depthChargeIterator, DepthCharge depthCharge) {
+        if (depthCharge.getHitbox().getY() <= 0) {
+            System.out.println(depthCharge.getHitbox().getY() );
+            depthChargeIterator.remove();
+            return true;
+        }
+        return false;
+    }
 
 
+    public ArrayList<Torpedo> getTorpedoes() {
+        return torpedoes;
+    }
+
+    public ArrayList<DepthCharge> getDepthCharges() {
+        return depthCharges;
+    }
 }
+
 
 
 

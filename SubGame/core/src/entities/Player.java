@@ -7,13 +7,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.danielr.subgame.SubGame;
 import gamestates.Playing;
 import utilz.HelpMethods;
-import utilz.LoadSave;
+
+import java.util.Objects;
 
 import static com.danielr.subgame.SubGame.*;
 import static utilz.Constants.Game.*;
+import static utilz.HelpMethods.drawObject;
+import static utilz.LoadSave.boatAnimation;
 
 public class Player {
 
@@ -44,18 +46,17 @@ public class Player {
     private boolean right;
     private boolean up;
     private boolean down;
-    private int flip = 1;
+    private boolean sunk = false;
+    private int flipX = 1;
 
     private int xOffset = 0;
 
-    private SubGame subGame;
-
-    private final Playing playing;
+    private Playing playing;
 
     public Player(Playing playing) {
         this.playing = playing;
         loadAnimations("Uboat-atlas2.png");
-        this.hitbox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT );
+        this.hitbox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT);
     }
 
     public void update() {
@@ -67,6 +68,7 @@ public class Player {
         render();
     }
 
+    // load animations (pending: migrate to helper class)
     private void loadAnimations(String sprites) {
         Texture uBoatAtlas = new Texture(sprites);
 
@@ -76,31 +78,37 @@ public class Player {
             }
         }
 
-        idleAnimations = LoadSave.boatAnimation(0,5, uBoatSprites, 2.0f);
-        movingAnimations = LoadSave.boatAnimation(1,3, uBoatSprites, 0.055f);
-        upAnimations = LoadSave.boatAnimation(2,3, uBoatSprites, 0.7f);
-        downAnimations = LoadSave.boatAnimation(3,3, uBoatSprites, 0.7f);
+        idleAnimations = boatAnimation(0,5, uBoatSprites, 2.0f);
+        movingAnimations = boatAnimation(1,3, uBoatSprites, 0.055f);
+        upAnimations = boatAnimation(2,3, uBoatSprites, 0.7f);
+        downAnimations = boatAnimation(3,3, uBoatSprites, 0.7f);
+        hitAnimations = boatAnimation(4,1, uBoatSprites, 0.7f);
+        sunkAnimations = boatAnimation(5,1, uBoatSprites, 0.7f);
     }
-
 
 
     public void render () {
-        hitbox = HelpMethods.drawObject(currentFrame, hitbox, -xOffset, flip, playerHealth);
+        drawObject(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth);
     }
 
+    // Animate the player character, resets statetime on non-looping animations
     private void checkAnimation() {
         stateTime += Gdx.graphics.getDeltaTime();
+        if (sunk) {
+            currentFrame = getSunkAnimations().getKeyFrame(stateTime, true);
+            return;
+        }
         if ((left | right) && !(up || down)) {
             currentFrame = getMovingAnimations().getKeyFrame(stateTime, true);
             lastDirection = "left or right";
         } else if (up) {
-            if(lastDirection != "up") {
+            if(!Objects.equals(lastDirection, "up")) {
                 stateTime=0;
             }
             currentFrame = getUpAnimations().getKeyFrame(stateTime, false);
             lastDirection = "up";
         } else if (down) {
-            if(lastDirection != "down") {
+            if(!Objects.equals(lastDirection, "down")) {
                 stateTime=0;
             }
             currentFrame = getDownAnimations().getKeyFrame(stateTime, false);
@@ -109,6 +117,9 @@ public class Player {
             currentFrame = getIdleAnimations().getKeyFrame(stateTime, true);
             lastDirection = "idle";
         }
+
+
+
     }
 
     private void checkCollision() {
@@ -116,6 +127,7 @@ public class Player {
             if (playerHealth > 0) {
                 playerHealth -= collisionDamage;
             } else {
+                sunk = true;
                 // game over
             }
         }
@@ -155,7 +167,6 @@ public class Player {
 
     public Rectangle getuBoatHitBox() {
         return hitbox;
-//        return uBoatHitBox;
     }
 
     public void checkDirection() {
@@ -170,14 +181,14 @@ public class Player {
             }
         }
         if (left) {
-            flip = 1;
+            flipX = 1;
             xOffset = 0;
             if (hitbox.getX() > 1) {
                 hitbox.x--;
             }
         }
         if (right) {
-            flip = -1;
+            flipX = -1;
             xOffset = -PLAYER_WIDTH ;
             if (hitbox.getX() < WORLD_WIDTH + xOffset ) {
                 hitbox.x++;
@@ -186,12 +197,12 @@ public class Player {
 
     }
 
-    public int getFlip() {
-        return flip;
+    public int getFlipX() {
+        return flipX;
     }
 
-    public void setFlip(int flip) {
-        this.flip = flip;
+    public void setFlipX(int flipX) {
+        this.flipX = flipX;
     }
 
     public void setLeft(boolean left) {
@@ -237,4 +248,38 @@ public class Player {
     public ShapeRenderer getShapeRendered() {
         return shapeRendered;
     }
+
+    public String getLastDirection() {
+        return lastDirection;
+    }
+
+    public String direction() {
+        String currentDirection;
+
+        if (left && up) {
+            currentDirection = "left&up";
+        } else if (left&&down) {
+            currentDirection = "left&down";
+        } else if (left) {
+            currentDirection = "left";
+        } else if (right&&up) {
+            currentDirection = "right&up";
+        } else if (right&&down) {
+            currentDirection = "right&down";
+        } else if (right) {
+            currentDirection = "right";
+        } else if (down) {
+            currentDirection = "down";
+        } else {
+            currentDirection = "up";
+        }
+
+
+        return currentDirection;
+    }
+
+    public Rectangle getHitbox() {
+        return hitbox;
+    }
+
 }

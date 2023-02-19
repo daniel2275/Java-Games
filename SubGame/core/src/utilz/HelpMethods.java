@@ -4,10 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.danielr.subgame.SubGame;
 
-import static com.danielr.subgame.SubGame.pause;
-import static com.danielr.subgame.SubGame.shapeRendered;
+import static com.danielr.subgame.SubGame.*;
 import static utilz.Constants.Game.VISIBLE_HITBOXES;
 
 public class HelpMethods {
@@ -27,11 +25,11 @@ public class HelpMethods {
 //        hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
 
         if(!pause) {
-            SubGame.batch.begin();
+            batch.begin();
             if (currentFrame != null) {
-                SubGame.batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY);
+                batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY);
             }
-            SubGame.batch.end();
+            batch.end();
 
             if (health > 0) {
                 shapeRendered.begin(ShapeRenderer.ShapeType.Filled);

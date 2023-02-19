@@ -55,7 +55,7 @@ public class Player {
 
     public Player(Playing playing) {
         this.playing = playing;
-        loadAnimations("Uboat-atlas2.png");
+        loadAnimations("Uboat-atlas.png");
         this.hitbox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT);
     }
 

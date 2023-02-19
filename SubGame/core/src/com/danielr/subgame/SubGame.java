@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import gamestates.Gamestate;
+import gamestates.Menu;
 import gamestates.Playing;
 
 import static utilz.Constants.Game.WORLD_HEIGHT;
@@ -26,9 +27,10 @@ public class SubGame extends ApplicationAdapter  {
 	public static ShapeRenderer shapeRendered;
 	public static SpriteBatch batch;
 
-	public static boolean pause = true;
+	public static boolean pause = false;
 
 	private Playing playing;
+	private Menu menu;
 
 
 //	BufferedImage[] lvls;
@@ -63,6 +65,7 @@ public class SubGame extends ApplicationAdapter  {
 
 		camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
 
+		menu =  new Menu(this);
 		playing = new Playing();
 
 		shapeRendered = new ShapeRenderer();
@@ -95,7 +98,7 @@ public class SubGame extends ApplicationAdapter  {
 				playing.update();
 			}break;
 			case MENU:{
-				System.out.println("Menu");
+				menu.update();
 			}
 			break;
 			case OPTIONS:{

@@ -98,7 +98,9 @@ public class SubGame extends ApplicationAdapter  {
 				playing.update();
 			}break;
 			case MENU:{
+				pause = true;
 				menu.update();
+				playing.update();
 			}
 			break;
 			case OPTIONS:{
@@ -127,6 +129,9 @@ public class SubGame extends ApplicationAdapter  {
 		shapeRendered.dispose();
 	}
 
+	public Playing getPlaying() {
+		return playing;
+	}
 }
 
 

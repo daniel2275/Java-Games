@@ -7,8 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 import com.danielr.subgame.SubGame;
 
-import static com.danielr.subgame.SubGame.batch;
-import static com.danielr.subgame.SubGame.camera;
+import static com.danielr.subgame.SubGame.*;
 
 public class Menu extends State implements InputProcessor {
 
@@ -42,8 +41,11 @@ public class Menu extends State implements InputProcessor {
             System.out.println("Mouse position: (" + worldCoordinates.x + ", " + worldCoordinates.y + ")");
             if(worldCoordinates.y > 342 && worldCoordinates.y < 416) {
                 setGameState(Gamestate.PLAYING);
+                pause = false;
             } else if (worldCoordinates.y > 14 && worldCoordinates.y < 88) {
                 Gdx.app.exit();
+            } else if (worldCoordinates.y > 231 && worldCoordinates.y < 303) {
+                subGame.getPlaying().reset();
             }
         }
     }

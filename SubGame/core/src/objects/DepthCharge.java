@@ -33,19 +33,18 @@ public class DepthCharge {
     }
 
     public void update() {
-        if (!pause) {
-            updatePos();
-        }
         render();
     }
 
-    private void updatePos() {
-        hitbox.y -= speed;
-    }
 
     private void render(){
         TextureRegion currentFrame;
-        stateTime += Gdx.graphics.getDeltaTime();
+
+        if (!pause) {
+            stateTime += Gdx.graphics.getDeltaTime();
+            hitbox.y -= speed;
+        }
+
         int flipX = 1;
         int flipY = 1;
         int xOffset = 0;

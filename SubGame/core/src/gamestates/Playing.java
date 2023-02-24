@@ -75,7 +75,6 @@ public class Playing implements InputProcessor {
             }
             break;
             case Input.Keys.ESCAPE: {
-                reset();
                 Gamestate.state = Gamestate.MENU;
             }
             break;

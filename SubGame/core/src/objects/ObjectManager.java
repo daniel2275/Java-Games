@@ -30,8 +30,11 @@ public class ObjectManager {
     }
 
     public void dropCharge(Enemy enemy) {
-        if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode()) {
+        if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode() && !enemy.isSub()) {
             depthCharges.add(new DepthCharge(enemy.getHitbox().getX(), enemy.getHitbox().getY()));
+        } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode() && enemy.isSub()) {
+            System.out.println(enemy.getDirection());
+            torpedoes.add(new Torpedo(enemy.getHitbox().getX() , enemy.getHitbox().getY(), enemy.getDirection(), true));
         }
     }
 
@@ -46,10 +49,19 @@ public class ObjectManager {
             while (torpedoIterator.hasNext()) {
                 Torpedo torpedo = torpedoIterator.next();
                 if (!checkProjectileLimit(torpedoIterator, torpedo)) {
-                    if (playing.checkCollision(torpedo.getHitbox(), torpedo.getTorpedoDamage())) {
-                        torpedo.setExplode(true);
-                        torpedo.update();
-                        torpedoIterator.remove();
+                    if (torpedo.isEnemy()) {
+                        if (playing.getPlayer().getHitbox().overlaps(torpedo.getHitbox())) {
+                            playing.getPlayer().setPlayerHealth(playing.getPlayer().getPlayerHealth() - torpedo.getTorpedoDamage());
+                            torpedo.setExplode(true);
+                            torpedo.update();
+                            torpedoIterator.remove();
+                        }
+                    } else {
+                        if (playing.checkCollision(torpedo.getHitbox(), torpedo.getTorpedoDamage())) {
+                            torpedo.setExplode(true);
+                            torpedo.update();
+                            torpedoIterator.remove();
+                        }
                     }
                 }
                 torpedo.update();
@@ -90,7 +102,7 @@ public class ObjectManager {
 
     public boolean checkDpcLimit(Iterator<DepthCharge> depthChargeIterator, DepthCharge depthCharge) {
         if (depthCharge.getHitbox().getY() <= 0) {
-            System.out.println(depthCharge.getHitbox().getY() );
+//            System.out.println(depthCharge.getHitbox().getY() );
             depthChargeIterator.remove();
             return true;
         }

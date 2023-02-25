@@ -20,6 +20,8 @@ public class Torpedo {
 
     private Rectangle hitbox;
 
+    private boolean enemy = false;
+
     float stateTime;
 
     private final TextureRegion[][] torpedoSprites =  new TextureRegion[4][8];;
@@ -35,10 +37,12 @@ public class Torpedo {
         this.direction = direction;
     }
 
+    public Torpedo(float x, float y, String direction, boolean enemy) {
+       this(x,y,direction);
+       this.enemy = enemy;
+    }
+
     public void update() {
-        if (!pause) {
-            updatePos();
-        }
         render();
     }
 
@@ -50,12 +54,18 @@ public class Torpedo {
 
     public void render() {
         TextureRegion currentFrame;
-        stateTime += Gdx.graphics.getDeltaTime();
+
+        if (!pause) {
+            stateTime += Gdx.graphics.getDeltaTime();
+            updatePos();
+        }
+
         int flipX = 1;
         int flipY = 1;
         int xOffset = 0;
         int yOffset = 0;
 
+        System.out.println(direction);
 
         if (this.explode) {
             currentFrame = torpedoExplode.getKeyFrame(stateTime, false);
@@ -201,6 +211,10 @@ public class Torpedo {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public boolean isEnemy() {
+        return enemy;
     }
 }
 

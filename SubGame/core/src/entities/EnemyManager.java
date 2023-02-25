@@ -19,11 +19,13 @@ public class EnemyManager {
         Enemy enemy3 = new Enemy(10, 865, 1, "tanker2-atlas.png", 1f,false);
         Enemy enemy4 = new Enemy(1, 865, 1, "destroyer-atlas.png", 1.5f,true);
 
+        Enemy enemy5 = new Enemy(1, 865, 400, 1, "enemy-sub1.png", 0.3f,true, true);
 
         listOfEnemies.add(enemy1);
         listOfEnemies.add(enemy2);
         listOfEnemies.add(enemy3);
         listOfEnemies.add(enemy4);
+        listOfEnemies.add(enemy5);
     }
 
     public void update(Player player, ObjectManager objectManager) {

@@ -33,12 +33,13 @@ public class Enemy {
     private boolean explode = false;
     private boolean sunk = false;
 
-    private float enemySpeed;
+    private float enemySpeed, speed;
     private final String spriteAtlas;
 
     private final float delay;
 
     private int flipX;
+    private String direction;
 
     private float xOffset = ENEMY_WIDTH;
 
@@ -48,16 +49,26 @@ public class Enemy {
 
     private TextureRegion currentFrame;
 
+    private boolean sub;
+
     public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro) {
         this.flipX = flipX;
         this.delay = delay;
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
+        this.speed = speed;
         this.aggro = aggro;
         loadAnimations(spriteAtlas);
         this.hitbox = initHitBox(spawnPosX, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f , ENEMY_WIDTH, ENEMY_HEIGHT);
     }
 
+
+    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, boolean sub) {
+        this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro);
+        this.sub = sub;
+        this.direction = "";
+        this.hitbox = initHitBox(spawnPosX, spawnPosY , ENEMY_WIDTH, ENEMY_HEIGHT);
+    }
 
     public void update(Player player) {
         if ((aggro) && (!explode)) {
@@ -85,23 +96,52 @@ public class Enemy {
     }
 
 
-    public void scheduleAnimation(Player player){
+    public void scheduleAnimation(final Player player){
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 if (!pause) {
+                    direction = "";
                     if (flipX == -1 && hitbox.getX() <= 800) {
                         hitbox.x += enemySpeed ;
                         xOffset = ENEMY_WIDTH;
+                        direction = "right";
                     } else if (flipX == -1 && hitbox.getX() > 800) {
                         flipX = 1;
                     }
                     if (flipX == 1 && hitbox.getX() >= -65 ) {
                         hitbox.x -= enemySpeed ;
                         xOffset = 0;
+                        direction = "left";
                     } else if (flipX == 1 && hitbox.getX() <= -65) {
                         flipX = -1;
+                    }
+
+                    System.out.println(Math.abs(hitbox.getY() - player.getHitbox().getY()));
+
+                    if (sub && hitbox.getY() > player.getHitbox().getY()) {
+                        hitbox.y -= enemySpeed;
+                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 55) {
+                            direction = "down";
+                        } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
+                            direction += "&down";
+                        }
+                    } else if (sub && hitbox.getY() < player.getHitbox().getY()) {
+                        hitbox.y += enemySpeed;
+                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 55 ) {
+                            direction = "up";
+                        } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100){
+                            direction += "&up";
+                        }
+                    }
+
+                    if (direction.equals("")) {
+                        if (flipX == -1) {
+                            direction  = "left";
+                        } else {
+                            direction  = "right";
+                        }
                     }
                 }
             }
@@ -115,6 +155,13 @@ public class Enemy {
         float playerDistY = Math.abs(player.getuBoatHitBox().getY() - this.hitbox.getY());
         // check player in radar range
         if ((playerDistX  < 180) && (playerDistY) < 180) {
+            // if sub stop near player
+            if ((playerDistX  < 80) && (playerDistY) < 60 && (sub)) {
+                enemySpeed = 0;
+                return;
+            } else {
+                enemySpeed = speed;
+            }
             // patrol above player
             if ((playerDistX) > 70) {
                 if (playerX > hitbox.getX()) {
@@ -124,6 +171,7 @@ public class Enemy {
                     flipX = 1;
                     xOffset = 0;
                 }
+
                 stateTime = 0;
             }
         }
@@ -225,5 +273,11 @@ public class Enemy {
         return aggro;
     }
 
+    public boolean isSub() {
+        return sub;
+    }
 
+    public String getDirection() {
+        return direction;
+    }
 }

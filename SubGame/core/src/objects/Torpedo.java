@@ -65,7 +65,6 @@ public class Torpedo {
         int xOffset = 0;
         int yOffset = 0;
 
-        System.out.println(direction);
 
         if (this.explode) {
             currentFrame = torpedoExplode.getKeyFrame(stateTime, false);

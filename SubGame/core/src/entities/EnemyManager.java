@@ -64,8 +64,6 @@ public class EnemyManager {
                     } else {
                         enemy.setFlipY(1);
                     }
-                    System.out.println(enemy.getFlipY());
-
                 }
             }
         }

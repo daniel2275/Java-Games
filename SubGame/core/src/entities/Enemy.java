@@ -125,7 +125,7 @@ public class Enemy {
                         flipX = -1;
                     }
 
-                    System.out.println(Math.abs(hitbox.getY() - player.getHitbox().getY()));
+
 
                     if (sub && hitbox.getY() > player.getHitbox().getY()) {
                         hitbox.y -= enemySpeed * flipY;
@@ -238,7 +238,17 @@ public class Enemy {
         if(collision && !explode) {
             this.enemyHeath -= damage;
             if (enemySpeed > 0) {
-                enemySpeed -= 0.1f;
+                if (sub) {
+                    speed -= 0.1f;
+                } else {
+                    speed -= 0.2f;
+                }
+                if (speed < 0) {
+                    speed = 0;
+                }
+                enemySpeed = speed;
+
+                System.out.println(enemySpeed);
                 doHitAnimation = true;
                 stateTime = 0;
             }

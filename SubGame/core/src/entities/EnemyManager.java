@@ -3,8 +3,12 @@ package entities;
 import gamestates.Playing;
 import objects.ObjectManager;
 
+
+import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import static com.danielr.subgame.SubGame.pause;
 
 public class EnemyManager {
 
@@ -19,7 +23,7 @@ public class EnemyManager {
         Enemy enemy3 = new Enemy(10, 865, 1, "tanker2-atlas.png", 1f,false);
         Enemy enemy4 = new Enemy(1, 865, 1, "destroyer-atlas.png", 1.5f,true);
         Enemy enemy5 = new Enemy(1, 865, 100, 1, "enemy-sub1.png", 0.3f,true, true);
-        Enemy enemy6 = new Enemy(1, 865, 400, 1, "enemy-sub1.png", 0.3f,true, true);
+        Enemy enemy6 = new Enemy(1, -65, 400, 1, "enemy-sub1.png", 0.3f,true, true);
 
 
 
@@ -32,21 +36,40 @@ public class EnemyManager {
     }
 
     public void update(Player player, ObjectManager objectManager) {
-        // update enemies
+            // update enemies
         Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
 //        iterateEnemies(enemyIterator);
         while (enemyIterator.hasNext()) {
-            Enemy enemy =  enemyIterator.next();
+            Enemy enemy = enemyIterator.next();
             if (enemy.isSunk()) {
                 enemyIterator.remove();
             } else {
                 enemy.update(player);
+                avoidEnemies();
                 objectManager.dropCharge(enemy);
             }
         }
     }
 
 
+    public void avoidEnemies() {
+        if (!pause) {
+            Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
+            while (enemyIterator.hasNext()) {
+                Enemy nextEnemy = enemyIterator.next();
+                if (enemyIterator.hasNext()) {
+                    Enemy enemy = enemyIterator.next();
+                    if (nextEnemy.getHitbox().overlaps(enemy.getHitbox())) {
+                        enemy.setFlipY(-1);
+                    } else {
+                        enemy.setFlipY(1);
+                    }
+                    System.out.println(enemy.getFlipY());
+
+                }
+            }
+        }
+    }
 
     public ArrayList<Enemy> getListOfEnemies() {
         return listOfEnemies;

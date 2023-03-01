@@ -38,9 +38,11 @@ public class Playing implements InputProcessor {
     }
 
     public void update() {
+
             player.update();
             objectManager.update();
             enemyManager.update(player, objectManager);
+
     }
 
     @Override

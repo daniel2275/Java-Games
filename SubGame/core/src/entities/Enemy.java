@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Timer;
+import gamestates.Playing;
 
 import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.pause;
@@ -17,6 +18,7 @@ import static utilz.HelpMethods.*;
 import static utilz.LoadSave.boatAnimation;
 
 public class Enemy {
+
 
     public static final int ENEMY_WIDTH = 64;
     public static final int ENEMY_HEIGHT = 25;
@@ -38,7 +40,7 @@ public class Enemy {
 
     private final float delay;
 
-    private int flipX;
+    private int flipX, flipY;
     private String direction;
 
     private float xOffset = ENEMY_WIDTH;
@@ -63,10 +65,11 @@ public class Enemy {
     }
 
 
-    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, boolean sub) {
+    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX,  String spriteAtlas, float speed, boolean aggro, boolean sub) {
         this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro);
         this.sub = sub;
         this.direction = "";
+        this.flipY = 1;
         this.hitbox = initHitBox(spawnPosX, spawnPosY , ENEMY_WIDTH, ENEMY_HEIGHT);
     }
 
@@ -75,7 +78,7 @@ public class Enemy {
             turnTowardsPlayer(player);
         }
         if (!explode) {
-            scheduleAnimation(player);
+            scheduleAnimation(player, this);
         }
         render();
     }
@@ -96,14 +99,18 @@ public class Enemy {
     }
 
 
-    public void scheduleAnimation(final Player player){
+    public void scheduleAnimation(final Player player, final Enemy enemy){
+
+
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 if (!pause) {
                     direction = "";
+
                     if (flipX == -1 && hitbox.getX() <= 800) {
+
                         hitbox.x += enemySpeed ;
                         xOffset = ENEMY_WIDTH;
                         direction = "right";
@@ -121,14 +128,14 @@ public class Enemy {
                     System.out.println(Math.abs(hitbox.getY() - player.getHitbox().getY()));
 
                     if (sub && hitbox.getY() > player.getHitbox().getY()) {
-                        hitbox.y -= enemySpeed;
+                        hitbox.y -= enemySpeed * flipY;
                         if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 55) {
                             direction = "down";
                         } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
                             direction += "&down";
                         }
                     } else if (sub && hitbox.getY() < player.getHitbox().getY()) {
-                        hitbox.y += enemySpeed;
+                        hitbox.y += enemySpeed * flipY;
                         if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 55 ) {
                             direction = "up";
                         } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100){
@@ -143,10 +150,15 @@ public class Enemy {
                             direction  = "right";
                         }
                     }
+
+
                 }
             }
         },delay);
     }
+
+
+
 
     // aggro behavior
     public void turnTowardsPlayer(Player player) {
@@ -279,5 +291,13 @@ public class Enemy {
 
     public String getDirection() {
         return direction;
+    }
+
+    public int getFlipY() {
+        return flipY;
+    }
+
+    public void setFlipY(int flipY) {
+        this.flipY = flipY;
     }
 }

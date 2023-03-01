@@ -33,8 +33,7 @@ public class ObjectManager {
         if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode() && !enemy.isSub()) {
             depthCharges.add(new DepthCharge(enemy.getHitbox().getX(), enemy.getHitbox().getY()));
         } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode() && enemy.isSub()) {
-            System.out.println(enemy.getDirection());
-            torpedoes.add(new Torpedo(enemy.getHitbox().getX() , enemy.getHitbox().getY(), enemy.getDirection(), true));
+           torpedoes.add(new Torpedo(enemy.getHitbox().getX() , enemy.getHitbox().getY(), enemy.getDirection(), true));
         }
     }
 

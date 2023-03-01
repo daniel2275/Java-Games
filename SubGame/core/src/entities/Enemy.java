@@ -78,7 +78,7 @@ public class Enemy {
             turnTowardsPlayer(player);
         }
         if (!explode) {
-            scheduleAnimation(player, this);
+            scheduleAnimation(player);
         }
         render();
     }
@@ -99,7 +99,7 @@ public class Enemy {
     }
 
 
-    public void scheduleAnimation(final Player player, final Enemy enemy){
+    public void scheduleAnimation(final Player player){
 
 
         Timer timer = new Timer();
@@ -191,7 +191,7 @@ public class Enemy {
 
     public boolean deployCharges() {
         java.util.Random rnd = new java.util.Random();
-        int launch = rnd.nextInt(1000);
+        int launch = rnd.nextInt(3000);
         return launch < 10;
     }
 
@@ -239,7 +239,7 @@ public class Enemy {
             this.enemyHeath -= damage;
             if (enemySpeed > 0) {
                 if (sub) {
-                    speed -= 0.1f;
+                    speed -= 0.05f;
                 } else {
                     speed -= 0.2f;
                 }

@@ -12,8 +12,7 @@ import gamestates.Playing;
 
 import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.pause;
-import static utilz.Constants.Game.SKY_SIZE;
-import static utilz.Constants.Game.WORLD_HEIGHT;
+import static utilz.Constants.Game.*;
 import static utilz.HelpMethods.*;
 import static utilz.LoadSave.boatAnimation;
 
@@ -109,12 +108,12 @@ public class Enemy {
                 if (!pause) {
                     direction = "";
 
-                    if (flipX == -1 && hitbox.getX() <= 800) {
+                    if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
 
                         hitbox.x += enemySpeed ;
                         xOffset = ENEMY_WIDTH;
                         direction = "right";
-                    } else if (flipX == -1 && hitbox.getX() > 800) {
+                    } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
                         flipX = 1;
                     }
                     if (flipX == 1 && hitbox.getX() >= -65 ) {

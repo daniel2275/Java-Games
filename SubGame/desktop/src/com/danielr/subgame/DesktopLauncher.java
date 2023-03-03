@@ -8,7 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("SubGame");
-		config.setWindowedMode(800, 600);
+		config.setWindowedMode(1024, 768);
 		config.useVsync(true);
 		config.setForegroundFPS(60);
 		config.setResizable(false);

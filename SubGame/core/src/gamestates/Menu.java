@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.danielr.subgame.SubGame;
 
 import static com.danielr.subgame.SubGame.*;
+import static utilz.Constants.Game.WORLD_HEIGHT;
+import static utilz.Constants.Game.WORLD_WIDTH;
 
 public class Menu extends State implements InputProcessor {
 
@@ -27,6 +29,7 @@ public class Menu extends State implements InputProcessor {
     public void create() {
         menu = new Sprite(new Texture(Gdx.files.internal("menu.png")));
         menu.setPosition(0,0);
+        menu.setSize(WORLD_WIDTH, WORLD_HEIGHT);
     }
 
     public void render() {

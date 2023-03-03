@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import static com.danielr.subgame.SubGame.pause;
+import static utilz.Constants.Game.WORLD_WIDTH;
 
 public class EnemyManager {
 
@@ -19,13 +20,11 @@ public class EnemyManager {
 
     public void create() {
         Enemy enemy1 = new Enemy(2, -65, -1, "tanker-atlas.png", 0.5f, false);
-        Enemy enemy2 = new Enemy(20, 865, 1, "tanker-atlas.png", 0.5f,false);
-        Enemy enemy3 = new Enemy(10, 865, 1, "tanker2-atlas.png", 1f,false);
-        Enemy enemy4 = new Enemy(1, 865, 1, "destroyer-atlas.png", 1.5f,true);
-        Enemy enemy5 = new Enemy(1, 865, 100, 1, "enemy-sub1.png", 0.3f,true, true);
+        Enemy enemy2 = new Enemy(20, (int) WORLD_WIDTH + 65, 1, "tanker-atlas.png", 0.5f,false);
+        Enemy enemy3 = new Enemy(10, (int) WORLD_WIDTH + 65, 1, "tanker2-atlas.png", 1f,false);
+        Enemy enemy4 = new Enemy(1, (int) WORLD_WIDTH + 65, 1, "destroyer-atlas.png", 1.5f,true);
+        Enemy enemy5 = new Enemy(1, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 0.3f,true, true);
         Enemy enemy6 = new Enemy(1, -65, 400, 1, "enemy-sub1.png", 0.3f,true, true);
-
-
 
         listOfEnemies.add(enemy1);
         listOfEnemies.add(enemy2);

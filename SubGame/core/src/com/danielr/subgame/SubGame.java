@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import gamestates.Gamestate;
 import gamestates.Menu;
@@ -51,7 +52,7 @@ public class SubGame extends ApplicationAdapter  {
 
 		background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
 		background.setPosition(0, 0);
-		background.setSize(800f, 600f);
+		background.setSize(WORLD_WIDTH, WORLD_HEIGHT);
 
 		pauseSprite = new Sprite(new Texture(Gdx.files.internal("paused.png")));
 		pauseSprite.setPosition(WORLD_WIDTH/2 - 100f, 500);

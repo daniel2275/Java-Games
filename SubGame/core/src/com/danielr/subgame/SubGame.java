@@ -2,14 +2,18 @@ package com.danielr.subgame;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import gamestates.Gamestate;
 import gamestates.Menu;
@@ -28,11 +32,15 @@ public class SubGame extends ApplicationAdapter  {
 	public static ShapeRenderer shapeRendered;
 	public static SpriteBatch batch;
 
+
 	public static boolean pause = false;
 
 	private Playing playing;
 	private Menu menu;
 
+	private Label scoreLabel;
+
+	private Stage uiStage;
 
 //	BufferedImage[] lvls;
 //	private Level[] level;
@@ -40,7 +48,15 @@ public class SubGame extends ApplicationAdapter  {
 	@Override
 	public void create() {
 
-		batch = new SpriteBatch();
+		//set up UI display
+		BitmapFont font = loadFont("fonts/BwnsnwBitmap-2O9d.ttf");
+
+		scoreLabel = new Label("Enemies remaining:", new Label.LabelStyle(font, Color.BLACK));
+		scoreLabel.setPosition(5, WORLD_HEIGHT - 20);
+		uiStage = new Stage();
+		uiStage.addActor(scoreLabel);
+
+
 //		LoadSave.loadBinary();
 
 //		lvls = LoadSave.GetAllLevels();
@@ -50,6 +66,7 @@ public class SubGame extends ApplicationAdapter  {
 //			level[i] = new Level(lvls[i]);
 //		}
 
+		batch = new SpriteBatch();
 		background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
 		background.setPosition(0, 0);
 		background.setSize(WORLD_WIDTH, WORLD_HEIGHT);
@@ -72,6 +89,8 @@ public class SubGame extends ApplicationAdapter  {
 		shapeRendered = new ShapeRenderer();
 
 		shapeRendered.setAutoShapeType(true);
+
+
 	}
 
 	@Override
@@ -87,6 +106,7 @@ public class SubGame extends ApplicationAdapter  {
 		shapeRendered.setProjectionMatrix(camera.combined);
 		camera.update();
 
+
 		batch.begin();
 		background.draw(batch);
 		if (pause) {
@@ -97,6 +117,8 @@ public class SubGame extends ApplicationAdapter  {
 		switch (Gamestate.state) {
 			case PLAYING:{
 				playing.update();
+				scoreLabel.setText("Enemies remaining:" + playing.getEnemyManager().getListOfEnemies().size());
+				uiStage.draw();
 			}break;
 			case MENU:{
 				pause = true;
@@ -133,6 +155,16 @@ public class SubGame extends ApplicationAdapter  {
 	public Playing getPlaying() {
 		return playing;
 	}
+
+	private BitmapFont loadFont(String fontName){
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontName));
+		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		parameter.size = 16; // font size
+		BitmapFont font = generator.generateFont(parameter); // generate the BitmapFont
+		generator.dispose(); // dispose the generator when you're done
+		return font;
+	}
+
 }
 
 

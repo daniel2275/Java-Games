@@ -1,6 +1,7 @@
 package objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -56,7 +57,7 @@ public class DepthCharge {
             currentFrame = dpcAnimation.getKeyFrame(stateTime, true);
         }
 
-        drawObject(currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0);
+        drawObject(currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0,-1, Color.WHITE);
     }
 
 

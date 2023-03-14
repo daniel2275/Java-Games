@@ -3,9 +3,11 @@ package utilz;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
 import static com.danielr.subgame.SubGame.*;
+import static entities.Player.reloadSpeed;
 import static utilz.Constants.Game.VISIBLE_HITBOXES;
 
 public class HelpMethods {
@@ -21,11 +23,12 @@ public class HelpMethods {
     }
 
 
-    public static Rectangle drawObject(TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float health) {
+    public static Rectangle drawObject(TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float health, float reload, Color color) {
 //        hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
 
         if(!pause) {
             batch.begin();
+            batch.setColor(color);
             if (currentFrame != null) {
                 batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY);
             }
@@ -45,6 +48,22 @@ public class HelpMethods {
                 shapeRendered.end();
             }
 
+            if (reload >= 0) {
+                shapeRendered.begin(ShapeRenderer.ShapeType.Filled);
+                if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 2.5) {
+                    shapeRendered.setColor(Color.GREEN);
+                } else if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 1.5) {
+                    shapeRendered.setColor(Color.GOLD);
+                } else {
+                    shapeRendered.setColor(Color.FIREBRICK);
+                }
+                float width = hitbox.getWidth() - (hitbox.getWidth() / reloadSpeed * reload);
+//                System.out.println(width);
+                shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 8, width, 1);
+                shapeRendered.end();
+            }
+
+
             if (VISIBLE_HITBOXES) {
                 shapeRendered.setColor(Color.WHITE);
                 shapeRendered.begin();
@@ -54,6 +73,35 @@ public class HelpMethods {
 
         }
         return hitbox;
+    }
+
+
+
+    public static class FadingAnimation {
+        private float stateTime;
+        private float alpha;
+        private float duration;
+
+        public FadingAnimation(float duration) {
+            this.duration = duration;
+            stateTime = 0f;
+            alpha = 1f;
+        }
+
+        public void update(float delta) {
+            stateTime += delta;
+            alpha = MathUtils.clamp(alpha - delta/duration, 0f, 1f); // Decrease alpha over time
+        }
+
+        public float getAlpha() {
+            return alpha;
+        }
+
+        public Color color() {
+            Color color = batch.getColor();
+            color.a = getAlpha(); // Set alpha value of color
+            return color;
+        }
     }
 
 

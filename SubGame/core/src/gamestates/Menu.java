@@ -42,12 +42,12 @@ public class Menu extends State implements InputProcessor {
             float y = Gdx.input.getY();
             Vector3 worldCoordinates = camera.unproject(new Vector3(x, y, 0));
             System.out.println("Mouse position: (" + worldCoordinates.x + ", " + worldCoordinates.y + ")");
-            if(worldCoordinates.y > 342 && worldCoordinates.y < 416) {
+            if(worldCoordinates.y > 438 && worldCoordinates.y < 528) {
                 setGameState(Gamestate.PLAYING);
                 pause = false;
-            } else if (worldCoordinates.y > 14 && worldCoordinates.y < 88) {
+            } else if (worldCoordinates.y > 20 && worldCoordinates.y < 113) {
                 Gdx.app.exit();
-            } else if (worldCoordinates.y > 231 && worldCoordinates.y < 303) {
+            } else if (worldCoordinates.y > 295 && worldCoordinates.y < 387) {
                 subGame.getPlaying().reset();
             }
         }

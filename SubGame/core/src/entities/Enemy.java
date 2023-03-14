@@ -1,6 +1,7 @@
 package entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,7 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Timer;
-import gamestates.Playing;
+import utilz.HelpMethods;
+import utilz.Timing;
 
 import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.pause;
@@ -31,7 +33,7 @@ public class Enemy {
     private Animation<TextureRegion> shipHit;
 
     private boolean doHitAnimation = false;
-    private boolean explode = false;
+    private boolean dying = false;
     private boolean sunk = false;
 
     private float enemySpeed, speed;
@@ -52,6 +54,10 @@ public class Enemy {
 
     private boolean sub;
 
+    private Timing fadeDelay;
+
+    private HelpMethods.FadingAnimation fadingAnimation;
+
     public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro) {
         this.flipX = flipX;
         this.delay = delay;
@@ -59,7 +65,9 @@ public class Enemy {
         this.enemySpeed = speed;
         this.speed = speed;
         this.aggro = aggro;
+        this.fadeDelay = new Timing(7); // seconds dispose delay
         loadAnimations(spriteAtlas);
+        this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
         this.hitbox = initHitBox(spawnPosX, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f , ENEMY_WIDTH, ENEMY_HEIGHT);
     }
 
@@ -72,11 +80,12 @@ public class Enemy {
         this.hitbox = initHitBox(spawnPosX, spawnPosY , ENEMY_WIDTH, ENEMY_HEIGHT);
     }
 
+
     public void update(Player player) {
-        if ((aggro) && (!explode)) {
+        if ((aggro) && (!dying)) {
             turnTowardsPlayer(player);
         }
-        if (!explode) {
+        if (!dying) {
             scheduleAnimation(player);
         }
         render();
@@ -99,8 +108,6 @@ public class Enemy {
 
 
     public void scheduleAnimation(final Player player){
-
-
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
@@ -195,31 +202,52 @@ public class Enemy {
     }
 
 
-    public void render () {
-    if(!pause) {
-        hitbox = updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
-        stateTime += Gdx.graphics.getDeltaTime();
-        if (explode) {
-            enemySpeed = 0;
-            if (stateTime > 3) {  // delay for 3 frames of animation (smoke above water)
-                hitbox.y -= 0.5;
-            }
-            currentFrame = shipExplode.getKeyFrame(stateTime, false);
-            if (hitbox.y <= -16f) {
-               this.sunk = true;
-            }
-        } else if (doHitAnimation) {
-            currentFrame = shipHit.getKeyFrame(stateTime, false);
-            if (stateTime > 1) {
-                doHitAnimation = false;
+    public void render() {
+        Color color = Color.WHITE;
+
+        if (!pause) {
+
+            hitbox = updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
+
+            stateTime += Gdx.graphics.getDeltaTime();
+
+            if (dying) {
+                enemySpeed = 0;
+
+                fadeDelay.checkPause(false);
+                fadeDelay.update();
+
+                if (stateTime > 3 && stateTime < 6) {  // delay for 3 frames of animation (smoke above water) & 3 to sink
+                    hitbox.y -= 0.5;
+                } else if (stateTime > 6) {
+                    hitbox.y -= 0.5;
+                    fadingAnimation.update(stateTime);
+
+                    color = fadingAnimation.color();
+                }
+
+                System.out.println("state:" +stateTime + "  fade:" + fadeDelay.getTimeRemaining());
+
+                currentFrame = shipExplode.getKeyFrame(stateTime, false);
+
+                if (hitbox.y <= -16f || fadeDelay.getTimeRemaining() <= 0) {
+                    this.sunk = true;
+                }
+            } else if (doHitAnimation) {
+                currentFrame = shipHit.getKeyFrame(stateTime, false);
+                if (stateTime > 1) {
+                    doHitAnimation = false;
+                }
+            } else {
+                currentFrame = shipIdle.getKeyFrame(stateTime, true);
             }
         } else {
-            currentFrame = shipIdle.getKeyFrame(stateTime, true);
+            fadeDelay.checkPause(true);
         }
-    }
-        drawObject(currentFrame, hitbox, xOffset, 0, flipX,1, enemyHeath);
-    }
 
+        drawObject(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
+
+    }
 
 
 
@@ -234,7 +262,7 @@ public class Enemy {
 
     public boolean checkHit(Rectangle hitBox, float damage) {
         boolean collision = Intersector.overlaps(hitBox, this.hitbox);
-        if(collision && !explode) {
+        if(collision && !dying) {
             this.enemyHeath -= damage;
             if (enemySpeed > 0) {
                 if (sub) {
@@ -247,7 +275,6 @@ public class Enemy {
                 }
                 enemySpeed = speed;
 
-                System.out.println(enemySpeed);
                 doHitAnimation = true;
                 stateTime = 0;
             }
@@ -269,13 +296,14 @@ public class Enemy {
         return enemySpeed;
     }
 
-    public void setExplode(boolean explode) {
-        this.explode = explode;
+    public void setDying(boolean dying) {
+        this.dying = dying;
+        fadeDelay.init(); // initialize fade timer
         stateTime = 0; // reset animation time
     }
 
-    public boolean isExplode() {
-        return explode;
+    public boolean isDying() {
+        return dying;
     }
 
     public void setEnemySpeed(float enemySpeed) {

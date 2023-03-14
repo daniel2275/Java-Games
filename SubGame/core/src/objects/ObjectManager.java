@@ -2,6 +2,7 @@ package objects;
 
 import entities.Enemy;
 import gamestates.Playing;
+import utilz.Timing;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,22 +18,26 @@ public class ObjectManager {
     private final ArrayList<Torpedo> torpedoes;
     private ArrayList<DepthCharge> depthCharges;
 
+    private Timing torpedoLoading;
+
     public ObjectManager(Playing playing) {
         torpedoes = new ArrayList<>();
         depthCharges = new ArrayList<>();
         this.playing = playing;
+        torpedoLoading = new Timing(playing.getPlayer().getReloadSpeed());
     }
 
     public void fireProjectile() {
-        if (!pause) {
-            torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() + PLAYER_WIDTH / 2.0f, playing.getPlayer().getuBoatHitBox().getY(), playing.getPlayer().direction()));
+        if (!pause && (torpedoLoading.getStartTime() == 0) || !pause && (torpedoLoading.getTimeRemaining() <= 0)) {
+                torpedoLoading.init();
+                torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() + PLAYER_WIDTH / 2.0f, playing.getPlayer().getuBoatHitBox().getY(), playing.getPlayer().direction()));
         }
     }
 
     public void dropCharge(Enemy enemy) {
-        if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode() && !enemy.isSub()) {
+        if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && !enemy.isSub()) {
             depthCharges.add(new DepthCharge(enemy.getHitbox().getX(), enemy.getHitbox().getY()));
-        } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isExplode() && enemy.isSub()) {
+        } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
            torpedoes.add(new Torpedo(enemy.getHitbox().getX() , enemy.getHitbox().getY(), enemy.getDirection(), true));
         }
     }
@@ -44,6 +49,10 @@ public class ObjectManager {
     // sets up an iterator with the list of torpedoes, call to check boundaries and manages explosion/removal
     public void render() {
         if (!pause) {
+            playing.getPlayer().setReload(torpedoLoading.getTimeRemaining());
+            torpedoLoading.checkPause(false);
+            torpedoLoading.update();
+
             if (torpedoes.size() > 0) {
                 Iterator<Torpedo> torpedoIterator = torpedoes.iterator();
                 while (torpedoIterator.hasNext()) {
@@ -88,6 +97,8 @@ public class ObjectManager {
                 }
 
             }
+        } else {
+            torpedoLoading.checkPause(true);
         }
     }
 

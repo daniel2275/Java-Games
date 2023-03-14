@@ -1,6 +1,7 @@
 package entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -49,6 +50,10 @@ public class Player {
     private boolean sunk = false;
     private int flipX = 1;
 
+    private float reload = 0;
+
+    public static float reloadSpeed = 3;
+
     private int xOffset = 0;
 
     private Playing playing;
@@ -88,12 +93,13 @@ public class Player {
 
 
     public void render () {
-        drawObject(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth);
+        drawObject(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth,reload, Color.WHITE);
     }
 
     // Animate the player character, resets statetime on non-looping animations
     private void checkAnimation() {
         stateTime += Gdx.graphics.getDeltaTime();
+
         if (sunk) {
             currentFrame = getSunkAnimations().getKeyFrame(stateTime, true);
             return;
@@ -117,10 +123,8 @@ public class Player {
             currentFrame = getIdleAnimations().getKeyFrame(stateTime, true);
             lastDirection = "idle";
         }
-
-
-
     }
+
 
     private void checkCollision() {
         if (playing.checkCollision(this.hitbox, collisionDamage)) {
@@ -281,5 +285,14 @@ public class Player {
     public Rectangle getHitbox() {
         return hitbox;
     }
+
+    public void setReload(float reload) {
+        this.reload = reload;
+    }
+
+    public float getReloadSpeed() {
+        return reloadSpeed;
+    }
+
 
 }

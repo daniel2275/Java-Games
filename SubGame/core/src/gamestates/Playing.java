@@ -153,7 +153,7 @@ public class Playing implements InputProcessor {
             Enemy enemy = enemyIterator.next();
             if (enemy.checkHit(hitBox, damage)) {
                 if (enemy.getEnemyHeath() <= 0) {
-                    enemy.setExplode(true);
+                    enemy.setDying(true);
                 }
                 return true;
             }

@@ -1,6 +1,7 @@
 package objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,7 +23,7 @@ public class Torpedo {
 
     private boolean enemy = false;
 
-    float stateTime;
+    private float stateTime;
 
     private final TextureRegion[][] torpedoSprites =  new TextureRegion[4][8];;
     private Animation<TextureRegion> torpedoUpAnimation;
@@ -129,7 +130,7 @@ public class Torpedo {
         }
 
 
-        HelpMethods.drawObject(currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0);
+        HelpMethods.drawObject(currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0,-1, Color.WHITE);
 
     }
 

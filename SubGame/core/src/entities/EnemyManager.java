@@ -17,22 +17,22 @@ public class EnemyManager {
     }
 
     public void create() {
-        Enemy enemy1 = new Enemy(2, -65, -1, "tanker-atlas.png", 0.5f, false);
-        Enemy enemy2 = new Enemy(20, (int) WORLD_WIDTH + 65, 1, "tanker-atlas.png", 0.5f,false);
-        Enemy enemy3 = new Enemy(10, (int) WORLD_WIDTH + 65, 1, "tanker2-atlas.png", 1f,false);
+//        Enemy enemy1 = new Enemy(2, -65, -1, "tanker-atlas.png", 0.5f, false);
+//        Enemy enemy2 = new Enemy(20, (int) WORLD_WIDTH + 65, 1, "tanker-atlas.png", 0.5f,false);
+//        Enemy enemy3 = new Enemy(10, (int) WORLD_WIDTH + 65, 1, "tanker2-atlas.png", 1f,false);
         Enemy enemy4 = new Enemy(4, (int) WORLD_WIDTH + 65, 1, "destroyer-atlas.png", 1.5f,true);
-        Enemy enemy5 = new Enemy(6, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 0.3f,true, true);
-        Enemy enemy6 = new Enemy(8, -65, 400, -1, "enemy-sub1.png", 0.3f,true, true);
-        Enemy enemy7 = new Enemy(25, (int) WORLD_WIDTH + 65, 200, -1, "enemy-sub1.png", 0.3f,true, true);
+        Enemy enemy5 = new Enemy(1, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 0.3f,true, true);
+//        Enemy enemy6 = new Enemy(8, -65, 400, -1, "enemy-sub1.png", 0.3f,true, true);
+//        Enemy enemy7 = new Enemy(25, (int) WORLD_WIDTH + 65, 200, -1, "enemy-sub1.png", 0.3f,true, true);
 
 
-        listOfEnemies.add(enemy1);
-        listOfEnemies.add(enemy2);
-        listOfEnemies.add(enemy3);
+//        listOfEnemies.add(enemy1);
+//        listOfEnemies.add(enemy2);
+//        listOfEnemies.add(enemy3);
         listOfEnemies.add(enemy4);
         listOfEnemies.add(enemy5);
-        listOfEnemies.add(enemy6);
-        listOfEnemies.add(enemy7);
+//        listOfEnemies.add(enemy6);
+//        listOfEnemies.add(enemy7);
     }
 
     public void update(Player player, ObjectManager objectManager) {
@@ -42,7 +42,7 @@ public class EnemyManager {
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
             if (enemy.isSunk()) {
-                System.out.println(enemy.isSunk());
+//                System.out.println(enemy.isSunk());
                 enemyIterator.remove();
             } else {
                 enemy.update(player);

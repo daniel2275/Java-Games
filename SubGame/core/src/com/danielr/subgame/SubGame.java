@@ -2,9 +2,7 @@ package com.danielr.subgame;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -47,6 +45,12 @@ public class SubGame extends ApplicationAdapter  {
 
 	@Override
 	public void create() {
+
+		Pixmap cursorTexture = new Pixmap(Gdx.files.internal("CrossHair.png"));
+		int xHotSpot = cursorTexture.getWidth() /2;
+		int yHotSpot = cursorTexture.getHeight() /2 ;
+		Cursor customCursor = Gdx.graphics.newCursor(cursorTexture, xHotSpot, yHotSpot);
+		Gdx.graphics.setCursor(customCursor);
 
 		//set up UI display
 		BitmapFont font = loadFont("fonts/BwnsnwBitmap-2O9d.ttf");

@@ -10,8 +10,7 @@ import java.util.Iterator;
 import static com.danielr.subgame.SubGame.pause;
 import static entities.Player.PLAYER_WIDTH;
 import static objects.Torpedo.TORPEDO_HEIGHT;
-import static utilz.Constants.Game.SKY_SIZE;
-import static utilz.Constants.Game.WORLD_HEIGHT;
+import static utilz.Constants.Game.*;
 
 public class ObjectManager {
     private final Playing playing;
@@ -38,7 +37,9 @@ public class ObjectManager {
         if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && !enemy.isSub()) {
             depthCharges.add(new DepthCharge(enemy.getHitbox().getX(), enemy.getHitbox().getY()));
         } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
-           torpedoes.add(new Torpedo(enemy.getHitbox().getX() , enemy.getHitbox().getY(), enemy.getDirection(), true));
+           if (checkBounds(enemy)) {
+               torpedoes.add(new Torpedo(enemy.getHitbox().getX(), enemy.getHitbox().getY(), enemy.getDirection(), true, playing.getPlayer().getHitbox().getX(), playing.getPlayer().getHitbox().getY()));
+           }
         }
     }
 
@@ -104,7 +105,8 @@ public class ObjectManager {
 
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
-        if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - SKY_SIZE - TORPEDO_HEIGHT) {
+//        System.out.println(torpedoes.size());
+        if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - SKY_SIZE - TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
             torpedoIterator.remove();
             return true;
         }
@@ -126,6 +128,14 @@ public class ObjectManager {
 
     public ArrayList<DepthCharge> getDepthCharges() {
         return depthCharges;
+    }
+
+    private boolean checkBounds(Enemy enemy) {
+        return  ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < WORLD_HEIGHT - SKY_SIZE));
+    }
+
+    private boolean checkBoundsT(Torpedo enemy) {
+        return  ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < WORLD_HEIGHT - SKY_SIZE));
     }
 }
 

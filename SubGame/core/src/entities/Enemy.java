@@ -116,15 +116,18 @@ public class Enemy {
                     direction = "";
 
                     if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
-
-                        hitbox.x += enemySpeed ;
+                        if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+                            hitbox.x += enemySpeed;
+                        }
                         xOffset = ENEMY_WIDTH;
                         direction = "right";
                     } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
                         flipX = 1;
                     }
                     if (flipX == 1 && hitbox.getX() >= -65 ) {
-                        hitbox.x -= enemySpeed ;
+                        if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+                            hitbox.x -= enemySpeed;
+                        }
                         xOffset = 0;
                         direction = "left";
                     } else if (flipX == 1 && hitbox.getX() <= -65) {
@@ -135,14 +138,14 @@ public class Enemy {
 
                     if (sub && hitbox.getY() > player.getHitbox().getY()) {
                         hitbox.y -= enemySpeed * flipY;
-                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 55) {
+                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
                             direction = "down";
                         } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
                             direction += "&down";
                         }
                     } else if (sub && hitbox.getY() < player.getHitbox().getY()) {
                         hitbox.y += enemySpeed * flipY;
-                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 55 ) {
+                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15 ) {
                             direction = "up";
                         } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100){
                             direction += "&up";
@@ -165,23 +168,23 @@ public class Enemy {
 
 
 
-
     // aggro behavior
     public void turnTowardsPlayer(Player player) {
         float playerX = player.getuBoatHitBox().getX();
         float playerDistX = Math.abs(playerX - this.hitbox.getX());
         float playerDistY = Math.abs(player.getuBoatHitBox().getY() - this.hitbox.getY());
+
         // check player in radar range
-        if ((playerDistX  < 180) && (playerDistY) < 180) {
+        if ( (((playerDistX  < 180) && (playerDistY < 180))) || sub ) {
             // if sub stop near player
             if ((playerDistX  < 80) && (playerDistY) < 60 && (sub)) {
                 enemySpeed = 0;
-                return;
+//                return;
             } else {
                 enemySpeed = speed;
             }
             // patrol above player
-            if ((playerDistX) > 70) {
+            if (playerDistX > 70 || sub && playerDistX > 2) {
                 if (playerX > hitbox.getX()) {
                     flipX = -1;
                     xOffset = ENEMY_WIDTH;
@@ -189,8 +192,6 @@ public class Enemy {
                     flipX = 1;
                     xOffset = 0;
                 }
-
-                stateTime = 0;
             }
         }
     }
@@ -226,16 +227,16 @@ public class Enemy {
                     color = fadingAnimation.color();
                 }
 
-                System.out.println("state:" +stateTime + "  fade:" + fadeDelay.getTimeRemaining());
-
                 currentFrame = shipExplode.getKeyFrame(stateTime, false);
 
                 if (hitbox.y <= -16f || fadeDelay.getTimeRemaining() <= 0) {
                     this.sunk = true;
                 }
             } else if (doHitAnimation) {
+                System.out.println("Hit start " + stateTime);
                 currentFrame = shipHit.getKeyFrame(stateTime, false);
                 if (stateTime > 1) {
+                    System.out.println("Hit end");
                     doHitAnimation = false;
                 }
             } else {
@@ -249,9 +250,6 @@ public class Enemy {
 
     }
 
-
-
-
     public SpriteBatch getBatch() {
         return batch;
     }
@@ -261,6 +259,7 @@ public class Enemy {
     }
 
     public boolean checkHit(Rectangle hitBox, float damage) {
+        System.out.println("check");
         boolean collision = Intersector.overlaps(hitBox, this.hitbox);
         if(collision && !dying) {
             this.enemyHeath -= damage;

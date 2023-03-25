@@ -9,10 +9,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import utilz.HelpMethods;
+import utilz.DrawAsset;
 
-import static com.danielr.subgame.SubGame.*;
+import static com.danielr.subgame.SubGame.camera;
+import static com.danielr.subgame.SubGame.pause;
 import static java.lang.Math.atan2;
-import static utilz.Constants.Game.VISIBLE_HITBOXES;
 import static utilz.LoadSave.boatAnimation;
 
 public class Torpedo {
@@ -31,8 +32,8 @@ public class Torpedo {
 
     private final TextureRegion[][] torpedoSprites =  new TextureRegion[4][8];;
     private Animation<TextureRegion> torpedoUpAnimation;
-    private Animation<TextureRegion> torpedoLeftUpAnimation;
-    private Animation<TextureRegion> torpedoLeftAnimation;
+//    private Animation<TextureRegion> torpedoLeftUpAnimation;
+//    private Animation<TextureRegion> torpedoLeftAnimation;
     private Animation<TextureRegion> torpedoExplode;
     private boolean explode = false;
 
@@ -48,19 +49,19 @@ public class Torpedo {
     private float velocityX;
     private float velocityY;
 
-    public Torpedo(float x, float y, String direction) {
+    public Torpedo(float x, float y) {
         loadAnimations("torpedo-atlas.png");
         hitbox = HelpMethods.initHitBox(x, y, TORPEDO_WIDTH, TORPEDO_HEIGHT);
-        this.direction = direction;
+//        this.direction = direction;
     }
 
-    public Torpedo(float x, float y, String direction, boolean enemy) {
-       this(x,y,direction);
+    public Torpedo(float x, float y,  boolean enemy) {
+       this(x,y);
        this.enemy = enemy;
     }
 
-    public Torpedo(float x, float y, String direction, boolean enemy, float targetX, float targetY) {
-        this(x,y,direction,enemy);
+    public Torpedo(float x, float y,  boolean enemy, float targetX, float targetY) {
+        this(x,y,enemy);
         this.targetX = targetX;
         this.targetY = targetY;
     }
@@ -83,10 +84,11 @@ public class Torpedo {
             updatePos();
         }
 
-        int flipX = 1;
-        int flipY = 1;
-        int xOffset = 0;
-        int yOffset = 0;
+//        int flipX = 1;
+//        int flipY = 1;
+//        int xOffset = 0;
+//        int yOffset = 0;
+
 
 
 //        if (this.explode) {
@@ -160,27 +162,32 @@ public class Torpedo {
             currentFrame = torpedoUpAnimation.getKeyFrame(stateTime, true);
         }
 
-        if (currentFrame != null) {
-            batch.begin();
-            batch.setColor(Color.WHITE);
-            System.out.println(angle);
-            batch.draw(currentFrame, hitbox.getX() , hitbox.getY() , hitbox.getWidth(), hitbox.getHeight() ,  TORPEDO_WIDTH , TORPEDO_HEIGHT,1,1,angle -90 );
-            batch.end();
-        }
 
-        if (VISIBLE_HITBOXES) {
-            shapeRendered.setColor(Color.WHITE);
-            shapeRendered.begin();
-            shapeRendered.rect(hitbox.getX() , hitbox.getY() , hitbox.getWidth(), hitbox.getHeight(), TORPEDO_WIDTH,TORPEDO_HEIGHT,1,1,angle -90);
-            shapeRendered.end();
-        }
+        DrawAsset drawTorpedo = new DrawAsset(currentFrame, hitbox, 0, 0, 1, 1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle - 90);
+
+        drawTorpedo.draw();
+
+//        if (currentFrame != null) {
+//            batch.begin();
+//            batch.setColor(Color.WHITE);
+//            System.out.println(angle);
+//            batch.draw(currentFrame, hitbox.getX() , hitbox.getY() , hitbox.getWidth(), hitbox.getHeight() ,  TORPEDO_WIDTH , TORPEDO_HEIGHT,1,1,angle -90 );
+//            batch.end();
+//        }
+//
+//        if (VISIBLE_HITBOXES) {
+//            shapeRendered.setColor(Color.WHITE);
+//            shapeRendered.begin();
+//            shapeRendered.rect(hitbox.getX() , hitbox.getY() , hitbox.getWidth(), hitbox.getHeight(), TORPEDO_WIDTH,TORPEDO_HEIGHT,1,1,angle -90);
+//            shapeRendered.end();
+//        }
     }
 
 
     private void loadAnimations(String sprites) {
         Texture boatAtlas = new Texture(sprites);
 
-        for (int i= 0; i <= 3; i++) {
+        for (int i= 0; i <= 1; i++) {
             for (int j= 0; j <= 7; j++) {
                 torpedoSprites[i][j] = new TextureRegion(boatAtlas, 16 * j , 16 * i ,TORPEDO_WIDTH,TORPEDO_HEIGHT);
             }
@@ -188,8 +195,8 @@ public class Torpedo {
 
         torpedoExplode = boatAnimation(1,1, torpedoSprites, 8.0f);
         torpedoUpAnimation = boatAnimation(0,8, torpedoSprites, 0.03f);
-        torpedoLeftAnimation = boatAnimation(2,8, torpedoSprites, 0.03f);
-        torpedoLeftUpAnimation = boatAnimation(3,8, torpedoSprites, 0.03f);
+//        torpedoLeftAnimation = boatAnimation(2,8, torpedoSprites, 0.03f);
+//        torpedoLeftUpAnimation = boatAnimation(3,8, torpedoSprites, 0.03f);
     }
 
     private void directionTranslation() {
@@ -199,9 +206,9 @@ public class Torpedo {
             float x = Gdx.input.getX();
             float y = Gdx.input.getY();
             Vector3 worldCoordinates = camera.unproject(new Vector3(x, y, 0));
-            System.out.println("Mouse position: (" + worldCoordinates.x + ", " + worldCoordinates.y + ")");
+//            System.out.println("Mouse position: (" + worldCoordinates.x + ", " + worldCoordinates.y + ")");
 
-            targetShot(worldCoordinates.x -16 , worldCoordinates.y -16);
+            targetShot(worldCoordinates.x - TORPEDO_WIDTH , worldCoordinates.y - TORPEDO_HEIGHT);
         }
 
 //            switch ( direction ) {
@@ -250,8 +257,6 @@ public class Torpedo {
             destX = destX / dist;
             destY = destY / dist;
 
-
-
             velocityX = destX * this.speed;
             velocityY = destY * this.speed;
             calculateSpeed = true;
@@ -270,16 +275,8 @@ public class Torpedo {
         }
 
 
-
-
-
-
     public Rectangle getHitbox() {
         return hitbox;
-    }
-
-    public void setTorpedoDamage(int torpedoDamage) {
-        this.torpedoDamage = torpedoDamage;
     }
 
     public void setExplode(boolean explode) {
@@ -295,6 +292,10 @@ public class Torpedo {
 
     public int getTorpedoDamage() {
         return torpedoDamage;
+    }
+
+    public void setTorpedoDamage(int torpedoDamage) {
+        this.torpedoDamage = torpedoDamage;
     }
 
     public int getSpeed() {

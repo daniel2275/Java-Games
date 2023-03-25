@@ -9,21 +9,27 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import gamestates.Playing;
+import utilz.DrawAsset;
 import utilz.HelpMethods;
 
 import java.util.Objects;
 
 import static com.danielr.subgame.SubGame.*;
 import static utilz.Constants.Game.*;
-import static utilz.HelpMethods.drawObject;
 import static utilz.LoadSave.boatAnimation;
 
 public class Player {
 
     public static final int PLAYER_WIDTH = 48;
     public static final int PLAYER_HEIGHT = 16;
-    public static final float SPAWN_X = WORLD_WIDTH/2;
-    public static final float SPAWN_Y = WORLD_HEIGHT/2;
+    public static float SPAWN_X = WORLD_WIDTH/2;
+    public static float SPAWN_Y = WORLD_HEIGHT/2;
+
+    private float playerHealth = 100f;
+    private float collisionDamage = 5f;
+    private float playerSpeed = 0.2f;
+
+    private int playerScore = 0;
 
     private final TextureRegion[][] uBoatSprites =  new TextureRegion[6][6];
 
@@ -39,8 +45,7 @@ public class Player {
     private TextureRegion currentFrame;
 
     private Rectangle hitbox;
-    private float playerHealth = 100f;
-    private float collisionDamage = 5f;
+
 
     private String lastDirection;
     private boolean left;
@@ -93,7 +98,11 @@ public class Player {
 
 
     public void render () {
-        drawObject(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth,reload, Color.WHITE);
+//        drawObject(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth,reload, Color.WHITE);
+
+        DrawAsset drawPlayer = new DrawAsset(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth,reload, Color.WHITE);
+
+        drawPlayer.draw();
     }
 
     // Animate the player character, resets statetime on non-looping animations
@@ -176,26 +185,26 @@ public class Player {
     public void checkDirection() {
         if (up) {
             if ( hitbox.getY() + PLAYER_HEIGHT < WORLD_HEIGHT - SKY_SIZE + PLAYER_HEIGHT / 2.0f ) {
-                hitbox.y++;
+                hitbox.y += playerSpeed;
             }
         }
         if (down) {
             if ( hitbox.getY() > 1) {
-                hitbox.y--;
+                hitbox.y -= playerSpeed;
             }
         }
         if (left) {
             flipX = 1;
             xOffset = 0;
             if (hitbox.getX() > 1) {
-                hitbox.x--;
+                hitbox.x -= playerSpeed;
             }
         }
         if (right) {
             flipX = -1;
             xOffset = -PLAYER_WIDTH ;
             if (hitbox.getX() < WORLD_WIDTH + xOffset ) {
-                hitbox.x++;
+                hitbox.x += playerSpeed;
             }
         }
 
@@ -257,30 +266,37 @@ public class Player {
         return lastDirection;
     }
 
-    public String direction() {
-        String currentDirection;
-
-        if (left && up) {
-            currentDirection = "left&up";
-        } else if (left&&down) {
-            currentDirection = "left&down";
-        } else if (left) {
-            currentDirection = "left";
-        } else if (right&&up) {
-            currentDirection = "right&up";
-        } else if (right&&down) {
-            currentDirection = "right&down";
-        } else if (right) {
-            currentDirection = "right";
-        } else if (down) {
-            currentDirection = "down";
-        } else {
-            currentDirection = "up";
-        }
-
-
-        return currentDirection;
+    public int getPlayerScore() {
+        return playerScore;
     }
+
+    public void setPlayerScore(int playerScore) {
+        this.playerScore = playerScore;
+    }
+//    public String direction() {
+//        String currentDirection;
+//
+//        if (left && up) {
+//            currentDirection = "left&up";
+//        } else if (left&&down) {
+//            currentDirection = "left&down";
+//        } else if (left) {
+//            currentDirection = "left";
+//        } else if (right&&up) {
+//            currentDirection = "right&up";
+//        } else if (right&&down) {
+//            currentDirection = "right&down";
+//        } else if (right) {
+//            currentDirection = "right";
+//        } else if (down) {
+//            currentDirection = "down";
+//        } else {
+//            currentDirection = "up";
+//        }
+//
+//
+//        return currentDirection;
+//    }
 
     public Rectangle getHitbox() {
         return hitbox;
@@ -294,5 +310,15 @@ public class Player {
         return reloadSpeed;
     }
 
+    public float getReload() {
+        return reload;
+    }
 
+    public float getPlayerSpeed() {
+        return playerSpeed;
+    }
+
+    public void setPlayerSpeed(float playerSpeed) {
+        this.playerSpeed = playerSpeed;
+    }
 }

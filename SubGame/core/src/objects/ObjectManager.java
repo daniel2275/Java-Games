@@ -29,7 +29,7 @@ public class ObjectManager {
     public void fireProjectile() {
         if (!pause && (torpedoLoading.getStartTime() == 0) || !pause && (torpedoLoading.getTimeRemaining() <= 0)) {
                 torpedoLoading.init();
-                torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() + PLAYER_WIDTH / 2.0f, playing.getPlayer().getuBoatHitBox().getY(), playing.getPlayer().direction()));
+                torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() + PLAYER_WIDTH / 2.0f, playing.getPlayer().getuBoatHitBox().getY()));
         }
     }
 
@@ -38,7 +38,7 @@ public class ObjectManager {
             depthCharges.add(new DepthCharge(enemy.getHitbox().getX(), enemy.getHitbox().getY()));
         } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
            if (checkBounds(enemy)) {
-               torpedoes.add(new Torpedo(enemy.getHitbox().getX(), enemy.getHitbox().getY(), enemy.getDirection(), true, playing.getPlayer().getHitbox().getX(), playing.getPlayer().getHitbox().getY()));
+               torpedoes.add(new Torpedo(enemy.getHitbox().getX(), enemy.getHitbox().getY(),  true, playing.getPlayer().getHitbox().getX(), playing.getPlayer().getHitbox().getY()));
            }
         }
     }
@@ -86,9 +86,9 @@ public class ObjectManager {
                         if (playing.getPlayer().getHitbox().overlaps(depthCharge.getHitbox())) {
                             if (!depthCharge.isExplode()) {
                                 playing.getPlayer().setPlayerHealth(playing.getPlayer().getPlayerHealth() - depthCharge.getDpcDamage());
+                                depthCharge.setExplode(true);
+                                depthCharge.setSpeed(0);
                             }
-                            depthCharge.setExplode(true);
-                            depthCharge.setSpeed(0);
                         }
                     }
                     if (depthCharge.getAnimationFinished() && depthCharge.isExplode()) {

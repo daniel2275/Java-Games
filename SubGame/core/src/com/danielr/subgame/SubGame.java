@@ -2,6 +2,7 @@ package com.danielr.subgame;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import gamestates.Gamestate;
 import gamestates.Menu;
 import gamestates.Playing;
+import gamestates.Upgrades;
 
 import static utilz.Constants.Game.WORLD_HEIGHT;
 import static utilz.Constants.Game.WORLD_WIDTH;
@@ -37,15 +39,22 @@ public class SubGame extends ApplicationAdapter  {
 	private Menu menu;
 
 	private Label scoreLabel;
+	private Label scoreLabel1;
+	private Label scoreLabel2;
 
 	private Stage uiStage;
 
+	private Upgrades upgrades;
 //	BufferedImage[] lvls;
 //	private Level[] level;
+
+        public static InputMultiplexer multiplexer = new InputMultiplexer();
+
 
 	@Override
 	public void create() {
 
+		// set up mouse cross-hair
 		Pixmap cursorTexture = new Pixmap(Gdx.files.internal("CrossHair.png"));
 		int xHotSpot = cursorTexture.getWidth() /2;
 		int yHotSpot = cursorTexture.getHeight() /2 ;
@@ -56,10 +65,15 @@ public class SubGame extends ApplicationAdapter  {
 		BitmapFont font = loadFont("fonts/BwnsnwBitmap-2O9d.ttf");
 
 		scoreLabel = new Label("Enemies remaining:", new Label.LabelStyle(font, Color.BLACK));
+		scoreLabel1 = new Label("Score:", new Label.LabelStyle(font, Color.BLACK));
+		scoreLabel2 = new Label("Level:", new Label.LabelStyle(font, Color.BLACK));
 		scoreLabel.setPosition(5, WORLD_HEIGHT - 20);
+		scoreLabel1.setPosition(5, WORLD_HEIGHT - 35);
+		scoreLabel2.setPosition(5, WORLD_HEIGHT - 50);
 		uiStage = new Stage();
 		uiStage.addActor(scoreLabel);
-
+		uiStage.addActor(scoreLabel1);
+		uiStage.addActor(scoreLabel2);
 
 //		LoadSave.loadBinary();
 
@@ -69,6 +83,7 @@ public class SubGame extends ApplicationAdapter  {
 //		for (int i = 0; i < lvls.length; i++) {
 //			level[i] = new Level(lvls[i]);
 //		}
+
 
 		batch = new SpriteBatch();
 		background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
@@ -94,7 +109,7 @@ public class SubGame extends ApplicationAdapter  {
 
 		shapeRendered.setAutoShapeType(true);
 
-
+		upgrades = new Upgrades(playing);
 	}
 
 	@Override
@@ -122,12 +137,18 @@ public class SubGame extends ApplicationAdapter  {
 			case PLAYING:{
 				playing.update();
 				scoreLabel.setText("Enemies remaining:" + playing.getEnemyManager().getListOfEnemies().size());
+				scoreLabel1.setText("Score:" + playing.getPlayer().getPlayerScore());
+				scoreLabel2.setText("Level:" + playing.getLevelManager().getLevel().getTotalLevels());
 				uiStage.draw();
 			}break;
 			case MENU:{
 				pause = true;
 				menu.update();
 				playing.update();
+			}
+			break;
+			case STORE:{
+					upgrades.render(Gdx.graphics.getDeltaTime());
 			}
 			break;
 			case OPTIONS:{

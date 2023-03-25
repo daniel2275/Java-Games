@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import entities.Enemy;
 import entities.EnemyManager;
 import entities.Player;
+import levels.LevelManager;
 import objects.ObjectManager;
 
 import java.util.Iterator;
@@ -17,6 +18,8 @@ public class Playing implements InputProcessor {
     private Player player;
     private ObjectManager objectManager;
     private EnemyManager enemyManager;
+
+    private LevelManager levelManager;
 
     int x,y;
 
@@ -29,8 +32,8 @@ public class Playing implements InputProcessor {
         player = new Player(this);
         objectManager =  new ObjectManager(this);
         enemyManager = new EnemyManager(this);
-        enemyManager.create();
-        Gdx.input.setInputProcessor(this);
+        levelManager = new LevelManager(this);
+//        Gdx.input.setInputProcessor(this);
     }
 
     public Player getPlayer() {
@@ -38,11 +41,11 @@ public class Playing implements InputProcessor {
     }
 
     public void update() {
-
+            Gdx.input.setInputProcessor(this);
             player.update();
             objectManager.update();
             enemyManager.update(player, objectManager);
-
+            levelManager.update();
     }
 
     @Override
@@ -72,12 +75,25 @@ public class Playing implements InputProcessor {
                 pause = !pause;
             }
             break;
+            case Input.Keys.O: {
+                if (Gamestate.state.equals(Gamestate.STORE)) {
+                    Gamestate.state = Gamestate.PLAYING;
+                } else if (Gamestate.state.equals(Gamestate.PLAYING)) {
+                    Gamestate.state = Gamestate.STORE;
+                }
+            }
+            break;
             case Input.Keys.R: {
                 reset();
             }
             break;
             case Input.Keys.ESCAPE: {
-                Gamestate.state = Gamestate.MENU;
+                if (Gamestate.state.equals(Gamestate.MENU)) {
+                    Gamestate.state = Gamestate.PLAYING;
+                    pause = false;
+                } else if (Gamestate.state.equals(Gamestate.PLAYING)) {
+                    Gamestate.state = Gamestate.MENU;
+                }
             }
             break;
 
@@ -177,5 +193,9 @@ public class Playing implements InputProcessor {
 
     public ObjectManager getObjectManager() {
         return objectManager;
+    }
+
+    public LevelManager getLevelManager() {
+        return levelManager;
     }
 }

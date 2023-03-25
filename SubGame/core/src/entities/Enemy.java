@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Timer;
+import utilz.DrawAsset;
 import utilz.HelpMethods;
 import utilz.Timing;
 
@@ -24,8 +25,11 @@ public class Enemy {
     public static final int ENEMY_WIDTH = 64;
     public static final int ENEMY_HEIGHT = 25;
 
-    private Rectangle hitbox;
     private float enemyHeath = 100f;
+
+    private int enemyPoints = 10;
+    private Rectangle hitbox;
+    private float enemySpeed, speed;
 
     private final TextureRegion[][] boatSprites =  new TextureRegion[2][6];;
     private Animation<TextureRegion> shipIdle;
@@ -36,11 +40,9 @@ public class Enemy {
     private boolean dying = false;
     private boolean sunk = false;
 
-    private float enemySpeed, speed;
     private final String spriteAtlas;
 
     private final float delay;
-
     private int flipX, flipY;
     private String direction;
 
@@ -58,13 +60,17 @@ public class Enemy {
 
     private HelpMethods.FadingAnimation fadingAnimation;
 
-    public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro) {
+
+
+    public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float enemyHeath, int enemyPoints) {
         this.flipX = flipX;
         this.delay = delay;
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
         this.speed = speed;
         this.aggro = aggro;
+        this.enemyHeath = enemyHeath;
+        this.enemyPoints = enemyPoints;
         this.fadeDelay = new Timing(7); // seconds dispose delay
         loadAnimations(spriteAtlas);
         this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
@@ -72,8 +78,8 @@ public class Enemy {
     }
 
 
-    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX,  String spriteAtlas, float speed, boolean aggro, boolean sub) {
-        this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro);
+    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX,  String spriteAtlas, float speed, boolean aggro, float enemyHeath, boolean sub, int enemyPoints) {
+        this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro, enemyHeath, enemyPoints);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
@@ -81,7 +87,9 @@ public class Enemy {
     }
 
 
-    public void update(Player player) {
+
+
+        public void update(Player player) {
         if ((aggro) && (!dying)) {
             turnTowardsPlayer(player);
         }
@@ -131,9 +139,12 @@ public class Enemy {
                         xOffset = 0;
                         direction = "left";
                     } else if (flipX == 1 && hitbox.getX() <= -65) {
+                        if (!aggro) {
+                            enemyPoints -= enemyPoints * 0.1;
+                            System.out.println(enemyPoints);
+                        }
                         flipX = -1;
                     }
-
 
 
                     if (sub && hitbox.getY() > player.getHitbox().getY()) {
@@ -246,7 +257,11 @@ public class Enemy {
             fadeDelay.checkPause(true);
         }
 
-        drawObject(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
+//        drawObject(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
+
+        DrawAsset drawEnemy = new DrawAsset(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
+
+        drawEnemy.draw();
 
     }
 
@@ -259,16 +274,11 @@ public class Enemy {
     }
 
     public boolean checkHit(Rectangle hitBox, float damage) {
-        System.out.println("check");
         boolean collision = Intersector.overlaps(hitBox, this.hitbox);
         if(collision && !dying) {
             this.enemyHeath -= damage;
             if (enemySpeed > 0) {
-                if (sub) {
-                    speed -= 0.05f;
-                } else {
-                    speed -= 0.2f;
-                }
+                speed = speed - (speed * 0.25f);
                 if (speed < 0) {
                     speed = 0;
                 }
@@ -295,6 +305,11 @@ public class Enemy {
         return enemySpeed;
     }
 
+    public void setEnemySpeed(float enemySpeed) {
+        this.enemySpeed = enemySpeed;
+    }
+
+
     public void setDying(boolean dying) {
         this.dying = dying;
         fadeDelay.init(); // initialize fade timer
@@ -305,9 +320,6 @@ public class Enemy {
         return dying;
     }
 
-    public void setEnemySpeed(float enemySpeed) {
-        this.enemySpeed = enemySpeed;
-    }
 
     public boolean isSunk() {
         return sunk;
@@ -335,5 +347,9 @@ public class Enemy {
 
     public void setFlipY(int flipY) {
         this.flipY = flipY;
+    }
+
+    public int getEnemyPoints() {
+        return enemyPoints;
     }
 }

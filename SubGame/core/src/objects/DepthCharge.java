@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import utilz.DrawAsset;
 
 import static com.danielr.subgame.SubGame.pause;
-import static utilz.HelpMethods.drawObject;
 import static utilz.HelpMethods.initHitBox;
 import static utilz.LoadSave.boatAnimation;
 
@@ -17,6 +17,7 @@ public class DepthCharge {
     public static final int DPC_WIDTH = 16 ;
     public static final int DPC_HEIGHT = 16 ;
     private int dpcDamage = 20;
+    private int speed = 1;
 
     private Rectangle hitbox;
 
@@ -25,7 +26,6 @@ public class DepthCharge {
     private Animation<TextureRegion> dpcAnimation;
     private Animation<TextureRegion> dpcExplodeAnimation;
 
-    private int speed = 1;
     private boolean explode;
 
     public DepthCharge(float x, float y) {
@@ -36,7 +36,6 @@ public class DepthCharge {
     public void update() {
         render();
     }
-
 
     private void render(){
         TextureRegion currentFrame;
@@ -57,7 +56,11 @@ public class DepthCharge {
             currentFrame = dpcAnimation.getKeyFrame(stateTime, true);
         }
 
-        drawObject(currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0,-1, Color.WHITE);
+//        drawObject(currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0,-1, Color.WHITE);
+
+        DrawAsset drawDepthCharge =  new DrawAsset (currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0,-1, Color.WHITE);
+
+        drawDepthCharge.draw();
     }
 
 
@@ -82,7 +85,12 @@ public class DepthCharge {
         return dpcDamage;
     }
 
+    public void setDpcDamage(int dpcDamage) {
+        this.dpcDamage = dpcDamage;
+    }
+
     public void setExplode(boolean explode) {
+        stateTime = 0;
         this.explode = explode;
     }
 
@@ -90,10 +98,13 @@ public class DepthCharge {
         return explode;
     }
 
+    public int getSpeed() {
+        return speed;
+    }
+
     public void setSpeed(int speed) {
         this.speed = speed;
     }
-
 
     public boolean getAnimationFinished() {
         return dpcExplodeAnimation.isAnimationFinished(stateTime);

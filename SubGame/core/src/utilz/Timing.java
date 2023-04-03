@@ -59,4 +59,8 @@ public class Timing {
     public float getTimeRemaining() {
         return timeRemaining;
     }
+
+    public void setDuration(float duration) {
+        this.duration = duration;
+    }
 }

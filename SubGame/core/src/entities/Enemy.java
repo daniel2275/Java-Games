@@ -16,7 +16,8 @@ import utilz.Timing;
 import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.pause;
 import static utilz.Constants.Game.*;
-import static utilz.HelpMethods.*;
+import static utilz.HelpMethods.initHitBox;
+import static utilz.HelpMethods.updateHitbox;
 import static utilz.LoadSave.boatAnimation;
 
 public class Enemy {
@@ -141,7 +142,7 @@ public class Enemy {
                     } else if (flipX == 1 && hitbox.getX() <= -65) {
                         if (!aggro) {
                             enemyPoints -= enemyPoints * 0.1;
-                            System.out.println(enemyPoints);
+//                            System.out.println(enemyPoints);
                         }
                         flipX = -1;
                     }
@@ -244,10 +245,10 @@ public class Enemy {
                     this.sunk = true;
                 }
             } else if (doHitAnimation) {
-                System.out.println("Hit start " + stateTime);
+//                System.out.println("Hit start " + stateTime);
                 currentFrame = shipHit.getKeyFrame(stateTime, false);
                 if (stateTime > 1) {
-                    System.out.println("Hit end");
+//                    System.out.println("Hit end");
                     doHitAnimation = false;
                 }
             } else {

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import static com.danielr.subgame.SubGame.pause;
-import static entities.Player.PLAYER_WIDTH;
 import static objects.Torpedo.TORPEDO_HEIGHT;
 import static utilz.Constants.Game.*;
 
@@ -29,7 +28,9 @@ public class ObjectManager {
     public void fireProjectile() {
         if (!pause && (torpedoLoading.getStartTime() == 0) || !pause && (torpedoLoading.getTimeRemaining() <= 0)) {
                 torpedoLoading.init();
-                torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() + PLAYER_WIDTH / 2.0f, playing.getPlayer().getuBoatHitBox().getY()));
+            // update timing with reloadSpeed updates
+                torpedoLoading.setDuration(playing.getPlayer().getReloadSpeed());
+                torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX() , playing.getPlayer().getuBoatHitBox().getY() ));
         }
     }
 

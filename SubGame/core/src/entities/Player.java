@@ -22,16 +22,16 @@ public class Player {
 
     public static final int PLAYER_WIDTH = 48;
     public static final int PLAYER_HEIGHT = 16;
-    public static float SPAWN_X = WORLD_WIDTH/2;
-    public static float SPAWN_Y = WORLD_HEIGHT/2;
+    public static float SPAWN_X = WORLD_WIDTH / 2;
+    public static float SPAWN_Y = WORLD_HEIGHT / 2;
 
     private float playerHealth = 100f;
     private float collisionDamage = 5f;
     private float playerSpeed = 0.2f;
 
-    private int playerScore = 0;
+    private int playerScore = 1000;
 
-    private final TextureRegion[][] uBoatSprites =  new TextureRegion[6][6];
+    private final TextureRegion[][] uBoatSprites = new TextureRegion[6][6];
 
     private Animation<TextureRegion> idleAnimations;
     private Animation<TextureRegion> movingAnimations;
@@ -57,7 +57,7 @@ public class Player {
 
     private float reload = 0;
 
-    public static float reloadSpeed = 3;
+    public float reloadSpeed = 3f;
 
     private int xOffset = 0;
 
@@ -66,7 +66,7 @@ public class Player {
     public Player(Playing playing) {
         this.playing = playing;
         loadAnimations("Uboat-atlas.png");
-        this.hitbox = HelpMethods.initHitBox(SPAWN_X,SPAWN_Y, PLAYER_WIDTH,PLAYER_HEIGHT);
+        this.hitbox = HelpMethods.initHitBox(SPAWN_X, SPAWN_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 
     public void update() {
@@ -82,25 +82,23 @@ public class Player {
     private void loadAnimations(String sprites) {
         Texture uBoatAtlas = new Texture(sprites);
 
-        for (int i= 0; i <= 5; i++) {
-            for (int j= 0; j <= 5; j++) {
-                uBoatSprites[i][j] = new TextureRegion(uBoatAtlas, j * 64, i * 16,PLAYER_WIDTH,PLAYER_HEIGHT);
+        for (int i = 0; i <= 5; i++) {
+            for (int j = 0; j <= 5; j++) {
+                uBoatSprites[i][j] = new TextureRegion(uBoatAtlas, j * 64, i * 16, PLAYER_WIDTH, PLAYER_HEIGHT);
             }
         }
 
-        idleAnimations = boatAnimation(0,5, uBoatSprites, 2.0f);
-        movingAnimations = boatAnimation(1,3, uBoatSprites, 0.055f);
-        upAnimations = boatAnimation(2,3, uBoatSprites, 0.7f);
-        downAnimations = boatAnimation(3,3, uBoatSprites, 0.7f);
-        hitAnimations = boatAnimation(4,1, uBoatSprites, 0.7f);
-        sunkAnimations = boatAnimation(5,1, uBoatSprites, 0.7f);
+        idleAnimations = boatAnimation(0, 5, uBoatSprites, 2.0f);
+        movingAnimations = boatAnimation(1, 3, uBoatSprites, 0.055f);
+        upAnimations = boatAnimation(2, 3, uBoatSprites, 0.7f);
+        downAnimations = boatAnimation(3, 3, uBoatSprites, 0.7f);
+        hitAnimations = boatAnimation(4, 1, uBoatSprites, 0.7f);
+        sunkAnimations = boatAnimation(5, 1, uBoatSprites, 0.7f);
     }
 
 
-    public void render () {
-//        drawObject(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth,reload, Color.WHITE);
-
-        DrawAsset drawPlayer = new DrawAsset(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth,reload, Color.WHITE);
+    public void render() {
+        DrawAsset drawPlayer = new DrawAsset(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth, reload, Color.WHITE, reloadSpeed);
 
         drawPlayer.draw();
     }
@@ -117,14 +115,14 @@ public class Player {
             currentFrame = getMovingAnimations().getKeyFrame(stateTime, true);
             lastDirection = "left or right";
         } else if (up) {
-            if(!Objects.equals(lastDirection, "up")) {
-                stateTime=0;
+            if (!Objects.equals(lastDirection, "up")) {
+                stateTime = 0;
             }
             currentFrame = getUpAnimations().getKeyFrame(stateTime, false);
             lastDirection = "up";
         } else if (down) {
-            if(!Objects.equals(lastDirection, "down")) {
-                stateTime=0;
+            if (!Objects.equals(lastDirection, "down")) {
+                stateTime = 0;
             }
             currentFrame = getDownAnimations().getKeyFrame(stateTime, false);
             lastDirection = "down";
@@ -184,12 +182,12 @@ public class Player {
 
     public void checkDirection() {
         if (up) {
-            if ( hitbox.getY() + PLAYER_HEIGHT < WORLD_HEIGHT - SKY_SIZE + PLAYER_HEIGHT / 2.0f ) {
+            if (hitbox.getY() + PLAYER_HEIGHT < WORLD_HEIGHT - SKY_SIZE + PLAYER_HEIGHT / 2.0f) {
                 hitbox.y += playerSpeed;
             }
         }
         if (down) {
-            if ( hitbox.getY() > 1) {
+            if (hitbox.getY() > 1) {
                 hitbox.y -= playerSpeed;
             }
         }
@@ -202,8 +200,8 @@ public class Player {
         }
         if (right) {
             flipX = -1;
-            xOffset = -PLAYER_WIDTH ;
-            if (hitbox.getX() < WORLD_WIDTH + xOffset ) {
+            xOffset = -PLAYER_WIDTH;
+            if (hitbox.getX() < WORLD_WIDTH + xOffset) {
                 hitbox.x += playerSpeed;
             }
         }
@@ -302,9 +300,6 @@ public class Player {
         return hitbox;
     }
 
-    public void setReload(float reload) {
-        this.reload = reload;
-    }
 
     public float getReloadSpeed() {
         return reloadSpeed;
@@ -318,7 +313,17 @@ public class Player {
         return playerSpeed;
     }
 
+    public void setReloadSpeed(float reloadSpeed) {
+
+        this.reloadSpeed = reloadSpeed;
+    }
+
     public void setPlayerSpeed(float playerSpeed) {
         this.playerSpeed = playerSpeed;
     }
+
+    public void setReload(float reload) {
+        this.reload = reload;
+    }
+
 }

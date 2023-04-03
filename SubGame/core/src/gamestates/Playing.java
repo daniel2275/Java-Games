@@ -21,6 +21,8 @@ public class Playing implements InputProcessor {
 
     private LevelManager levelManager;
 
+    private UpgradeStore upgrades;
+
     int x,y;
 
 
@@ -33,7 +35,7 @@ public class Playing implements InputProcessor {
         objectManager =  new ObjectManager(this);
         enemyManager = new EnemyManager(this);
         levelManager = new LevelManager(this);
-//        Gdx.input.setInputProcessor(this);
+        upgrades = new UpgradeStore(this);
     }
 
     public Player getPlayer() {

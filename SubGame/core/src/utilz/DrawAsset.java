@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Rectangle;
 
 import static com.danielr.subgame.SubGame.*;
 import static com.danielr.subgame.SubGame.shapeRendered;
-import static entities.Player.reloadSpeed;
 import static utilz.Constants.Game.VISIBLE_HITBOXES;
 
 public class DrawAsset {
@@ -26,6 +25,8 @@ public class DrawAsset {
     private float scaleX = 1f;
     private float scaleY = 1f;
     private float angle = 0;
+
+    private float reloadSpeed;
 
 //
 //
@@ -53,6 +54,14 @@ public class DrawAsset {
         this.angle= angle;
     }
 
+    public DrawAsset(TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float health, float reload, Color color,float reloadSpeed) {
+        this(currentFrame,hitbox,xOffset,yOffset,flipX,flipY,health,reload, color);
+        this.reloadSpeed = reloadSpeed;
+    }
+
+
+
+
 
     public void draw() {
 //        hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
@@ -63,6 +72,9 @@ public class DrawAsset {
             if (currentFrame != null) {
                 if (health == -1) {
                     batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY, width, height, scaleX, scaleY, angle);
+
+//                      batch.draw(currentFrame, hitbox.getX() , hitbox.getY() , hitbox.getWidth() , hitbox.getHeight(), width, height, scaleX, scaleY, angle);
+
                 } else {
                     batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY);
                 }
@@ -93,7 +105,7 @@ public class DrawAsset {
                     shapeRendered.setColor(Color.FIREBRICK);
                 }
                 float width = hitbox.getWidth() - (hitbox.getWidth() / reloadSpeed * reload);
-//                System.out.println(width);
+
                 shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 8, width, 1);
                 shapeRendered.end();
             }

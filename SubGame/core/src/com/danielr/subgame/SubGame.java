@@ -17,7 +17,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import gamestates.Gamestate;
 import gamestates.Menu;
 import gamestates.Playing;
-import gamestates.Upgrades;
+import gamestates.UpgradeStore;
+
 
 import static utilz.Constants.Game.WORLD_HEIGHT;
 import static utilz.Constants.Game.WORLD_WIDTH;
@@ -44,7 +45,7 @@ public class SubGame extends ApplicationAdapter  {
 
 	private Stage uiStage;
 
-	private Upgrades upgrades;
+	private UpgradeStore upgradeStore;
 //	BufferedImage[] lvls;
 //	private Level[] level;
 
@@ -109,7 +110,7 @@ public class SubGame extends ApplicationAdapter  {
 
 		shapeRendered.setAutoShapeType(true);
 
-		upgrades = new Upgrades(playing);
+		upgradeStore = new UpgradeStore(playing);
 	}
 
 	@Override
@@ -140,6 +141,7 @@ public class SubGame extends ApplicationAdapter  {
 				scoreLabel1.setText("Score:" + playing.getPlayer().getPlayerScore());
 				scoreLabel2.setText("Level:" + playing.getLevelManager().getLevel().getTotalLevels());
 				uiStage.draw();
+				upgradeStore.setPlayerScore(playing.getPlayer().getPlayerScore());
 			}break;
 			case MENU:{
 				pause = true;
@@ -148,7 +150,7 @@ public class SubGame extends ApplicationAdapter  {
 			}
 			break;
 			case STORE:{
-					upgrades.render(Gdx.graphics.getDeltaTime());
+				upgradeStore.render(Gdx.graphics.getDeltaTime());
 			}
 			break;
 			case OPTIONS:{

@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import utilz.HelpMethods;
 import utilz.DrawAsset;
+import utilz.HelpMethods;
 
 import static com.danielr.subgame.SubGame.camera;
 import static com.danielr.subgame.SubGame.pause;
@@ -162,7 +162,6 @@ public class Torpedo {
             currentFrame = torpedoUpAnimation.getKeyFrame(stateTime, true);
         }
 
-
         DrawAsset drawTorpedo = new DrawAsset(currentFrame, hitbox, 0, 0, 1, 1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle - 90);
 
         drawTorpedo.draw();
@@ -182,7 +181,6 @@ public class Torpedo {
 //            shapeRendered.end();
 //        }
     }
-
 
     private void loadAnimations(String sprites) {
         Texture boatAtlas = new Texture(sprites);
@@ -242,17 +240,23 @@ public class Torpedo {
 //                    break;
 //            }
 //        }
-
     }
 
     private void targetShot(float goalX, float goalY) {
          if(!calculateSpeed) {
-            float destX = goalX - hitbox.x ;
-            float destY = goalY - hitbox.y ;
+            float destX = goalX - hitbox.x;
+            float destY = goalY - hitbox.y;
 
             angle = (float)  atan2(destY,destX);
             angle = MathUtils.radiansToDegrees * angle;
 
+            // different tubes illusion
+            if(Math.abs(angle) < 90) {
+                hitbox.x += 24;
+                hitbox.y -= 16;
+            }
+
+//             System.out.println("angle :" + angle);
             float dist = (float) Math.sqrt(destX * destX + destY * destY);
             destX = destX / dist;
             destY = destY / dist;

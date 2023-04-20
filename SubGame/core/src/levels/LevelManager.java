@@ -1,6 +1,9 @@
 package levels;
 
+import entities.Enemy;
 import gamestates.Playing;
+
+import java.util.List;
 
 public class LevelManager {
 
@@ -22,5 +25,18 @@ public class LevelManager {
 
     public Level getLevel() {
         return level;
+    }
+
+    public void reset() {
+        // reset the current level to the first level
+        level.setCurrentScreen(0);
+        level.setTotalLevels(0);
+        level.setCurrentHealth(100);
+        level.setMaxHealth(100);
+        // remove all enemies from the enemy manager
+        List<Enemy> enemies = playing.getEnemyManager().getListOfEnemies();
+        for (Enemy enemy : enemies) {
+            playing.getEnemyManager().reset();
+        }
     }
 }

@@ -1,9 +1,6 @@
 package gamestates;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -13,45 +10,152 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Json;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.danielr.subgame.SubGame.pause;
 import static utilz.Constants.Game.WORLD_HEIGHT;
 import static utilz.Constants.Game.WORLD_WIDTH;
 
-public class UpgradeStore implements Screen, InputProcessor {
-private Stage stage;
-private Map<String, Upgrade> upgrades;
+public class UpgradeStore implements Screen {
+    private Stage stage;
+    private Map<String, Upgrade> upgrades;
 
-private Playing playing;
-private Label scoreLbl;
+    private Playing playing;
+    private Label scoreLbl;
 
-private Upgrade upgradeSpeed;
-private Upgrade upgradeFireRate;
+    private Upgrade upgradeSpeed;
+    private Upgrade upgradeFireRate;
 
-private float playerScore;
+    private Label speedCost;
+    private Label fireRateCost;
 
-// Score label creation font name
-private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
+    private ProgressBar playerSpeedDisplay;
+    private ProgressBar playerFireRateDisplay;
+
+    private int playerScore;
+
+//    private static boolean init;
+
+    // Score label creation font name
+    private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
 
     public UpgradeStore(Playing playing) {
         this.playerScore = playing.getPlayer().getPlayerScore();
         this.playing = playing;
+        loadDefaults();
         loadInit();
         show();
     }
 
-    private  void loadInit() {
+    public void loadInit() {
+        Preferences prefs = Gdx.app.getPreferences("my_prefs");
+
+        String jsonStringDefault = prefs.getString("upgrades", null);
+        upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+
+        int playerScoreInit = prefs.getInteger("playerScore");
+        playing.getPlayer().setPlayerScore(playerScoreInit);
+
+        float playerHealthInit = prefs.getFloat("playerHealth");
+        playing.getPlayer().setPlayerHealth(playerHealthInit);
+
+        int levelInit = prefs.getInteger("level");
+        playing.getLevelManager().getLevel().setTotalLevels(levelInit);
+
+        float reloadSpeed = prefs.getFloat("reloadSpeed");
+        playing.getPlayer().setReloadSpeed(reloadSpeed);
+
+        float playerSpeed = prefs.getFloat("playerSpeed");
+        playing.getPlayer().setPlayerSpeed(playerSpeed);
+    }
+
+
+    public void saveGame() {
+        Preferences prefs = Gdx.app.getPreferences("my_prefs");
+        String jsonString = new Json().toJson(upgrades);
+        prefs.putString("upgrades", jsonString);
+
+        prefs.putInteger("playerScore", playing.getPlayer().getPlayerScore());
+        prefs.putFloat("playerHealth", playing.getPlayer().getPlayerHealth());
+        prefs.putInteger("level", playing.getLevelManager().getLevel().getTotalLevels());
+
+        prefs.putFloat("reloadSpeed", playing.getPlayer().getReloadSpeed());
+        prefs.putFloat("playerSpeed", playing.getPlayer().getPlayerSpeed());
+
+        prefs.flush();
+    }
+
+    public void loadDefaults() {
+        upgradeSpeed = new Upgrade("Speed", 10f, 2f, 0f, 2f, 40, 0);
+        upgradeFireRate = new Upgrade("FireRate", 10f, 2f, 3f, 0f, 40, 0);
+        int playerScore = 1000;
+        float playerHealth = 100f;
+
+        int totalLevels = 0;
+
+        float reloadSpeed = 3f;
+        float playerSpeed = 0.2f;
+
         upgrades = new HashMap<>();
-        upgradeSpeed = new Upgrade("Speed", 10f,2f, 0f,2f,40,0);
-        upgradeFireRate =  new Upgrade("FireRate", 10f,2f, 3f,0f, 40,0);
-        upgrades.put("Speed", upgradeSpeed);
-        upgrades.put("FireRate", upgradeFireRate);
+        upgrades.put("Speed",upgradeSpeed);
+        upgrades.put("FireRate",upgradeFireRate);
+
+        Preferences prefs = Gdx.app.getPreferences("my_prefs");
+        String jsonString = new Json().toJson(upgrades);
+        prefs.putString("default_upgrades", jsonString);
+        prefs.putInteger("default_playerScore", playerScore);
+        prefs.putFloat("default_playerHealth", playerHealth);
+        prefs.putInteger("default_level", totalLevels);
+
+        prefs.putFloat("default_reloadSpeed", reloadSpeed);
+        prefs.putFloat("default_playerSpeed", playerSpeed);
+
+        prefs.flush();
+    }
+
+    public void resetUpgrades() {
+        Preferences prefs = Gdx.app.getPreferences("my_prefs");
+
+        String jsonStringDefault = prefs.getString("default_upgrades", null);
+
+        upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+
+        int playerScoreInit = prefs.getInteger("default_playerScore");
+        playing.getPlayer().setPlayerScore(playerScoreInit);
+
+        float playerHealthInit = prefs.getFloat("default_playerHealth");
+        playing.getPlayer().setPlayerHealth(playerHealthInit);
+
+        int levelInit = prefs.getInteger("default_level");
+        playing.getLevelManager().getLevel().setTotalLevels(levelInit);
+
+        float reloadSpeed = prefs.getFloat("default_reloadSpeed");
+        playing.getPlayer().setReloadSpeed(reloadSpeed);
+
+        float playerSpeed = prefs.getFloat("default_playerSpeed");
+        playing.getPlayer().setPlayerSpeed(playerSpeed);
+
+        saveGame();
+
+        show();
+
+        int percent;
+        percent = (upgrades.get("Speed").getLevel() * 100) / upgrades.get("Speed").getUpgTicks();
+        playerSpeedDisplay.setValue(percent);
+
+        percent = (upgrades.get("FireRate").getLevel() * 100) / upgrades.get("FireRate").getUpgTicks();
+        playerFireRateDisplay.setValue(percent);
+
+
+        speedCost.setText(" " + upgrades.get("Speed").getCost());
+        fireRateCost.setText(" " + upgrades.get("FireRate").getCost());
     }
 
     // Score label creation (load font)
-    private BitmapFont loadFont(String fontName){
+    private BitmapFont loadFont(String fontName) {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontName));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 16; // font size
@@ -61,29 +165,6 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
     }
 
 
-//    public void addUpgrade(String name, Upgrade upgrade) {
-//        upgrades.put(name, upgrade);
-//    }
-//
-//    public Upgrade getUpgrade(String name) {
-//        return upgrades.get(name);
-//    }
-//
-//    public void upgrade(String name) {
-//        Upgrade upgrade = upgrades.get(name);
-//        if (upgrade != null) {
-//            upgrade.upgrade();
-//        }
-//    }
-//
-//    public void downgrade(String name) {
-//        Upgrade upgrade = upgrades.get(name);
-//        if (upgrade != null) {
-//            upgrade.downgrade();
-//        }
-//    }
-
-    @Override
     public void show() {
 
         // create a skin object
@@ -98,10 +179,10 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
         table.align(Align.left);
         table.setSkin(skin);
 
-        Label speedCost = new Label("00", skin);
-        Label fireRateCost = new Label("00", skin);
+        speedCost = new Label("00", skin);
+        fireRateCost = new Label("00", skin);
 
-        Window window =  new Window("Upgrades", skin);
+        Window window = new Window("Upgrades", skin);
         Label titleLabel = window.getTitleLabel();
         titleLabel.setAlignment(Align.center);
         window.align(Align.center);
@@ -112,7 +193,7 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
 
         // Score label creation
         scoreLbl = new Label("(Score:)" + playing.getPlayer().getPlayerScore(), skin);
-        scoreLbl.setPosition(5,WORLD_HEIGHT - 25);
+        scoreLbl.setPosition(5, WORLD_HEIGHT - 25);
         stage.addActor(scoreLbl);
 
         TextButton playerSpeedUpBtn = new TextButton("(Sub Speed + )", skin);
@@ -121,18 +202,19 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
         TextButton playerFireRateUpBtn = new TextButton("(Sub FireRate + )", skin);
         TextButton playerFireRateDownBtn = new TextButton("(Sub FireRate -)", skin);
 
-        ProgressBar playerSpeedDisplay = new ProgressBar(2,100, 1,false, skin);
-        float percent = (playing.getPlayer().getPlayerSpeed() * 100) / 2;
+        playerSpeedDisplay = new ProgressBar(2, 100, 1, false, skin);
+        int percent = 0;
         playerSpeedDisplay.setValue(percent);
 
-        ProgressBar playerFireRateDisplay = new ProgressBar(2,100, 1,false, skin);
-        float percentFireRate = (playing.getPlayer().getReloadSpeed() + (float) (upgrades.get("FireRate").getMaxUpg()) * 100) / 2;
+        playerFireRateDisplay = new ProgressBar(2, 100, 1, false, skin);
+        int percentFireRate = 0;
         playerFireRateDisplay.setValue(percentFireRate);
 
         TextButton exitBtn = new TextButton("Exit", skin);
 
         table.add(playerSpeedUpBtn);
-        table.add(playerSpeedDownBtn);;
+        table.add(playerSpeedDownBtn);
+        ;
         table.add(speedCost);
         table.add(playerSpeedDisplay);
         table.row();
@@ -143,19 +225,18 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
         table.add(exitBtn);
 
         String property = "Speed";
-        addListeners(playerSpeedUpBtn, property, upgradeSpeed, -1, speedCost, playerSpeedDisplay);
-        addListeners(playerSpeedDownBtn, property, upgradeSpeed, 1, speedCost, playerSpeedDisplay);
+        addListeners(playerSpeedUpBtn, property, -1, speedCost, playerSpeedDisplay);
+        addListeners(playerSpeedDownBtn, property, 1, speedCost, playerSpeedDisplay);
 
         property = "FireRate";
-        addListeners(playerFireRateUpBtn, property, upgradeFireRate,-1, fireRateCost, playerFireRateDisplay);
-        addListeners(playerFireRateDownBtn, property, upgradeFireRate, 1, fireRateCost, playerFireRateDisplay);
-
-
+        addListeners(playerFireRateUpBtn, property, -1, fireRateCost, playerFireRateDisplay);
+        addListeners(playerFireRateDownBtn, property, 1, fireRateCost, playerFireRateDisplay);
 
         exitBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gamestate.state = Gamestate.PLAYING;
+                pause = false;
             }
         });
 
@@ -163,8 +244,9 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 switch ( keycode ) {
-                    case Input.Keys.ESCAPE : {
+                    case Input.Keys.ESCAPE: {
                         Gamestate.state = Gamestate.PLAYING;
+                        pause = false;
                     }
                     break;
                 }
@@ -172,80 +254,79 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
             }
         });
 
-        speedCost.setText(" "  + upgrades.get("Speed").getCost());
-        fireRateCost.setText(" "  + upgrades.get("Speed").getCost());
+        percent = (upgrades.get("Speed").getLevel() * 100) / upgrades.get("Speed").getUpgTicks();
+        playerSpeedDisplay.setValue(percent);
+
+        percent = (upgrades.get("FireRate").getLevel() * 100) / upgrades.get("FireRate").getUpgTicks();
+        playerFireRateDisplay.setValue(percent);
+
+        speedCost.setText(" " + upgrades.get("Speed").getCost());
+        fireRateCost.setText(" " + upgrades.get("FireRate").getCost());
+
     }
 
 
-    private void addListeners(final TextButton textButton,final String property, final Upgrade upgrade, final int behavior, final Label value, final ProgressBar outputLbl) {
+    private void addListeners(TextButton textButton, final String property, final int behavior, final Label value, final ProgressBar outputLbl) {
         textButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                labelBehavior(property, upgrade, behavior, value, outputLbl);
+                labelBehavior(property, behavior, value, outputLbl);
                 return super.touchDown(event, x, y, pointer, button);
             }
+
         });
     }
 
-    private void labelBehavior(String property, Upgrade upgrade, int behavior, Label value, ProgressBar outputLbl) {
+
+    private void labelBehavior(String property, int behavior, Label value, ProgressBar outputLbl) {
+        loadInit();
+
         float costIncrements = upgrades.get(property).getCostIncrements();
         float minUpg = upgrades.get(property).getMinUpg();
         float maxUpg = upgrades.get(property).getMaxUpg();
         float upgTicks = upgrades.get(property).getUpgTicks();
-
         float speed = getProperty(property);
         float upgAmount = -((maxUpg - minUpg) / upgTicks) * behavior;
-
-        int level = upgrade.getLevel();
+        int level = upgrades.get(property).getLevel();
         int playerScore = playing.getPlayer().getPlayerScore();
-
-        float baseCost ;
+        float baseCost;
         if (behavior == 1) {
-            baseCost = (upgrades.get(property).getCost() - costIncrements) * behavior ;
-            level --;
+            baseCost = (upgrades.get(property).getCost() - costIncrements) * behavior;
+            level--;
         } else {
             baseCost = (upgrades.get(property).getCost()) * behavior;
-            level ++;
+            level++;
         }
 
-        System.out.println("speed " + speed + "  local " + this.playerScore + "  var " + playerScore + "  basecost " + baseCost + " ticks " + upgTicks
-                + " maxupg " + maxUpg + " upgamo " + upgAmount + " lvl " + level + " upg level " + upgrade.getLevel());
+        if ((playerScore + baseCost >= 0) && (playerScore + baseCost <= this.playerScore) && (level >= 0) && (level <= upgTicks)) {
+            if (Math.abs(speed - maxUpg) > 0) {
+                if (behavior == -1) {
+                    playerScore += baseCost;
+                    upgrades.get(property).upgrade();
 
-                if ((playerScore + baseCost >= 0) && (playerScore + baseCost <= this.playerScore)  && (level >= 0) && (level <= upgTicks)) {
-
-                    if (Math.abs(speed - maxUpg) > 0 ) {
-
-                        if (behavior == -1) {
-                            playerScore += baseCost;
-                            upgrade.upgrade();
-                            System.out.println("up");
-                        } else {
-                            playerScore += baseCost;
-                            upgrade.downgrade();
-                            System.out.println("down");
-                        }
-
-                        float newSpeed = speed + upgAmount;
-                        setProperty(property, newSpeed);
-
-                        System.out.println(upgrade.getName() + " LEVEL:" + upgrade.getLevel());
-
-                        scoreLbl.setText("(Score:)" + playing.getPlayer().getPlayerScore());
-
-                        float percent = (getProperty(property) * 100) / maxUpg;
-
-                        outputLbl.setValue(percent);
-
-                        baseCost = upgrade.getCost();
-
-                        value.setText(" " + baseCost);
-
-                        playing.getPlayer().setPlayerScore(playerScore);
-                    }
-
+                } else {
+                    playerScore += baseCost;
+                    upgrades.get(property).downgrade();
 
                 }
+                float newSpeed = speed + upgAmount;
+                setProperty(property, newSpeed);
 
+                scoreLbl.setText("(Score:)" + playing.getPlayer().getPlayerScore());
+                float percent = (upgrades.get(property).getLevel() * 100) / upgTicks;
+                outputLbl.setValue(percent);
+                baseCost = upgrades.get(property).getCost();
+                value.setText(" " + baseCost);
+                playing.getPlayer().setPlayerScore(playerScore);
+
+                saveGame();
+//                Json json = new Json();
+//// create a file handle for the output file
+//                FileHandle file = Gdx.files.local("output.json");
+//// write the map to the file
+//                json.toJson(upgrades, file);
+            }
+        }
     }
 
     public float getProperty(String property) {
@@ -273,7 +354,6 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
             }
         }
     }
-
 
     @Override
     public void render(float delta) {
@@ -310,47 +390,7 @@ private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
 
     }
 
-    @Override
-    public boolean keyDown(int i) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int i) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char c) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int i, int i1, int i2, int i3) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int i, int i1, int i2, int i3) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int i, int i1, int i2) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int i, int i1) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(float v, float v1) {
-        return false;
-    }
-
-    public void setPlayerScore(float playerScore) {
+    public void setPlayerScore(int playerScore) {
         this.playerScore = playerScore;
     }
 }

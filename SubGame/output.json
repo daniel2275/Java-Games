@@ -1,0 +1,1 @@
+{Speed:{class:gamestates.Upgrade,name:Speed,cost:10,costIncrements:2,maxUpg:2,upgTicks:40},FireRate:{class:gamestates.Upgrade,name:FireRate,cost:10,costIncrements:2,minUpg:3,upgTicks:40}}

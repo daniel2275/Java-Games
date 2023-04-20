@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import gamestates.Gamestate;
 import gamestates.Playing;
+import objects.DepthCharge;
+import objects.Torpedo;
 import utilz.DrawAsset;
 import utilz.HelpMethods;
 
@@ -24,9 +27,9 @@ public class Player {
     public static final int PLAYER_HEIGHT = 16;
     public static float SPAWN_X = WORLD_WIDTH / 2;
     public static float SPAWN_Y = WORLD_HEIGHT / 2;
-
+    private float maxHealth = 100f;
     private float playerHealth = 100f;
-    private float collisionDamage = 5f;
+    private float collisionDamage = 20f;
     private float playerSpeed = 0.2f;
 
     private int playerScore = 1000;
@@ -69,6 +72,20 @@ public class Player {
         this.hitbox = HelpMethods.initHitBox(SPAWN_X, SPAWN_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 
+    public void reset() {
+        playerHealth = 100f;
+        collisionDamage = 20f;
+        playerSpeed = 0.2f;
+        playerScore = 1000;
+        stateTime = 0;
+        sunk = false;
+        reload = 0;
+        reloadSpeed = 3f;
+        xOffset = 0;
+        flipX = 1;
+        hitbox.setPosition(SPAWN_X, SPAWN_Y);
+    }
+
     public void update() {
         if (!pause) {
             checkDirection();
@@ -87,7 +104,6 @@ public class Player {
                 uBoatSprites[i][j] = new TextureRegion(uBoatAtlas, j * 64, i * 16, PLAYER_WIDTH, PLAYER_HEIGHT);
             }
         }
-
         idleAnimations = boatAnimation(0, 5, uBoatSprites, 2.0f);
         movingAnimations = boatAnimation(1, 3, uBoatSprites, 0.055f);
         upAnimations = boatAnimation(2, 3, uBoatSprites, 0.7f);
@@ -96,9 +112,9 @@ public class Player {
         sunkAnimations = boatAnimation(5, 1, uBoatSprites, 0.7f);
     }
 
-
     public void render() {
-        DrawAsset drawPlayer = new DrawAsset(currentFrame, hitbox, -xOffset, 0, flipX, 1, playerHealth, reload, Color.WHITE, reloadSpeed);
+        DrawAsset drawPlayer = new DrawAsset(currentFrame, hitbox, -xOffset, 0, flipX, 1, maxHealth,playerHealth, reload, Color.WHITE, reloadSpeed);
+
 
         drawPlayer.draw();
     }
@@ -132,15 +148,41 @@ public class Player {
         }
     }
 
-
     private void checkCollision() {
         if (playing.checkCollision(this.hitbox, collisionDamage)) {
             if (playerHealth > 0) {
                 playerHealth -= collisionDamage;
+                if (playerHealth < 0) {
+                    playerHealth = 0;
+                }
             } else {
                 sunk = true;
+                System.out.println("Game Over Collided");
                 // game over
+                Gamestate.state = Gamestate.GAME_OVER;
             }
+        }
+    }
+
+    public void doHit(Torpedo torpedo) {
+        playerHealth = (playerHealth - torpedo.getTorpedoDamage());
+        if (playerHealth <= 0) {
+            playerHealth = 0;
+            sunk = true;
+            System.out.println("Game Over Torpedoed");
+            // game over
+            Gamestate.state = Gamestate.GAME_OVER;
+        }
+    }
+
+    public void doHit(DepthCharge depthCharge) {
+        playerHealth = (playerHealth - depthCharge.getDpcDamage());
+        if (playerHealth <= 0) {
+            playerHealth = 0;
+            sunk = true;
+            System.out.println("Game Over Torpedoed");
+            // game over
+            Gamestate.state = Gamestate.GAME_OVER;
         }
     }
 
@@ -205,7 +247,6 @@ public class Player {
                 hitbox.x += playerSpeed;
             }
         }
-
     }
 
     public int getFlipX() {
@@ -271,30 +312,6 @@ public class Player {
     public void setPlayerScore(int playerScore) {
         this.playerScore = playerScore;
     }
-//    public String direction() {
-//        String currentDirection;
-//
-//        if (left && up) {
-//            currentDirection = "left&up";
-//        } else if (left&&down) {
-//            currentDirection = "left&down";
-//        } else if (left) {
-//            currentDirection = "left";
-//        } else if (right&&up) {
-//            currentDirection = "right&up";
-//        } else if (right&&down) {
-//            currentDirection = "right&down";
-//        } else if (right) {
-//            currentDirection = "right";
-//        } else if (down) {
-//            currentDirection = "down";
-//        } else {
-//            currentDirection = "up";
-//        }
-//
-//
-//        return currentDirection;
-//    }
 
     public Rectangle getHitbox() {
         return hitbox;

@@ -34,6 +34,16 @@ public class EnemyManager {
 //        listOfEnemies.add(enemy7);
     }
 
+    public void reset() {
+        // clear the list of enemies
+//        listOfEnemies.clear();
+        Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            enemy.setQuit(true);
+        }
+    }
+
     public void update(Player player, ObjectManager objectManager) {
         // update enemies
         Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
@@ -41,18 +51,18 @@ public class EnemyManager {
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
             if (enemy.isSunk()) {
-//                System.out.println(enemy.isSunk());
                 player.setPlayerScore(player.getPlayerScore() + enemy.getEnemyPoints());
                 enemyIterator.remove();
-            } else {
+            } else if (enemy.isQuit()) {
+                enemy.setQuit(false);
+                enemyIterator.remove();
+            }
                 enemy.update(player);
                 avoidEnemies();
                 objectManager.dropCharge(enemy);
             }
         }
 
-//        System.out.println(listOfEnemies.size());
-    }
 
 // avoid overlapping of submarine enemies
     public void avoidEnemies() {
@@ -84,5 +94,9 @@ public class EnemyManager {
 
     public void addEnemy(Enemy enemy) {
         listOfEnemies.add(enemy);
+    }
+
+    public void removeEnemy(Enemy enemy) {
+        listOfEnemies.remove(enemy);
     }
 }

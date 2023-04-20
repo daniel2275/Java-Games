@@ -13,6 +13,7 @@ import objects.ObjectManager;
 import java.util.Iterator;
 
 import static com.danielr.subgame.SubGame.pause;
+import static com.danielr.subgame.SubGame.upgradeStore;
 
 public class Playing implements InputProcessor {
     private Player player;
@@ -20,8 +21,6 @@ public class Playing implements InputProcessor {
     private EnemyManager enemyManager;
 
     private LevelManager levelManager;
-
-    private UpgradeStore upgrades;
 
     int x,y;
 
@@ -35,7 +34,7 @@ public class Playing implements InputProcessor {
         objectManager =  new ObjectManager(this);
         enemyManager = new EnemyManager(this);
         levelManager = new LevelManager(this);
-        upgrades = new UpgradeStore(this);
+//        upgrades = new UpgradeStore(this);
     }
 
     public Player getPlayer() {
@@ -146,9 +145,6 @@ public class Playing implements InputProcessor {
 
 //    @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//        if (!Gdx.input.isTouched()) {
-//            pause = true;
-//         }
         return false;
     }
 
@@ -173,8 +169,9 @@ public class Playing implements InputProcessor {
         Iterator<Enemy> enemyIterator = enemyManager.getListOfEnemies().iterator();
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
+
             if (enemy.checkHit(hitBox, damage)) {
-                if (enemy.getEnemyHeath() <= 0) {
+                if (enemy.getCurrentHealth() <= 0) {
                     enemy.setDying(true);
                 }
                 return true;
@@ -186,7 +183,13 @@ public class Playing implements InputProcessor {
 
 
     public void reset() {
-        initClasses();
+        System.out.println("Playing reset");
+        objectManager.reset();
+        levelManager.reset();
+        player.reset();
+        upgradeStore.resetUpgrades();
+        //upgradeStore.render(Gdx.graphics.getDeltaTime());
+//        initClasses();
     }
 
     public EnemyManager getEnemyManager() {

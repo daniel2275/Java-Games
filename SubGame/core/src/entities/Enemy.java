@@ -22,11 +22,12 @@ import static utilz.LoadSave.boatAnimation;
 
 public class Enemy {
 
+    private int ENEMY_WIDTH = 64;
+    private int ENEMY_HEIGHT = 32; // 25
 
-    public static final int ENEMY_WIDTH = 64;
-    public static final int ENEMY_HEIGHT = 25;
+    private float currentHealth;
 
-    private float enemyHeath = 100f;
+    private float maxHealth;
 
     private int enemyPoints = 10;
     private Rectangle hitbox;
@@ -43,7 +44,7 @@ public class Enemy {
 
     private final String spriteAtlas;
 
-    private final float delay;
+    private float delay;
     private int flipX, flipY;
     private String direction;
 
@@ -61,16 +62,17 @@ public class Enemy {
 
     private HelpMethods.FadingAnimation fadingAnimation;
 
+    private boolean quit;
 
-
-    public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float enemyHeath, int enemyPoints) {
+    public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints) {
         this.flipX = flipX;
         this.delay = delay;
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
         this.speed = speed;
         this.aggro = aggro;
-        this.enemyHeath = enemyHeath;
+        this.currentHealth = currentHealth;
+        this.maxHealth = maxHealth;
         this.enemyPoints = enemyPoints;
         this.fadeDelay = new Timing(7); // seconds dispose delay
         loadAnimations(spriteAtlas);
@@ -79,18 +81,40 @@ public class Enemy {
     }
 
 
-    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX,  String spriteAtlas, float speed, boolean aggro, float enemyHeath, boolean sub, int enemyPoints) {
-        this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro, enemyHeath, enemyPoints);
+    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints) {
+        this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro, currentHealth, maxHealth, enemyPoints);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
         this.hitbox = initHitBox(spawnPosX, spawnPosY , ENEMY_WIDTH, ENEMY_HEIGHT);
     }
 
+//    public void reset(float delay, int spawnPosX , int flipX, float speed, float currentHealth, float maxHealth, int enemyPoints) {
+//        this.flipX = flipX;
+//        this.delay = delay;
+//        this.currentHealth = currentHealth;
+//        this.maxHealth = maxHealth;
+//        this.enemyPoints = enemyPoints;
+//        this.dying = false;
+//        this.sunk = false;
+//        this.doHitAnimation = false;
+//        this.hitbox.setPosition(spawnPosX, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f);
+//        this.enemySpeed = speed;
+//        this.fadeDelay.reset();
+////        this.fadingAnimation.reset();
+//        this.stateTime = 0f;
+//    }
+
+//    public void reset(float delay, int spawnPosX , int spawnPosY, int flipX, float speed, float currentHealth, float maxHealth, int enemyPoints) {
+//        this.reset(delay, spawnPosX,flipX,speed,currentHealth,maxHealth,enemyPoints);
+//        this.direction = "";
+//        this.flipY = 1;
+//        this.hitbox.setPosition(spawnPosX, spawnPosY);
+//    }
 
 
 
-        public void update(Player player) {
+    public void update(Player player) {
         if ((aggro) && (!dying)) {
             turnTowardsPlayer(player);
         }
@@ -172,13 +196,10 @@ public class Enemy {
                         }
                     }
 
-
                 }
             }
         },delay);
     }
-
-
 
     // aggro behavior
     public void turnTowardsPlayer(Player player) {
@@ -213,7 +234,6 @@ public class Enemy {
         int launch = rnd.nextInt(3000);
         return launch < 10;
     }
-
 
     public void render() {
         Color color = Color.WHITE;
@@ -260,7 +280,7 @@ public class Enemy {
 
 //        drawObject(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
 
-        DrawAsset drawEnemy = new DrawAsset(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
+        DrawAsset drawEnemy = new DrawAsset(currentFrame, hitbox, xOffset, 0,  flipX, 1, maxHealth, currentHealth, -1, color);
 
         drawEnemy.draw();
 
@@ -276,15 +296,15 @@ public class Enemy {
 
     public boolean checkHit(Rectangle hitBox, float damage) {
         boolean collision = Intersector.overlaps(hitBox, this.hitbox);
-        if(collision && !dying) {
-            this.enemyHeath -= damage;
+        if (collision && !dying) {
+            this.currentHealth -= damage;
+            float newSpeed = speed - (0.25f * speed);
+            if (this.currentHealth <= 0) {
+                this.currentHealth = 0;
+            }
             if (enemySpeed > 0) {
-                speed = speed - (speed * 0.25f);
-                if (speed < 0) {
-                    speed = 0;
-                }
+                speed = Math.max(newSpeed, 0);
                 enemySpeed = speed;
-
                 doHitAnimation = true;
                 stateTime = 0;
             }
@@ -293,13 +313,12 @@ public class Enemy {
         return false;
     }
 
-
-    public float getEnemyHeath() {
-        return enemyHeath;
+    public float getCurrentHealth() {
+        return currentHealth;
     }
 
-    public void setEnemyHeath(int enemyHeath) {
-        this.enemyHeath = enemyHeath;
+    public void setCurrentHealth(int currentHealth) {
+        this.currentHealth = currentHealth;
     }
 
     public float getEnemySpeed() {
@@ -321,6 +340,9 @@ public class Enemy {
         return dying;
     }
 
+    public void setSunk(boolean sunk) {
+        this.sunk = sunk;
+    }
 
     public boolean isSunk() {
         return sunk;
@@ -352,5 +374,30 @@ public class Enemy {
 
     public int getEnemyPoints() {
         return enemyPoints;
+    }
+
+    public boolean isQuit() {
+        return quit;
+    }
+
+    public void setQuit(boolean quit) {
+        this.quit = quit;
+    }
+
+
+    public int getENEMY_WIDTH() {
+        return ENEMY_WIDTH;
+    }
+
+    public void setENEMY_WIDTH(int ENEMY_WIDTH) {
+        this.ENEMY_WIDTH = ENEMY_WIDTH;
+    }
+
+    public int getENEMY_HEIGHT() {
+        return ENEMY_HEIGHT;
+    }
+
+    public void setENEMY_HEIGHT(int ENEMY_HEIGHT) {
+        this.ENEMY_HEIGHT = ENEMY_HEIGHT;
     }
 }

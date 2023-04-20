@@ -58,7 +58,7 @@ public class DepthCharge {
 
 //        drawObject(currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0,-1, Color.WHITE);
 
-        DrawAsset drawDepthCharge =  new DrawAsset (currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0,-1, Color.WHITE);
+        DrawAsset drawDepthCharge =  new DrawAsset (currentFrame, hitbox, xOffset, yOffset, flipX, flipY,0, 0,-1, Color.WHITE);
 
         drawDepthCharge.draw();
     }

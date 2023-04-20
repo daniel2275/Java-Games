@@ -47,6 +47,7 @@ public class Menu extends State {
                 setGameState(Gamestate.PLAYING);
                 pause = false;
             } else if (worldCoordinates.y > 20 && worldCoordinates.y < 113) {
+                upgradeStore.saveGame();
                 Gdx.app.exit();
             } else if (worldCoordinates.y > 295 && worldCoordinates.y < 387) {
                 subGame.getPlaying().reset();

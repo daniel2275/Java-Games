@@ -18,6 +18,14 @@ public class Timing {
         this.pause = false;
     }
 
+    public void reset() {
+        startTime = 0;
+        pausedTime = 0;
+        timeRemaining = 0;
+        pausedTimeRemaining = 0;
+        pause = false;
+    }
+
     // initialize/refresh timer (create method)
     public void init() {
         timeRemaining = 0.0f;

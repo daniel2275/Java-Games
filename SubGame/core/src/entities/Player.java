@@ -66,7 +66,11 @@ public class Player {
 
     private Playing playing;
 
-    public Player(Playing playing) {
+//    private Vector2 velocity = new Vector2(0, 0);
+
+
+    public Player(Playing playing, float delta) {
+        stateTime = delta;
         this.playing = playing;
         loadAnimations("Uboat-atlas.png");
         this.hitbox = HelpMethods.initHitBox(SPAWN_X, SPAWN_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
@@ -115,13 +119,18 @@ public class Player {
     public void render() {
         DrawAsset drawPlayer = new DrawAsset(currentFrame, hitbox, -xOffset, 0, flipX, 1, maxHealth,playerHealth, reload, Color.WHITE, reloadSpeed);
 
+//        velocity.scl(stateTime);
+//        hitbox.x += velocity.x;
+//        hitbox.y += velocity.y;
 
         drawPlayer.draw();
+
+
     }
 
     // Animate the player character, resets statetime on non-looping animations
     private void checkAnimation() {
-        stateTime += Gdx.graphics.getDeltaTime();
+//        stateTime += Gdx.graphics.getDeltaTime();
 
         if (sunk) {
             currentFrame = getSunkAnimations().getKeyFrame(stateTime, true);
@@ -225,26 +234,31 @@ public class Player {
     public void checkDirection() {
         if (up) {
             if (hitbox.getY() + PLAYER_HEIGHT < WORLD_HEIGHT - SKY_SIZE + PLAYER_HEIGHT / 2.0f) {
-                hitbox.y += playerSpeed;
+//                velocity.y = playerSpeed;
+                hitbox.y += playerSpeed * Gdx.graphics.getDeltaTime();
             }
         }
         if (down) {
             if (hitbox.getY() > 1) {
-                hitbox.y -= playerSpeed;
+//                velocity.y = -playerSpeed;a
+                hitbox.y -= playerSpeed * Gdx.graphics.getDeltaTime();
             }
         }
         if (left) {
             flipX = 1;
             xOffset = 0;
             if (hitbox.getX() > 1) {
-                hitbox.x -= playerSpeed;
+//                velocity.x = -playerSpeed;
+                hitbox.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+//                hitbox.x -= playerSpeed;
             }
         }
         if (right) {
             flipX = -1;
             xOffset = -PLAYER_WIDTH;
             if (hitbox.getX() < WORLD_WIDTH + xOffset) {
-                hitbox.x += playerSpeed;
+//                velocity.x = playerSpeed;
+                hitbox.x += playerSpeed * Gdx.graphics.getDeltaTime();
             }
         }
     }

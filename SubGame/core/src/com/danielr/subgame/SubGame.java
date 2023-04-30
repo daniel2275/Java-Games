@@ -41,6 +41,8 @@ public class SubGame extends ApplicationAdapter  {
 	private GameOver gameOver;
 
 	public static UpgradeStore upgradeStore;
+
+	private float stateTime;
 //	BufferedImage[] lvls;
 //	private Level[] level;
 
@@ -48,8 +50,9 @@ public class SubGame extends ApplicationAdapter  {
 
 	@Override
 	public void create() {
-		Skin skin = new Skin(Gdx.files.internal("assets/clean-crispy/skin/clean-crispy-ui.json"));
-
+		stateTime = Gdx.graphics.getDeltaTime();
+		Skin skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
+		// D:\Projects\Java-Games\SubGame\assets\clean-crispy\skin
 		// set up mouse cross-hair
 		Pixmap cursorTexture = new Pixmap(Gdx.files.internal("CrossHair.png"));
 		int xHotSpot = cursorTexture.getWidth() /2;
@@ -106,7 +109,7 @@ public class SubGame extends ApplicationAdapter  {
 
 		menu =  new Menu(this);
 
-		playing = new Playing();
+		playing = new Playing(stateTime);
 
 		shapeRendered = new ShapeRenderer();
 
@@ -126,15 +129,16 @@ public class SubGame extends ApplicationAdapter  {
 
 	@Override
 	public void render() {
+
 		ScreenUtils.clear(0, 0, 0.2f, 1);
 		shapeRendered.setProjectionMatrix(camera.combined);
 		camera.update();
-
 
 		batch.begin();
 		background.draw(batch);
 		if (pause) {
 			pauseSprite.draw(batch);
+//			Gamestate.state = Gamestate.PAUSE;
 		}
 		batch.end();
 
@@ -149,25 +153,30 @@ public class SubGame extends ApplicationAdapter  {
 				upgradeStore.setPlayerScore(playing.getPlayer().getPlayerScore());
 			}break;
 			case MENU:{
-				pause = true;
+//				pause = true;
 				menu.update();
-				playing.update();
+//				playing.update();
 			}
 			break;
 			case STORE:{
-				pause = true;
-				upgradeStore.render(Gdx.graphics.getDeltaTime());
+//				pause = true;
+				upgradeStore.render(stateTime);
 			}
 			break;
 			case GAME_OVER:{
 				System.out.println("GAME_OVER");
 				pause = true;
-				gameOver.render(Gdx.graphics.getDeltaTime());
+				gameOver.render(stateTime);
 //				Gamestate.state = Gamestate.MENU;
 			}break;
 			case OPTIONS:{
 				System.out.println("Options");
 			}break;
+//			case PAUSE:{
+//				System.out.println("pause");
+//				//pause = true;
+//			}
+//			break;
 			case QUIT:{
 				System.out.println("Quit");
 			}break;

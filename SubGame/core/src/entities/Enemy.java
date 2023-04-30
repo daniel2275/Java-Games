@@ -8,10 +8,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 import utilz.DrawAsset;
 import utilz.HelpMethods;
 import utilz.Timing;
+
+import java.util.concurrent.ScheduledExecutorService;
 
 import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.pause;
@@ -21,9 +24,8 @@ import static utilz.HelpMethods.updateHitbox;
 import static utilz.LoadSave.boatAnimation;
 
 public class Enemy {
-
-    private int ENEMY_WIDTH = 64;
-    private int ENEMY_HEIGHT = 32; // 25
+    private int enemyWidth;
+    private int enemyHeight; // 25
 
     private float currentHealth;
 
@@ -44,11 +46,11 @@ public class Enemy {
 
     private final String spriteAtlas;
 
-    private float delay;
+    private long delay;
     private int flipX, flipY;
     private String direction;
 
-    private float xOffset = ENEMY_WIDTH;
+    private float xOffset = enemyWidth;
 
     private boolean aggro;
 
@@ -64,9 +66,19 @@ public class Enemy {
 
     private boolean quit;
 
-    public Enemy(float delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints) {
+    private ScheduledExecutorService ses;
+
+//    private ScheduledExecutorService executor;
+//    private ScheduledFuture<?> animationTask;
+
+    private boolean delayComplete;
+    long timerDelay;
+
+    public Enemy(long delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints) {
         this.flipX = flipX;
         this.delay = delay;
+        this.enemyWidth = 64;
+        this.enemyHeight = 32; // 25
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
         this.speed = speed;
@@ -77,41 +89,31 @@ public class Enemy {
         this.fadeDelay = new Timing(7); // seconds dispose delay
         loadAnimations(spriteAtlas);
         this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
-        this.hitbox = initHitBox(spawnPosX, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f , ENEMY_WIDTH, ENEMY_HEIGHT);
+        this.hitbox = initHitBox(spawnPosX, WORLD_HEIGHT - SKY_SIZE - enemyHeight / 3f , enemyWidth, enemyHeight);
     }
 
 
-    public Enemy(float delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints) {
+    public Enemy(long delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints) {
         this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro, currentHealth, maxHealth, enemyPoints);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
-        this.hitbox = initHitBox(spawnPosX, spawnPosY , ENEMY_WIDTH, ENEMY_HEIGHT);
+        this.hitbox = initHitBox(spawnPosX, spawnPosY , enemyWidth, enemyHeight);
     }
 
-//    public void reset(float delay, int spawnPosX , int flipX, float speed, float currentHealth, float maxHealth, int enemyPoints) {
-//        this.flipX = flipX;
-//        this.delay = delay;
-//        this.currentHealth = currentHealth;
-//        this.maxHealth = maxHealth;
-//        this.enemyPoints = enemyPoints;
-//        this.dying = false;
-//        this.sunk = false;
-//        this.doHitAnimation = false;
-//        this.hitbox.setPosition(spawnPosX, WORLD_HEIGHT - SKY_SIZE - ENEMY_HEIGHT / 3f);
-//        this.enemySpeed = speed;
-//        this.fadeDelay.reset();
-////        this.fadingAnimation.reset();
-//        this.stateTime = 0f;
-//    }
 
-//    public void reset(float delay, int spawnPosX , int spawnPosY, int flipX, float speed, float currentHealth, float maxHealth, int enemyPoints) {
-//        this.reset(delay, spawnPosX,flipX,speed,currentHealth,maxHealth,enemyPoints);
-//        this.direction = "";
-//        this.flipY = 1;
-//        this.hitbox.setPosition(spawnPosX, spawnPosY);
-//    }
-
+    public Enemy(long delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight) {
+        this(delay,spawnPosX, spawnPosY, flipX, spriteAtlas,speed,aggro, currentHealth, maxHealth, sub, enemyPoints);
+        this.sub = sub;
+        this.direction = "";
+        this.flipY = 1;
+        this.enemyWidth = enemyWidth;
+        this.enemyHeight = enemyHeight;
+        System.out.println("constructor " + this.enemyWidth + " " + this.enemyHeight);
+        loadAnimations(spriteAtlas);
+        this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
+        this.hitbox = initHitBox(spawnPosX, spawnPosY , this.enemyWidth, this.enemyHeight);
+    }
 
 
     public void update(Player player) {
@@ -130,7 +132,8 @@ public class Enemy {
 
         for (int i= 0; i <= 1; i++) {
             for (int j= 0; j <= 4; j++) {
-        boatSprites[i][j] = new TextureRegion(boatAtlas, 64 * j, 32 * i,ENEMY_WIDTH,ENEMY_HEIGHT);
+        boatSprites[i][j] = new TextureRegion(boatAtlas, enemyWidth * j, enemyHeight * i, enemyWidth, enemyHeight);
+//                System.out.println(enemyWidth + " " + enemyHeight);
             }
         }
 
@@ -139,67 +142,197 @@ public class Enemy {
         shipHit = boatAnimation(1,3, boatSprites, 0.2f);
     }
 
+    boolean paused = false;
+    public void scheduleAnimation(Player player) {
+        float delaySeconds = delay;
 
-    public void scheduleAnimation(final Player player){
-        Timer timer = new Timer();
-        timer.scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                if (!pause) {
-                    direction = "";
+        if (!delayComplete) {
+            delay();
+//            // Start the delay
+//            Timer.schedule(new Timer.Task() {
+//                @Override
+//                public void run() {
+//                    System.out.println("Waiting");
+//                    delayComplete = true;
+//                }
+//            }, delaySeconds);
+        } else {
+            direction = "";
 
-                    if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
-                        if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
-                            hitbox.x += enemySpeed;
-                        }
-                        xOffset = ENEMY_WIDTH;
-                        direction = "right";
-                    } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
-                        flipX = 1;
+            if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
+                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+                    hitbox.x += enemySpeed * Gdx.graphics.getDeltaTime();
+                }
+                xOffset = enemyWidth;
+                direction = "right";
+            } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
+                flipX = 1;
+            }
+            if (flipX == 1 && hitbox.getX() >= -65) {
+                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+                    hitbox.x -= enemySpeed * Gdx.graphics.getDeltaTime();
+                }
+                xOffset = 0;
+                direction = "left";
+            } else if (flipX == 1 && hitbox.getX() <= -65) {
+                if (!aggro) {
+                    enemyPoints -= enemyPoints * 0.1;
+                }
+                flipX = -1;
+            }
+
+            if (sub) {
+                if (hitbox.getY() > player.getHitbox().getY()) {
+                    hitbox.y -= (enemySpeed * flipY) * Gdx.graphics.getDeltaTime();
+                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
+                        direction = "down";
+                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
+                        direction += "&down";
                     }
-                    if (flipX == 1 && hitbox.getX() >= -65 ) {
-                        if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
-                            hitbox.x -= enemySpeed;
-                        }
-                        xOffset = 0;
-                        direction = "left";
-                    } else if (flipX == 1 && hitbox.getX() <= -65) {
-                        if (!aggro) {
-                            enemyPoints -= enemyPoints * 0.1;
-//                            System.out.println(enemyPoints);
-                        }
-                        flipX = -1;
+                } else if (hitbox.getY() < player.getHitbox().getY()) {
+                    hitbox.y += (enemySpeed * flipY) * Gdx.graphics.getDeltaTime();
+                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
+                        direction = "up";
+                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
+                        direction += "&up";
                     }
-
-
-                    if (sub && hitbox.getY() > player.getHitbox().getY()) {
-                        hitbox.y -= enemySpeed * flipY;
-                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
-                            direction = "down";
-                        } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
-                            direction += "&down";
-                        }
-                    } else if (sub && hitbox.getY() < player.getHitbox().getY()) {
-                        hitbox.y += enemySpeed * flipY;
-                        if  (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15 ) {
-                            direction = "up";
-                        } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100){
-                            direction += "&up";
-                        }
-                    }
-
-                    if (direction.equals("")) {
-                        if (flipX == -1) {
-                            direction  = "left";
-                        } else {
-                            direction  = "right";
-                        }
-                    }
-
                 }
             }
-        },delay);
+
+            if (direction.equals("")) {
+                direction = flipX == -1 ? "left" : "right";
+            }
+        }
     }
+
+
+//    public void scheduleAnimation(Player player) {
+//        ses = Executors.newScheduledThreadPool(0);
+//
+//        Runnable task = ()  -> {
+//            direction = "";
+//
+//            if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
+//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+//                    hitbox.x += enemySpeed * Gdx.graphics.getDeltaTime();
+//                }
+//                xOffset = enemyWidth;
+//                direction = "right";
+//            } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
+//                flipX = 1;
+//            }
+//            if (flipX == 1 && hitbox.getX() >= -65) {
+//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+//                    hitbox.x -= enemySpeed * Gdx.graphics.getDeltaTime();
+//                }
+//                xOffset = 0;
+//                direction = "left";
+//            } else if (flipX == 1 && hitbox.getX() <= -65) {
+//                if (!aggro) {
+//                    enemyPoints -= enemyPoints * 0.1;
+//                }
+//                flipX = -1;
+//            }
+//
+//            if (sub) {
+//                if (hitbox.getY() > player.getHitbox().getY()) {
+//                    hitbox.y -= (enemySpeed * flipY) * Gdx.graphics.getDeltaTime();
+//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
+//                        direction = "down";
+//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
+//                        direction += "&down";
+//                    }
+//                } else if (hitbox.getY() < player.getHitbox().getY()) {
+//                    hitbox.y += (enemySpeed * flipY) * Gdx.graphics.getDeltaTime();
+//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
+//                        direction = "up";
+//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
+//                        direction += "&up";
+//                    }
+//                }
+//            }
+//
+//            if (direction.equals("")) {
+//                direction = flipX == -1 ? "left" : "right";
+//            }
+//        };
+//        ses.schedule(task, delay, TimeUnit.SECONDS);
+//    }
+
+//    public void scheduleAnimation(Player player) {
+//        if (executor == null) {
+//            executor = Executors.newScheduledThreadPool(0);
+//        }
+//
+//        System.out.println(enemySpeed);
+//
+//        Runnable task = () -> {
+//            direction = "";
+//
+//            if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
+//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+//                    hitbox.x += enemySpeed;
+//                }
+//                xOffset = enemyWidth;
+//                direction = "right";
+//            } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
+//                flipX = 1;
+//            }
+//            if (flipX == 1 && hitbox.getX() >= -65) {
+//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
+//                    hitbox.x -= enemySpeed;
+//                }
+//                xOffset = 0;
+//                direction = "left";
+//            } else if (flipX == 1 && hitbox.getX() <= -65) {
+//                if (!aggro) {
+//                    enemyPoints -= enemyPoints * 0.1;
+//                }
+//                flipX = -1;
+//            }
+//
+//            if (sub) {
+//                if (hitbox.getY() > player.getHitbox().getY()) {
+//                    hitbox.y -= enemySpeed * flipY;
+//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
+//                        direction = "down";
+//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
+//                        direction += "&down";
+//                    }
+//                } else if (hitbox.getY() < player.getHitbox().getY()) {
+//                    hitbox.y += enemySpeed * flipY;
+//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
+//                        direction = "up";
+//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
+//                        direction += "&up";
+//                    }
+//                }
+//            }
+//
+//            if (direction.equals("")) {
+//                direction = flipX == -1 ? "left" : "right";
+//            }
+//        };
+//
+//        // Schedule the task with a delay of 0 seconds and a fixed delay of 1 second
+//        animationTask = executor.scheduleAtFixedRate(task, delay, 1, TimeUnit.SECONDS);
+//    }
+
+//    public void pauseAnimation() {
+//        if (animationTask != null) {
+//            animationTask.cancel(false);
+//        }
+//    }
+//
+//    public void resumeAnimation(Player player) {
+//        if (executor != null) {
+//            scheduleAnimation(player); // Call the method again to schedule the task
+//        }
+//    }
+
+
+
+
 
     // aggro behavior
     public void turnTowardsPlayer(Player player) {
@@ -220,7 +353,7 @@ public class Enemy {
             if (playerDistX > 70 || sub && playerDistX > 2) {
                 if (playerX > hitbox.getX()) {
                     flipX = -1;
-                    xOffset = ENEMY_WIDTH;
+                    xOffset = enemyWidth;
                 } else {
                     flipX = 1;
                     xOffset = 0;
@@ -247,7 +380,7 @@ public class Enemy {
             if (dying) {
                 enemySpeed = 0;
 
-                fadeDelay.checkPause(false);
+                fadeDelay.checkPaused(false);
                 fadeDelay.update();
 
                 if (stateTime > 3 && stateTime < 6) {  // delay for 3 frames of animation (smoke above water) & 3 to sink
@@ -275,7 +408,7 @@ public class Enemy {
                 currentFrame = shipIdle.getKeyFrame(stateTime, true);
             }
         } else {
-            fadeDelay.checkPause(true);
+            fadeDelay.checkPaused(true);
         }
 
 //        drawObject(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
@@ -283,7 +416,6 @@ public class Enemy {
         DrawAsset drawEnemy = new DrawAsset(currentFrame, hitbox, xOffset, 0,  flipX, 1, maxHealth, currentHealth, -1, color);
 
         drawEnemy.draw();
-
     }
 
     public SpriteBatch getBatch() {
@@ -385,19 +517,57 @@ public class Enemy {
     }
 
 
-    public int getENEMY_WIDTH() {
-        return ENEMY_WIDTH;
+    public int getEnemyWidth() {
+        return enemyWidth;
     }
 
-    public void setENEMY_WIDTH(int ENEMY_WIDTH) {
-        this.ENEMY_WIDTH = ENEMY_WIDTH;
+    public void setEnemyWidth(int enemyWidth) {
+        this.enemyWidth = enemyWidth;
     }
 
-    public int getENEMY_HEIGHT() {
-        return ENEMY_HEIGHT;
+    public int getEnemyHeight() {
+        return enemyHeight;
     }
 
-    public void setENEMY_HEIGHT(int ENEMY_HEIGHT) {
-        this.ENEMY_HEIGHT = ENEMY_HEIGHT;
+    public void setEnemyHeight(int enemyHeight) {
+        this.enemyHeight = enemyHeight;
     }
+
+//    public ScheduledExecutorService getSes() {
+//        return ses;
+//    }
+//
+//    public void setSes(ScheduledExecutorService ses) {
+//        this.ses = ses;
+//    }
+
+    public boolean delay() {
+        float delaySeconds = delay;
+        if (!delayComplete) {
+            // Start the delay
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    System.out.print(".");
+                    delayComplete = true;
+                }
+            }, (long) delaySeconds);
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    public void pause() {
+        timerDelay = TimeUtils.nanosToMillis(TimeUtils.nanoTime());
+        Timer.instance().stop();
+        System.out.print("Timer Stop -");
+    }
+
+    public void resume() {
+        Timer.instance().delay(TimeUtils.nanosToMillis(TimeUtils.nanoTime() - timerDelay));
+        Timer.instance().start();
+        System.out.print("Timer Start -");
+    }
+
 }

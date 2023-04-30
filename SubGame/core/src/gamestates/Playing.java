@@ -10,10 +10,9 @@ import entities.Player;
 import levels.LevelManager;
 import objects.ObjectManager;
 
-import java.util.Iterator;
+import java.util.Optional;
 
-import static com.danielr.subgame.SubGame.pause;
-import static com.danielr.subgame.SubGame.upgradeStore;
+import static com.danielr.subgame.SubGame.*;
 
 public class Playing implements InputProcessor {
     private Player player;
@@ -24,13 +23,16 @@ public class Playing implements InputProcessor {
 
     int x,y;
 
+    private float stateTime;
 
-    public Playing() {
+
+    public Playing(float delta) {
         initClasses();
+        stateTime = delta;
     }
 
     private void initClasses() {
-        player = new Player(this);
+        player = new Player(this, stateTime);
         objectManager =  new ObjectManager(this);
         enemyManager = new EnemyManager(this);
         levelManager = new LevelManager(this);
@@ -78,8 +80,10 @@ public class Playing implements InputProcessor {
             break;
             case Input.Keys.O: {
                 if (Gamestate.state.equals(Gamestate.STORE)) {
+                    getEnemyManager().resume();
                     Gamestate.state = Gamestate.PLAYING;
                 } else if (Gamestate.state.equals(Gamestate.PLAYING)) {
+                    getEnemyManager().pause();
                     Gamestate.state = Gamestate.STORE;
                 }
             }
@@ -90,9 +94,11 @@ public class Playing implements InputProcessor {
             break;
             case Input.Keys.ESCAPE: {
                 if (Gamestate.state.equals(Gamestate.MENU)) {
+                    getEnemyManager().resume();
                     Gamestate.state = Gamestate.PLAYING;
                     pause = false;
                 } else if (Gamestate.state.equals(Gamestate.PLAYING)) {
+                    getEnemyManager().pause();
                     Gamestate.state = Gamestate.MENU;
                 }
             }
@@ -166,19 +172,16 @@ public class Playing implements InputProcessor {
 
     // Check collisions
     public boolean checkCollision(Rectangle hitBox, float damage) {
-        Iterator<Enemy> enemyIterator = enemyManager.getListOfEnemies().iterator();
-        while (enemyIterator.hasNext()) {
-            Enemy enemy = enemyIterator.next();
+        Optional<Enemy> deadEnemy = enemyManager.getListOfEnemies().stream()
+                .filter(enemy -> enemy.checkHit(hitBox, damage))
+                .peek(enemy -> {
+                    if (enemy.getCurrentHealth() <= 0) {
+                        enemy.setDying(true);
+                    }
+                })
+                .findFirst();
+        return deadEnemy.isPresent();
 
-            if (enemy.checkHit(hitBox, damage)) {
-                if (enemy.getCurrentHealth() <= 0) {
-                    enemy.setDying(true);
-                }
-                return true;
-            }
-
-        }
-        return false;
     }
 
 

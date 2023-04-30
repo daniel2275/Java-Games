@@ -95,8 +95,6 @@ public class DrawAsset {
                     shapeRendered.setColor(Color.GREEN);
                 }
 
-
-
                 shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 5, (int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)), 2);
                 shapeRendered.end();
             }

@@ -4,7 +4,7 @@ package levels;
 import entities.Enemy;
 import entities.EnemyManager;
 
-import static utilz.Constants.Game.WORLD_WIDTH;
+import static utilz.Constants.Game.*;
 
 public class Level {
 
@@ -22,7 +22,6 @@ public class Level {
     }
 
     public void levelSelector() {
-        totalLevels ++;
         maxHealth += totalLevels;
         currentHealth = maxHealth;
         switch ( currentScreen ) {
@@ -44,29 +43,32 @@ public class Level {
         }
     }
 
-    private void level1() {
-        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 0.5f, false, maxHealth, currentHealth, 10);
-
+    private void level2() {
+        Enemy enemy1 = new Enemy(0, -125, ((int) (WORLD_HEIGHT - SKY_SIZE - 14)), 1, "cv6-atlas.png", 13f, true, maxHealth * 3, currentHealth * 3, false, 200,128,32);
+//        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 0.5f, false, maxHealth, currentHealth, 10);
         enemyManager.addEnemy(enemy1);
     }
 
-    private void level2() {
-        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 0.5f, false, maxHealth, currentHealth, 10);
-        Enemy enemy2 = new Enemy(2, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 1.5f, true, maxHealth, currentHealth, 10);
-        Enemy enemy3 = new Enemy(5, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 0.3f, true, maxHealth, currentHealth, true, 10);
+    private void level1() {
+        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 10f, false, maxHealth, currentHealth, 10);
+        Enemy enemy2 = new Enemy(5, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 15f, true, maxHealth, currentHealth, 10);
+        Enemy enemy3 = new Enemy(15, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 13f, true, maxHealth, currentHealth, true, 10);
+        Enemy enemy4 = new Enemy(24, -65, 100, -1, "enemy-sub1.png", 13f, true, maxHealth, currentHealth, true, 10);
+
 
         enemyManager.addEnemy(enemy1);
         enemyManager.addEnemy(enemy2);
         enemyManager.addEnemy(enemy3);
+        enemyManager.addEnemy(enemy4);
     }
 
     private void level3() {
-        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 0.5f, false, maxHealth, currentHealth, 10);
-        Enemy enemy2 = new Enemy(3, (int) WORLD_WIDTH + 65, 1, "tanker-atlas.png", 0.5f,false, maxHealth, currentHealth, 10);
-        Enemy enemy3 = new Enemy(10, (int) WORLD_WIDTH + 65, 1, "tanker2-atlas.png", 1f,false, maxHealth, currentHealth, 10);
-        Enemy enemy4 = new Enemy(4, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 1.5f,true, maxHealth, currentHealth, 10);
-        Enemy enemy5 = new Enemy(10, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 1.5f,true, maxHealth, currentHealth, 10);
-        Enemy enemy6 = new Enemy(12, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 0.3f,true, maxHealth, currentHealth, true, 10);
+        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 15f, false, maxHealth, currentHealth, 10);
+        Enemy enemy2 = new Enemy(3, (int) WORLD_WIDTH + 65, 1, "tanker-atlas.png", 11f,false, maxHealth, currentHealth, 10);
+        Enemy enemy3 = new Enemy(10, (int) WORLD_WIDTH + 65, 1, "tanker2-atlas.png", 10f,false, maxHealth, currentHealth, 10);
+        Enemy enemy4 = new Enemy(4, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 15f,true, maxHealth, currentHealth, 10);
+        Enemy enemy5 = new Enemy(10, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 15f,true, maxHealth, currentHealth, 10);
+        Enemy enemy6 = new Enemy(12, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 13f,true, maxHealth, currentHealth, true, 10);
 
         enemyManager.addEnemy(enemy1);
         enemyManager.addEnemy(enemy2);

@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 // handles fire rate
 public class Timing {
-    private float startTime = 0;
+    private float startTime;
     private float pausedTime = 0;
     private float timeRemaining = 0;
     private float duration;
@@ -19,10 +19,7 @@ public class Timing {
     }
 
     public void reset() {
-        startTime = 0;
-        pausedTime = 0;
-        timeRemaining = 0;
-        pausedTimeRemaining = 0;
+        startTime = pausedTime = timeRemaining = pausedTimeRemaining = 0;
         pause = false;
     }
 
@@ -32,7 +29,7 @@ public class Timing {
         startTime = TimeUtils.nanoTime();
     }
 
-    // update current - handle count down - (render method)
+//     update current - handle count down - (render method)
     public void update() {
         float currentTime = TimeUtils.nanoTime();
         float elapsedSeconds = MathUtils.nanoToSec * (currentTime - startTime);
@@ -43,17 +40,19 @@ public class Timing {
     }
 
     // handle timer adjustment for paused time (render method - pause triggered: accumulate time - not paused: consume accumulated time) sets pause bool value (call before update)
-    public void checkPause(boolean pause) {
-        if (pause && pausedTime == 0 && startTime > 0) {
+    public boolean checkPaused(boolean paused) {
+        boolean wasPaused = this.pause;
+        if (paused && !wasPaused && startTime > 0) {
             pausedTimeRemaining = timeRemaining;
             pausedTime = TimeUtils.nanoTime();
-        } else if (!pause && pausedTimeRemaining > 0 && startTime > 0) {
-            float resumedTime = TimeUtils.nanoTime();
+        } else if (!paused && pausedTimeRemaining > 0 && startTime > 0) {
+            long resumedTime = TimeUtils.nanoTime();
             startTime += resumedTime - pausedTime;
             pausedTimeRemaining = 0;
             pausedTime = 0;
         }
-        this.pause = pause;
+        this.pause = paused;
+        return wasPaused;
     }
 
     public float getStartTime() {

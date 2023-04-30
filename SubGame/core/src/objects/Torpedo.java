@@ -103,8 +103,8 @@ public class Torpedo {
             }
         }
 
-        torpedoExplode = boatAnimation(1,1, torpedoSprites, 8.0f);
         torpedoUpAnimation = boatAnimation(0,8, torpedoSprites, 0.03f);
+        torpedoExplode = boatAnimation(1,1, torpedoSprites, 8.0f);
     }
 
     private void directionTranslation() {

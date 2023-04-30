@@ -22,11 +22,10 @@ public class GameOver implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch = new SpriteBatch();
-        font = new BitmapFont(Gdx.files.internal("assets/clean-crispy/skin/font-export.fnt"), Gdx.files.internal("assets/clean-crispy/raw/font-export.png"), false);
+        font = new BitmapFont(Gdx.files.internal("clean-crispy/skin/font-export.fnt"), Gdx.files.internal("clean-crispy/raw/font-export.png"), false);
         layout = new GlyphLayout();
     }
 
-    @Override
     public void show() {
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override

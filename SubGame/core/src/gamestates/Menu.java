@@ -11,8 +11,6 @@ import static utilz.Constants.Game.WORLD_HEIGHT;
 import static utilz.Constants.Game.WORLD_WIDTH;
 
 public class Menu extends State {
-//    implements
-//} InputProcessor {
 
     private Sprite menu;
 
@@ -26,7 +24,6 @@ public class Menu extends State {
         render();
     }
 
-
     public void create() {
         menu = new Sprite(new Texture(Gdx.files.internal("menu.png")));
         menu.setPosition(0,0);
@@ -38,60 +35,26 @@ public class Menu extends State {
         menu.draw(batch);
         batch.end();
 
-        if (Gdx.input.isTouched()) {
-            float x = Gdx.input.getX();
-            float y = Gdx.input.getY();
-            Vector3 worldCoordinates = camera.unproject(new Vector3(x, y, 0));
-            System.out.println("Mouse position: (" + worldCoordinates.x + ", " + worldCoordinates.y + ")");
-            if(worldCoordinates.y > 438 && worldCoordinates.y < 528) {
-                setGameState(Gamestate.PLAYING);
-                pause = false;
-            } else if (worldCoordinates.y > 20 && worldCoordinates.y < 113) {
-                upgradeStore.saveGame();
-                Gdx.app.exit();
-            } else if (worldCoordinates.y > 295 && worldCoordinates.y < 387) {
-                subGame.getPlaying().reset();
-            }
+        if (!Gdx.input.isTouched()) {
+            return;
+        }
+
+        float x = Gdx.input.getX();
+        float y = Gdx.input.getY();
+        Vector3 worldCoordinates = camera.unproject(new Vector3(x, y, 0));
+        System.out.println("Mouse position: (" + worldCoordinates.x + ", " + worldCoordinates.y + ")");
+
+        if(worldCoordinates.y > 438 && worldCoordinates.y < 528) {
+            getSubGame().getPlaying().getEnemyManager().resume();
+            setGameState(Gamestate.PLAYING);
+            pause = false;
+        } else if (worldCoordinates.y > 20 && worldCoordinates.y < 113) {
+            upgradeStore.saveGame();
+            Gdx.app.exit();
+        } else if (worldCoordinates.y > 295 && worldCoordinates.y < 387) {
+            subGame.getPlaying().reset();
         }
     }
-//
-//    @Override
-//    public boolean keyDown(int keycode) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean keyUp(int keycode) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean keyTyped(char character) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean touchDragged(int screenX, int screenY, int pointer) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean mouseMoved(int screenX, int screenY) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean scrolled(float amountX, float amountY) {
-//        return false;
-//    }
 }
+
+

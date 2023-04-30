@@ -19,6 +19,7 @@ public class LevelManager {
     public void update() {
         if (playing.getEnemyManager().getListOfEnemies().size() == 0) {
             level.setCurrentScreen(level.getCurrentScreen() + 1);
+            level.setTotalLevels(level.getTotalLevels() + 1);
             level.levelSelector();
         }
     }

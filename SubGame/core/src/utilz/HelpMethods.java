@@ -71,8 +71,6 @@ public class HelpMethods {
 //        return hitbox;
 //    }
 
-
-
     public static class FadingAnimation {
         private float stateTime;
         private float alpha;

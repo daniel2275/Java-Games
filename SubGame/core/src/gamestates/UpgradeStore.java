@@ -1,6 +1,9 @@
 package gamestates;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -73,6 +76,23 @@ public class UpgradeStore implements Screen {
     }
 
 
+    public void load() {
+        Preferences prefs = Gdx.app.getPreferences("my_prefs");
+
+        String jsonStringDefault = prefs.getString("upgrades", null);
+        upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+
+//        float playerHealthInit = prefs.getFloat("playerHealth");
+//        playing.getPlayer().setPlayerHealth(playerHealthInit);
+
+        float reloadSpeed = prefs.getFloat("reloadSpeed");
+        playing.getPlayer().setReloadSpeed(reloadSpeed);
+
+        float playerSpeed = prefs.getFloat("playerSpeed");
+        playing.getPlayer().setPlayerSpeed(playerSpeed);
+    }
+
+
     public void saveGame() {
         Preferences prefs = Gdx.app.getPreferences("my_prefs");
         String jsonString = new Json().toJson(upgrades);
@@ -80,7 +100,10 @@ public class UpgradeStore implements Screen {
 
         prefs.putInteger("playerScore", playing.getPlayer().getPlayerScore());
         prefs.putFloat("playerHealth", playing.getPlayer().getPlayerHealth());
-        prefs.putInteger("level", playing.getLevelManager().getLevel().getTotalLevels());
+
+        int level = playing.getLevelManager().getLevel().getTotalLevels();
+        System.out.println(Gamestate.state + " " + level);
+        prefs.putInteger("level", ((Gamestate.state == Gamestate.MENU) ? level - 1 : level ) );
 
         prefs.putFloat("reloadSpeed", playing.getPlayer().getReloadSpeed());
         prefs.putFloat("playerSpeed", playing.getPlayer().getPlayerSpeed());
@@ -89,7 +112,7 @@ public class UpgradeStore implements Screen {
     }
 
     public void loadDefaults() {
-        upgradeSpeed = new Upgrade("Speed", 10f, 2f, 0f, 2f, 40, 0);
+        upgradeSpeed = new Upgrade("Speed", 10f, 2f, 0f, 60f, 40, 0);
         upgradeFireRate = new Upgrade("FireRate", 10f, 2f, 3f, 0f, 40, 0);
         int playerScore = 1000;
         float playerHealth = 100f;
@@ -97,7 +120,7 @@ public class UpgradeStore implements Screen {
         int totalLevels = 0;
 
         float reloadSpeed = 3f;
-        float playerSpeed = 0.2f;
+        float playerSpeed = 10f;
 
         upgrades = new HashMap<>();
         upgrades.put("Speed",upgradeSpeed);
@@ -149,7 +172,6 @@ public class UpgradeStore implements Screen {
         percent = (upgrades.get("FireRate").getLevel() * 100) / upgrades.get("FireRate").getUpgTicks();
         playerFireRateDisplay.setValue(percent);
 
-
         speedCost.setText(" " + upgrades.get("Speed").getCost());
         fireRateCost.setText(" " + upgrades.get("FireRate").getCost());
     }
@@ -168,7 +190,7 @@ public class UpgradeStore implements Screen {
     public void show() {
 
         // create a skin object
-        Skin skin = new Skin(Gdx.files.internal("assets/clean-crispy/skin/clean-crispy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
 
         stage = new Stage();
 
@@ -214,7 +236,6 @@ public class UpgradeStore implements Screen {
 
         table.add(playerSpeedUpBtn);
         table.add(playerSpeedDownBtn);
-        ;
         table.add(speedCost);
         table.add(playerSpeedDisplay);
         table.row();
@@ -265,7 +286,6 @@ public class UpgradeStore implements Screen {
 
     }
 
-
     private void addListeners(TextButton textButton, final String property, final int behavior, final Label value, final ProgressBar outputLbl) {
         textButton.addListener(new InputListener() {
             @Override
@@ -273,13 +293,11 @@ public class UpgradeStore implements Screen {
                 labelBehavior(property, behavior, value, outputLbl);
                 return super.touchDown(event, x, y, pointer, button);
             }
-
         });
     }
 
-
     private void labelBehavior(String property, int behavior, Label value, ProgressBar outputLbl) {
-        loadInit();
+        load();
 
         float costIncrements = upgrades.get(property).getCostIncrements();
         float minUpg = upgrades.get(property).getMinUpg();
@@ -344,7 +362,6 @@ public class UpgradeStore implements Screen {
     public void setProperty(String property, float speed) {
         switch ( property ) {
             case "Speed": {
-//                upgradeSpeed.upgrade();
                 playing.getPlayer().setPlayerSpeed(speed);
                 break;
             }

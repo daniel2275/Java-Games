@@ -2,6 +2,7 @@ package levels;
 
 
 import entities.Enemy;
+import entities.EnemyBuilder;
 import entities.EnemyManager;
 
 import static utilz.Constants.Game.*;
@@ -43,18 +44,69 @@ public class Level {
         }
     }
 
-    private void level2() {
-        Enemy enemy1 = new Enemy(0, -125, ((int) (WORLD_HEIGHT - SKY_SIZE - 14)), 1, "cv6-atlas.png", 13f, true, maxHealth * 3, currentHealth * 3, false, 200,128,32);
-//        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 0.5f, false, maxHealth, currentHealth, 10);
+    private void level1() {
+        Enemy enemy1 = new EnemyBuilder()
+                .withSpawnPosX(-125)
+                .withSpriteAtlas("cv6-atlas.png")
+                .withSpeed(13f)
+                .withAggro(true)
+                .withCurrentHealth(maxHealth )
+                .withMaxHealth(currentHealth )
+                .withEnemyPoints(200)
+                .withEnemyWidth(128)
+                .build();
+
         enemyManager.addEnemy(enemy1);
     }
 
-    private void level1() {
-        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 10f, false, maxHealth, currentHealth, 10);
-        Enemy enemy2 = new Enemy(5, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 15f, true, maxHealth, currentHealth, 10);
-        Enemy enemy3 = new Enemy(15, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 13f, true, maxHealth, currentHealth, true, 10);
-        Enemy enemy4 = new Enemy(24, -65, 100, -1, "enemy-sub1.png", 13f, true, maxHealth, currentHealth, true, 10);
+    private void level2() {
 
+        Enemy enemy1 = new EnemyBuilder()
+                .withSpawnPosX(-65)
+                .withFlipX(-1)
+                .withSpriteAtlas("tanker-atlas.png")
+                .withSpeed(10f)
+                .withCurrentHealth(maxHealth )
+                .withMaxHealth(currentHealth )
+                .withEnemyPoints(10)
+                .build();
+
+        Enemy enemy2 = new EnemyBuilder()
+                .withDelay(5)
+                .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpriteAtlas("destroyer-atlas.png")
+                .withSpeed(15f)
+                .withAggro(true)
+                .withCurrentHealth(maxHealth )
+                .withMaxHealth(currentHealth )
+                .withEnemyPoints(10)
+                .build();
+
+        Enemy enemy3 = new EnemyBuilder()
+                .withDelay(15)
+                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpawnPosY(100)
+                .withSpriteAtlas("enemy-sub1.png")
+                .withSpeed(13f)
+                .withAggro(true)
+                .withMaxHealth(maxHealth)
+                .withCurrentHealth(currentHealth)
+                .withSub(true)
+                .withEnemyPoints(10)
+                .build();
+
+        Enemy enemy4 = new EnemyBuilder()
+                .withDelay(24)
+                .withSpawnPosX(-65)
+                .withSpawnPosY(100)
+                .withSpriteAtlas("enemy-sub1.png")
+                .withSpeed(13f)
+                .withAggro(true)
+                .withMaxHealth(maxHealth)
+                .withCurrentHealth(currentHealth)
+                .withSub(true)
+                .withEnemyPoints(10)
+                .build();
 
         enemyManager.addEnemy(enemy1);
         enemyManager.addEnemy(enemy2);
@@ -63,12 +115,72 @@ public class Level {
     }
 
     private void level3() {
-        Enemy enemy1 = new Enemy(0, -65, -1, "tanker-atlas.png", 15f, false, maxHealth, currentHealth, 10);
-        Enemy enemy2 = new Enemy(3, (int) WORLD_WIDTH + 65, 1, "tanker-atlas.png", 11f,false, maxHealth, currentHealth, 10);
-        Enemy enemy3 = new Enemy(10, (int) WORLD_WIDTH + 65, 1, "tanker2-atlas.png", 10f,false, maxHealth, currentHealth, 10);
-        Enemy enemy4 = new Enemy(4, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 15f,true, maxHealth, currentHealth, 10);
-        Enemy enemy5 = new Enemy(10, (int) WORLD_WIDTH + 64, 1, "destroyer-atlas.png", 15f,true, maxHealth, currentHealth, 10);
-        Enemy enemy6 = new Enemy(12, (int) WORLD_WIDTH + 65, 100, 1, "enemy-sub1.png", 13f,true, maxHealth, currentHealth, true, 10);
+        Enemy enemy1 = new EnemyBuilder()
+                .withSpawnPosX(-65)
+                .withFlipX(-1)
+                .withSpriteAtlas("tanker-atlas.png")
+                .withSpeed(10f)
+                .withCurrentHealth(maxHealth )
+                .withMaxHealth(currentHealth )
+                .withEnemyPoints(10)
+                .build();
+
+        Enemy enemy2 = new EnemyBuilder()
+                .withDelay(3)
+                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpriteAtlas("tanker-atlas.png")
+                .withSpeed(11f)
+                .withCurrentHealth(maxHealth)
+                .withMaxHealth(currentHealth)
+                .withEnemyPoints(10)
+                .build();
+
+        Enemy enemy3 = new EnemyBuilder()
+                .withDelay(10)
+                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpawnPosY(100)
+                .withSpriteAtlas("tanker2-atlas.png")
+                .withSpeed(10f)
+                .withMaxHealth(maxHealth)
+                .withCurrentHealth(currentHealth)
+                .withEnemyPoints(10)
+                .build();
+
+
+        Enemy enemy4 = new EnemyBuilder()
+                .withDelay(4)
+                .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpriteAtlas("destroyer-atlas.png")
+                .withSpeed(15f)
+                .withAggro(true)
+                .withMaxHealth(maxHealth)
+                .withCurrentHealth(currentHealth)
+                .withEnemyPoints(10)
+                .build();
+
+        Enemy enemy5 = new EnemyBuilder()
+                .withDelay(10)
+                .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpriteAtlas("destroyer-atlas.png")
+                .withSpeed(20f)
+                .withAggro(true)
+                .withMaxHealth(maxHealth)
+                .withCurrentHealth(currentHealth)
+                .withEnemyPoints(10)
+                .build();
+
+        Enemy enemy6 = new EnemyBuilder()
+                .withDelay(12)
+                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpawnPosY(100)
+                .withSpriteAtlas("enemy-sub1.png")
+                .withSpeed(13f)
+                .withAggro(true)
+                .withMaxHealth(maxHealth)
+                .withCurrentHealth(currentHealth)
+                .withSub(true)
+                .withEnemyPoints(10)
+                .build();
 
         enemyManager.addEnemy(enemy1);
         enemyManager.addEnemy(enemy2);
@@ -77,6 +189,10 @@ public class Level {
         enemyManager.addEnemy(enemy5);
         enemyManager.addEnemy(enemy6);
     }
+
+
+
+
 
     public void setCurrentScreen(int currentScreen) {
         this.currentScreen = currentScreen;

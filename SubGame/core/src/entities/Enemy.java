@@ -1,6 +1,7 @@
 package entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -68,11 +69,9 @@ public class Enemy {
 
     private ScheduledExecutorService ses;
 
-//    private ScheduledExecutorService executor;
-//    private ScheduledFuture<?> animationTask;
-
     private boolean delayComplete;
-    long timerDelay;
+
+    Sound explodeSound = Gdx.audio.newSound(Gdx.files.internal("audio/exploded1.mp3"));
 
     public Enemy(long delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints) {
         this.flipX = flipX;
@@ -126,7 +125,7 @@ public class Enemy {
         render();
     }
 
-    // load animations (pending: migrate to helper class)
+    // load animations
     private void loadAnimations(String sprites) {
         Texture boatAtlas = new Texture(sprites);
 
@@ -142,20 +141,9 @@ public class Enemy {
         shipHit = boatAnimation(1,3, boatSprites, 0.2f);
     }
 
-    boolean paused = false;
     public void scheduleAnimation(Player player) {
-        float delaySeconds = delay;
-
         if (!delayComplete) {
             delay();
-//            // Start the delay
-//            Timer.schedule(new Timer.Task() {
-//                @Override
-//                public void run() {
-//                    System.out.println("Waiting");
-//                    delayComplete = true;
-//                }
-//            }, delaySeconds);
         } else {
             direction = "";
 
@@ -205,135 +193,6 @@ public class Enemy {
         }
     }
 
-
-//    public void scheduleAnimation(Player player) {
-//        ses = Executors.newScheduledThreadPool(0);
-//
-//        Runnable task = ()  -> {
-//            direction = "";
-//
-//            if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
-//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
-//                    hitbox.x += enemySpeed * Gdx.graphics.getDeltaTime();
-//                }
-//                xOffset = enemyWidth;
-//                direction = "right";
-//            } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
-//                flipX = 1;
-//            }
-//            if (flipX == 1 && hitbox.getX() >= -65) {
-//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
-//                    hitbox.x -= enemySpeed * Gdx.graphics.getDeltaTime();
-//                }
-//                xOffset = 0;
-//                direction = "left";
-//            } else if (flipX == 1 && hitbox.getX() <= -65) {
-//                if (!aggro) {
-//                    enemyPoints -= enemyPoints * 0.1;
-//                }
-//                flipX = -1;
-//            }
-//
-//            if (sub) {
-//                if (hitbox.getY() > player.getHitbox().getY()) {
-//                    hitbox.y -= (enemySpeed * flipY) * Gdx.graphics.getDeltaTime();
-//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
-//                        direction = "down";
-//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
-//                        direction += "&down";
-//                    }
-//                } else if (hitbox.getY() < player.getHitbox().getY()) {
-//                    hitbox.y += (enemySpeed * flipY) * Gdx.graphics.getDeltaTime();
-//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
-//                        direction = "up";
-//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
-//                        direction += "&up";
-//                    }
-//                }
-//            }
-//
-//            if (direction.equals("")) {
-//                direction = flipX == -1 ? "left" : "right";
-//            }
-//        };
-//        ses.schedule(task, delay, TimeUnit.SECONDS);
-//    }
-
-//    public void scheduleAnimation(Player player) {
-//        if (executor == null) {
-//            executor = Executors.newScheduledThreadPool(0);
-//        }
-//
-//        System.out.println(enemySpeed);
-//
-//        Runnable task = () -> {
-//            direction = "";
-//
-//            if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
-//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
-//                    hitbox.x += enemySpeed;
-//                }
-//                xOffset = enemyWidth;
-//                direction = "right";
-//            } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
-//                flipX = 1;
-//            }
-//            if (flipX == 1 && hitbox.getX() >= -65) {
-//                if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
-//                    hitbox.x -= enemySpeed;
-//                }
-//                xOffset = 0;
-//                direction = "left";
-//            } else if (flipX == 1 && hitbox.getX() <= -65) {
-//                if (!aggro) {
-//                    enemyPoints -= enemyPoints * 0.1;
-//                }
-//                flipX = -1;
-//            }
-//
-//            if (sub) {
-//                if (hitbox.getY() > player.getHitbox().getY()) {
-//                    hitbox.y -= enemySpeed * flipY;
-//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
-//                        direction = "down";
-//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
-//                        direction += "&down";
-//                    }
-//                } else if (hitbox.getY() < player.getHitbox().getY()) {
-//                    hitbox.y += enemySpeed * flipY;
-//                    if (direction.equals("") || Math.abs(hitbox.getX() - player.getHitbox().getX()) < 15) {
-//                        direction = "up";
-//                    } else if (Math.abs(hitbox.getY() - player.getHitbox().getY()) > 100) {
-//                        direction += "&up";
-//                    }
-//                }
-//            }
-//
-//            if (direction.equals("")) {
-//                direction = flipX == -1 ? "left" : "right";
-//            }
-//        };
-//
-//        // Schedule the task with a delay of 0 seconds and a fixed delay of 1 second
-//        animationTask = executor.scheduleAtFixedRate(task, delay, 1, TimeUnit.SECONDS);
-//    }
-
-//    public void pauseAnimation() {
-//        if (animationTask != null) {
-//            animationTask.cancel(false);
-//        }
-//    }
-//
-//    public void resumeAnimation(Player player) {
-//        if (executor != null) {
-//            scheduleAnimation(player); // Call the method again to schedule the task
-//        }
-//    }
-
-
-
-
-
     // aggro behavior
     public void turnTowardsPlayer(Player player) {
         float playerX = player.getuBoatHitBox().getX();
@@ -345,7 +204,6 @@ public class Enemy {
             // if sub stop near player
             if ((playerDistX  < 80) && (playerDistY) < 60 && (sub)) {
                 enemySpeed = 0;
-//                return;
             } else {
                 enemySpeed = speed;
             }
@@ -379,7 +237,6 @@ public class Enemy {
 
             if (dying) {
                 enemySpeed = 0;
-
                 fadeDelay.checkPaused(false);
                 fadeDelay.update();
 
@@ -388,7 +245,6 @@ public class Enemy {
                 } else if (stateTime > 6) {
                     hitbox.y -= 0.5;
                     fadingAnimation.update(stateTime);
-
                     color = fadingAnimation.color();
                 }
 
@@ -398,10 +254,8 @@ public class Enemy {
                     this.sunk = true;
                 }
             } else if (doHitAnimation) {
-//                System.out.println("Hit start " + stateTime);
                 currentFrame = shipHit.getKeyFrame(stateTime, false);
                 if (stateTime > 1) {
-//                    System.out.println("Hit end");
                     doHitAnimation = false;
                 }
             } else {
@@ -410,8 +264,6 @@ public class Enemy {
         } else {
             fadeDelay.checkPaused(true);
         }
-
-//        drawObject(currentFrame, hitbox, xOffset, 0, flipX, 1, enemyHeath, -1, color);
 
         DrawAsset drawEnemy = new DrawAsset(currentFrame, hitbox, xOffset, 0,  flipX, 1, maxHealth, currentHealth, -1, color);
 
@@ -464,6 +316,7 @@ public class Enemy {
 
     public void setDying(boolean dying) {
         this.dying = dying;
+        explodeSound.play();
         fadeDelay.init(); // initialize fade timer
         stateTime = 0; // reset animation time
     }
@@ -533,14 +386,6 @@ public class Enemy {
         this.enemyHeight = enemyHeight;
     }
 
-//    public ScheduledExecutorService getSes() {
-//        return ses;
-//    }
-//
-//    public void setSes(ScheduledExecutorService ses) {
-//        this.ses = ses;
-//    }
-
     public boolean delay() {
         float delaySeconds = delay;
         if (!delayComplete) {
@@ -558,16 +403,111 @@ public class Enemy {
         return false;
     }
 
-    public void pause() {
+//    public boolean delay(long delayMillis) {
+
+//        if (delayComplete) {
+//            return true; // delay already complete
+//        }
+//        if (delayMillis <= 0) {
+//            return false; // invalid delay time
+//        }
+//        CompletableFuture<Void> delayFuture = new CompletableFuture<>();
+//        Timer.schedule(new Timer.Task() {
+//            @Override
+//            public void run() {
+//                System.out.print(".");
+//                delayFuture.complete(null);
+//            }
+//        }, delayMillis / 1000f);
+//        try {
+//            delayFuture.get(); // wait for delay to complete
+//        } catch (InterruptedException | ExecutionException e) {
+//            Thread.currentThread().interrupt();
+//            return false; // delay interrupted or failed
+//        }
+//        delayComplete = true;
+//        return true;
+//    }
+
+
+    private static long timerDelay;
+
+    public static void pause() {
+        pause = true;
         timerDelay = TimeUtils.nanosToMillis(TimeUtils.nanoTime());
         Timer.instance().stop();
         System.out.print("Timer Stop -");
     }
 
-    public void resume() {
+    public static void resume() {
+        pause = false;
         Timer.instance().delay(TimeUtils.nanosToMillis(TimeUtils.nanoTime() - timerDelay));
         Timer.instance().start();
         System.out.print("Timer Start -");
     }
 
+    public TextureRegion[][] getBoatSprites() {
+        return boatSprites;
+    }
+
+    public void setHitbox(Rectangle hitbox) {
+        this.hitbox = hitbox;
+    }
+
+    public Animation<TextureRegion> getBoatIdleAnimation() {
+        return shipIdle;
+    }
+
+    public void setBoatIdleAnimation(Animation<TextureRegion> shipIdle) {
+        this.shipIdle = shipIdle;
+    }
+
+    public Animation<TextureRegion> getBoatExplodeAnimation() {
+        return shipExplode;
+    }
+
+    public void setBoatExplodeAnimation(Animation<TextureRegion> shipExplode) {
+        this.shipExplode = shipExplode;
+    }
+
+    public Animation<TextureRegion> getBoatHitAnimation() {
+        return shipHit;
+    }
+
+    public void setBoatHitAnimation(Animation<TextureRegion> shipHit) {
+        this.shipHit = shipHit;
+    }
+
+    public Timing getFadeDelay() {
+        return fadeDelay;
+    }
+
+    public void setFadeDelay(Timing fadeDelay) {
+        this.fadeDelay = fadeDelay;
+    }
+
+    public HelpMethods.FadingAnimation getFadingAnimation() {
+        return fadingAnimation;
+    }
+
+    public void setFadingAnimation(HelpMethods.FadingAnimation fadingAnimation) {
+        this.fadingAnimation = fadingAnimation;
+    }
+//    private Timer timer;
+//    private boolean paused;
+//
+//    public void togglePauseResume() {
+//        if (paused) {
+//            timer.start();
+//            System.out.println("Timer resumed.");
+//        } else {
+//            timer.stop();
+//            System.out.println("Timer paused.");
+//        }
+//        paused = !paused;
+//    }
+
+//    public void setTimer(Timer timer) {
+//        this.timer = timer;
+//    }
 }

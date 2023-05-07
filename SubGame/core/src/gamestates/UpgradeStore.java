@@ -5,8 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
+import entities.Enemy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +38,6 @@ public class UpgradeStore implements Screen {
     private ProgressBar playerFireRateDisplay;
 
     private int playerScore;
-
-//    private static boolean init;
-
-    // Score label creation font name
-    private BitmapFont font = loadFont("fonts/SmallTypeWriting.ttf");
 
     public UpgradeStore(Playing playing) {
         this.playerScore = playing.getPlayer().getPlayerScore();
@@ -81,9 +75,6 @@ public class UpgradeStore implements Screen {
 
         String jsonStringDefault = prefs.getString("upgrades", null);
         upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
-
-//        float playerHealthInit = prefs.getFloat("playerHealth");
-//        playing.getPlayer().setPlayerHealth(playerHealthInit);
 
         float reloadSpeed = prefs.getFloat("reloadSpeed");
         playing.getPlayer().setReloadSpeed(reloadSpeed);
@@ -176,17 +167,6 @@ public class UpgradeStore implements Screen {
         fireRateCost.setText(" " + upgrades.get("FireRate").getCost());
     }
 
-    // Score label creation (load font)
-    private BitmapFont loadFont(String fontName) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontName));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 16; // font size
-        BitmapFont font = generator.generateFont(parameter); // generate the BitmapFont
-        generator.dispose(); // dispose the generator when you're done
-        return font;
-    }
-
-
     public void show() {
 
         // create a skin object
@@ -256,6 +236,7 @@ public class UpgradeStore implements Screen {
         exitBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Enemy.resume();
                 Gamestate.state = Gamestate.PLAYING;
                 pause = false;
             }
@@ -298,7 +279,6 @@ public class UpgradeStore implements Screen {
 
     private void labelBehavior(String property, int behavior, Label value, ProgressBar outputLbl) {
         load();
-
         float costIncrements = upgrades.get(property).getCostIncrements();
         float minUpg = upgrades.get(property).getMinUpg();
         float maxUpg = upgrades.get(property).getMaxUpg();
@@ -315,7 +295,6 @@ public class UpgradeStore implements Screen {
             baseCost = (upgrades.get(property).getCost()) * behavior;
             level++;
         }
-
         if ((playerScore + baseCost >= 0) && (playerScore + baseCost <= this.playerScore) && (level >= 0) && (level <= upgTicks)) {
             if (Math.abs(speed - maxUpg) > 0) {
                 if (behavior == -1) {
@@ -338,11 +317,6 @@ public class UpgradeStore implements Screen {
                 playing.getPlayer().setPlayerScore(playerScore);
 
                 saveGame();
-//                Json json = new Json();
-//// create a file handle for the output file
-//                FileHandle file = Gdx.files.local("output.json");
-//// write the map to the file
-//                json.toJson(upgrades, file);
             }
         }
     }

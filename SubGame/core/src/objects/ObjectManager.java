@@ -1,8 +1,11 @@
 package objects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import entities.Enemy;
@@ -23,6 +26,11 @@ public class ObjectManager {
     private ArrayList<DepthCharge> depthCharges;
 
     private Timing torpedoLoading;
+
+    Sound torpedoHitSound = Gdx.audio.newSound(Gdx.files.internal("audio/BoatTorpHit.mp3"));
+    Sound torpedoHitSound1 = Gdx.audio.newSound(Gdx.files.internal("audio/BoatTorpHit1.mp3"));
+    Sound chargeHitSound = Gdx.audio.newSound(Gdx.files.internal("audio/depthchargeHit1.mp3"));
+    Sound depthChargeFar = Gdx.audio.newSound(Gdx.files.internal("audio/depthChargeFar1.mp3"));
 
     public ObjectManager(Playing playing) {
         torpedoes = new ArrayList<>();
@@ -70,12 +78,24 @@ public class ObjectManager {
                     if (playing.getPlayer().getHitbox().overlaps(torpedo.getHitbox())) {
                         playing.getPlayer().doHit(torpedo);
                         torpedo.setExplode(true);
+                        boolean randomBit = MathUtils.randomBoolean() ? true : false;
+                        if (randomBit) {
+                            torpedoHitSound.play();
+                        } else {
+                            torpedoHitSound1.play();
+                        }
                         torpedo.update();
                         torpedoIterator.remove();
                     }
                 } else {
                     if (playing.checkCollision(torpedo.getHitbox(), torpedo.getTorpedoDamage())) {
                         torpedo.setExplode(true);
+                        boolean randomBit = MathUtils.randomBoolean() ? true : false;
+                        if (randomBit) {
+                            torpedoHitSound.play();
+                        } else {
+                            torpedoHitSound1.play();
+                        }
                         torpedo.update();
                         torpedoIterator.remove();
                     }
@@ -95,6 +115,7 @@ public class ObjectManager {
                     if (!depthCharge.isExplode()) {
                         playing.getPlayer().doHit(depthCharge);
                         depthCharge.setExplode(true);
+                        chargeHitSound.play();
                         depthCharge.setSpeed(0);
                     }
                 }
@@ -137,6 +158,7 @@ public class ObjectManager {
     public boolean checkDpcLimit(Iterator<DepthCharge> depthChargeIterator, DepthCharge depthCharge) {
         if (depthCharge.getHitbox().getY() <= 0) {
             depthChargeIterator.remove();
+            depthChargeFar.play();
             return true;
         }
         return false;
@@ -244,6 +266,7 @@ public class ObjectManager {
         }
         return axisAlignedRect.overlaps(r2);
     }
+
 }
 
 

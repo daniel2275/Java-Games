@@ -12,6 +12,8 @@ public class EnemyManager {
 
     private ArrayList<Enemy> listOfEnemies = new ArrayList<>();
 
+
+
     public EnemyManager(Playing playing) {
     }
     public void reset() {
@@ -81,11 +83,16 @@ public class EnemyManager {
     }
 
     public void pause() {
-            listOfEnemies.forEach(Enemy::pause);
+        Enemy.pause();
+//            listOfEnemies.forEach(Enemy::pause);
     }
 
     public void resume() {
-        listOfEnemies.forEach(Enemy::resume);
+        Enemy.resume();
+//        listOfEnemies.forEach(Enemy::resume);
     }
+
+
+
 
 }

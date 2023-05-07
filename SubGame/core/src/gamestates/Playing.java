@@ -76,13 +76,20 @@ public class Playing implements InputProcessor {
             break;
             case Input.Keys.P: {
                 pause = !pause;
+                if (pause){
+                    getEnemyManager().pause();
+                } else {
+                    getEnemyManager().resume();
+                }
             }
             break;
             case Input.Keys.O: {
                 if (Gamestate.state.equals(Gamestate.STORE)) {
+                    pause = false;
                     getEnemyManager().resume();
                     Gamestate.state = Gamestate.PLAYING;
                 } else if (Gamestate.state.equals(Gamestate.PLAYING)) {
+                    pause = true;
                     getEnemyManager().pause();
                     Gamestate.state = Gamestate.STORE;
                 }

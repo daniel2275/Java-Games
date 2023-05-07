@@ -130,7 +130,9 @@ public class Player {
 
     // Animate the player character, resets statetime on non-looping animations
     private void checkAnimation() {
-//        stateTime += Gdx.graphics.getDeltaTime();
+        stateTime += Gdx.graphics.getDeltaTime();
+
+        System.out.println(lastDirection);
 
         if (sunk) {
             currentFrame = getSunkAnimations().getKeyFrame(stateTime, true);

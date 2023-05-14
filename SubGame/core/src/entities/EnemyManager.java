@@ -92,7 +92,10 @@ public class EnemyManager {
 //        listOfEnemies.forEach(Enemy::resume);
     }
 
-
-
+    public void exit() {
+        listOfEnemies.forEach(enemyA -> {
+            enemyA.exit();
+        });
+    }
 
 }

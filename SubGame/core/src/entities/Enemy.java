@@ -108,7 +108,6 @@ public class Enemy {
         this.flipY = 1;
         this.enemyWidth = enemyWidth;
         this.enemyHeight = enemyHeight;
-        System.out.println("constructor " + this.enemyWidth + " " + this.enemyHeight);
         loadAnimations(spriteAtlas);
         this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
         this.hitbox = initHitBox(spawnPosX, spawnPosY , this.enemyWidth, this.enemyHeight);
@@ -313,7 +312,6 @@ public class Enemy {
         this.enemySpeed = enemySpeed;
     }
 
-
     public void setDying(boolean dying) {
         this.dying = dying;
         explodeSound.play();
@@ -369,7 +367,6 @@ public class Enemy {
         this.quit = quit;
     }
 
-
     public int getEnemyWidth() {
         return enemyWidth;
     }
@@ -402,33 +399,6 @@ public class Enemy {
         }
         return false;
     }
-
-//    public boolean delay(long delayMillis) {
-
-//        if (delayComplete) {
-//            return true; // delay already complete
-//        }
-//        if (delayMillis <= 0) {
-//            return false; // invalid delay time
-//        }
-//        CompletableFuture<Void> delayFuture = new CompletableFuture<>();
-//        Timer.schedule(new Timer.Task() {
-//            @Override
-//            public void run() {
-//                System.out.print(".");
-//                delayFuture.complete(null);
-//            }
-//        }, delayMillis / 1000f);
-//        try {
-//            delayFuture.get(); // wait for delay to complete
-//        } catch (InterruptedException | ExecutionException e) {
-//            Thread.currentThread().interrupt();
-//            return false; // delay interrupted or failed
-//        }
-//        delayComplete = true;
-//        return true;
-//    }
-
 
     private static long timerDelay;
 
@@ -493,21 +463,9 @@ public class Enemy {
     public void setFadingAnimation(HelpMethods.FadingAnimation fadingAnimation) {
         this.fadingAnimation = fadingAnimation;
     }
-//    private Timer timer;
-//    private boolean paused;
-//
-//    public void togglePauseResume() {
-//        if (paused) {
-//            timer.start();
-//            System.out.println("Timer resumed.");
-//        } else {
-//            timer.stop();
-//            System.out.println("Timer paused.");
-//        }
-//        paused = !paused;
-//    }
 
-//    public void setTimer(Timer timer) {
-//        this.timer = timer;
-//    }
+    public void exit(){
+        explodeSound.dispose();
+    }
+
 }

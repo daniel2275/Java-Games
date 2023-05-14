@@ -2,12 +2,7 @@ package objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import entities.Enemy;
 import gamestates.Playing;
 import utilz.Timing;
@@ -16,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import static com.danielr.subgame.SubGame.pause;
-import static com.danielr.subgame.SubGame.shapeRendered;
 import static objects.Torpedo.TORPEDO_HEIGHT;
 import static utilz.Constants.Game.*;
 
@@ -29,7 +23,7 @@ public class ObjectManager {
 
     Sound torpedoHitSound = Gdx.audio.newSound(Gdx.files.internal("audio/BoatTorpHit.mp3"));
     Sound torpedoHitSound1 = Gdx.audio.newSound(Gdx.files.internal("audio/BoatTorpHit1.mp3"));
-    Sound chargeHitSound = Gdx.audio.newSound(Gdx.files.internal("audio/depthchargeHit1.mp3"));
+    Sound depthChargeHit = Gdx.audio.newSound(Gdx.files.internal("audio/depthchargeHit1.mp3"));
     Sound depthChargeFar = Gdx.audio.newSound(Gdx.files.internal("audio/depthChargeFar1.mp3"));
 
     public ObjectManager(Playing playing) {
@@ -115,7 +109,7 @@ public class ObjectManager {
                     if (!depthCharge.isExplode()) {
                         playing.getPlayer().doHit(depthCharge);
                         depthCharge.setExplode(true);
-                        chargeHitSound.play();
+                        depthChargeHit.play();
                         depthCharge.setSpeed(0);
                     }
                 }
@@ -180,91 +174,17 @@ public class ObjectManager {
         return ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < WORLD_HEIGHT - SKY_SIZE));
     }
 
-    public boolean hitDetect(Rectangle rect1, float angle1, Rectangle rect2, float angle2) {
-        System.out.println(angle2);
-        // calculate vertices of rect1
-        float[] vertices1 = new float[]{
-                rect1.x, rect1.y,
-                rect1.x + rect1.width, rect1.y,
-                rect1.x + rect1.width, rect1.y + rect1.height,
-                rect1.x, rect1.y + rect1.height
-        };
-        Polygon poly1 = new Polygon(vertices1);
-        poly1.setOrigin(rect1.width / 2, rect1.height / 2);
-//        poly1.setRotation(angle1);
-
-        // calculate vertices of rect2
-        float[] vertices2 = new float[]{
-                rect2.x, rect2.y,
-                rect2.x + rect2.width, rect2.y,
-                rect2.x + rect2.width, rect2.y + rect2.height,
-                rect2.x, rect2.y + rect2.height
-        };
-        Polygon poly2 = new Polygon(vertices2);
-        poly2.setOrigin(rect2.width / 2, rect2.height / 2);
-//        poly2.setRotation(angle2);
-
-        shapeRendered.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRendered.setColor(Color.RED);
-        shapeRendered.polygon(poly1.getVertices());
-        shapeRendered.setColor(Color.BLUE);
-        shapeRendered.polygon(poly2.getVertices());
-        shapeRendered.end();
-// check for collision
-        if (Intersector.overlapConvexPolygons(poly1, poly2)) {
-            // handle collision
-            System.out.println(" Intersect polys ");
-            return true;
+    public void exit () {
+        torpedoHitSound.dispose();
+        torpedoHitSound1.dispose();
+        depthChargeHit.dispose();
+        depthChargeFar.dispose();
+        for (Torpedo torpedo : torpedoes) {
+            torpedo.exit();
         }
-        System.out.println(" NO HIT polys ");
-        return false;
-    }
-
-    public static boolean isSkewedRectangleColliding(Rectangle r2, float skewAngle, Rectangle r1) {
-        // Transform r1 into an axis-aligned rectangle
-        float[] cornerX = {r1.x, r1.x + r1.width, r1.x, r1.x + r1.width};
-        float[] cornerY = {r1.y, r1.y, r1.y + r1.height, r1.y + r1.height};
-        float centerX = r1.x + r1.width / 2;
-        float centerY = r1.y + r1.height / 2;
-        for (int i = 0; i < 4; i++) {
-            float tempX = cornerX[i] - centerX;
-            float tempY = cornerY[i] - centerY;
-            float cos = (float) Math.cos(skewAngle);
-            float sin = (float) Math.sin(skewAngle);
-            cornerX[i] = tempX * cos - tempY * sin + centerX;
-            cornerY[i] = tempX * sin + tempY * cos + centerY;
+        for (DepthCharge depthCharge : depthCharges) {
+            depthCharge.exit();
         }
-        float minX = cornerX[0];
-        float maxX = cornerX[0];
-        float minY = cornerY[0];
-        float maxY = cornerY[0];
-        for (int i = 1; i < 4; i++) {
-            if (cornerX[i] < minX) {
-                minX = cornerX[i];
-            }
-            if (cornerX[i] > maxX) {
-                maxX = cornerX[i];
-            }
-            if (cornerY[i] < minY) {
-                minY = cornerY[i];
-            }
-            if (cornerY[i] > maxY) {
-                maxY = cornerY[i];
-            }
-        }
-        Rectangle axisAlignedRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-
-        shapeRendered.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRendered.setColor(Color.RED);
-        shapeRendered.rect(axisAlignedRect.getX(), axisAlignedRect.getY(), axisAlignedRect.getWidth(), axisAlignedRect.getHeight());
-        shapeRendered.end();
-
-
-        // Check for collision with r2
-        if (axisAlignedRect.overlaps(r2)) {
-            System.out.println(axisAlignedRect.overlaps(r2));
-        }
-        return axisAlignedRect.overlaps(r2);
     }
 
 }

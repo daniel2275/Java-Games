@@ -193,5 +193,12 @@ public class Torpedo {
     public float getAngle() {
         return angle;
     }
+    public void exit() {
+        for (int i= 0; i <= 1; i++) {
+            for (int j= 0; j <= 7; j++) {
+                torpedoSprites[i][j].getTexture().dispose();
+            }
+        }
+    }
 }
 

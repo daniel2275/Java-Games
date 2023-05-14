@@ -18,59 +18,6 @@ public class HelpMethods {
         return hitbox;
     }
 
-
-//    public static Rectangle drawObject(TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float health, float reload, Color color) {
-////        hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
-//
-//        if(!pause) {
-//            batch.begin();
-//            batch.setColor(color);
-//            if (currentFrame != null) {
-//                batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY);
-//            }
-//            batch.end();
-//
-//            if (health > 0) {
-//                shapeRendered.begin(ShapeRenderer.ShapeType.Filled);
-//                if (((int) (hitbox.getWidth() / 100 * health)) <= (int) hitbox.getWidth() / 3) {
-//                    shapeRendered.setColor(Color.RED);
-//                } else if (((int) (hitbox.getWidth() / 100 * health)) <= (int) hitbox.getWidth() / 2) {
-//                    shapeRendered.setColor(Color.YELLOW);
-//                } else {
-//                    shapeRendered.setColor(Color.GREEN);
-//                }
-//
-//                shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 5, (hitbox.getWidth() / 100 * health), 2);
-//                shapeRendered.end();
-//            }
-//
-//            if (reload >= 0) {
-//                shapeRendered.begin(ShapeRenderer.ShapeType.Filled);
-//                if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 2.5) {
-//                    shapeRendered.setColor(Color.GREEN);
-//                } else if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 1.5) {
-//                    shapeRendered.setColor(Color.GOLD);
-//                } else {
-//                    shapeRendered.setColor(Color.FIREBRICK);
-//                }
-//                float width = hitbox.getWidth() - (hitbox.getWidth() / reloadSpeed * reload);
-////                System.out.println(width);
-//                shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 8, width, 1);
-//                shapeRendered.end();
-//            }
-//
-//
-//            if (VISIBLE_HITBOXES) {
-//                shapeRendered.setColor(Color.WHITE);
-//                shapeRendered.begin();
-//                shapeRendered.rect(hitbox.getX(), hitbox.getY(), hitbox.getWidth(), hitbox.getHeight());
-//                shapeRendered.end();
-//            }
-//
-//        }
-//        return hitbox;
-//    }
-
     public static class FadingAnimation {
         private float stateTime;
         private float alpha;

@@ -4,13 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
 import entities.Enemy;
 
@@ -19,7 +22,6 @@ import java.util.Map;
 
 import static com.danielr.subgame.SubGame.pause;
 import static utilz.Constants.Game.WORLD_HEIGHT;
-import static utilz.Constants.Game.WORLD_WIDTH;
 
 public class UpgradeStore implements Screen {
     private Stage stage;
@@ -94,7 +96,8 @@ public class UpgradeStore implements Screen {
 
         int level = playing.getLevelManager().getLevel().getTotalLevels();
         System.out.println(Gamestate.state + " " + level);
-        prefs.putInteger("level", ((Gamestate.state == Gamestate.MENU) ? level - 1 : level ) );
+//        prefs.putInteger("level", ((Gamestate.state == Gamestate.MENU) ? level - 1 : level ) );
+        prefs.putInteger("level", level);
 
         prefs.putFloat("reloadSpeed", playing.getPlayer().getReloadSpeed());
         prefs.putFloat("playerSpeed", playing.getPlayer().getPlayerSpeed());
@@ -170,39 +173,42 @@ public class UpgradeStore implements Screen {
     public void show() {
 
         // create a skin object
-        Skin skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
-
+//        Skin skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("glassyui/glassy-ui.json"));
         stage = new Stage();
 
-        Table table;
-        table = new Table();
-        table.setFillParent(true);
-        table.defaults().align(Align.left).pad(15);
-        table.align(Align.left);
-        table.setSkin(skin);
+
+//        Table table;
+//        table = new Table();
+//        table.setFillParent(true);
+//        table.defaults().align(Align.left).pad(15);
+//        table.align(Align.left);
+//        table.setSkin(skin);
+
 
         speedCost = new Label("00", skin);
         fireRateCost = new Label("00", skin);
 
-        Window window = new Window("Upgrades", skin);
-        Label titleLabel = window.getTitleLabel();
-        titleLabel.setAlignment(Align.center);
-        window.align(Align.center);
-        window.add(table);
-        window.setWidth(WORLD_WIDTH);
-        window.setHeight(WORLD_HEIGHT - 25);
-        stage.addActor(window);
+//        Window window = new Window("Upgrades", skin);
+//        Label titleLabel = window.getTitleLabel();
+//        titleLabel.setAlignment(Align.center);
+//        window.align(Align.left);
+////        window.add(table);
+//        window.setWidth(WORLD_WIDTH);
+//        window.setHeight(WORLD_HEIGHT - 25);
+//        stage.addActor(window);
 
         // Score label creation
         scoreLbl = new Label("(Score:)" + playing.getPlayer().getPlayerScore(), skin);
         scoreLbl.setPosition(5, WORLD_HEIGHT - 25);
         stage.addActor(scoreLbl);
 
-        TextButton playerSpeedUpBtn = new TextButton("(Sub Speed + )", skin);
-        TextButton playerSpeedDownBtn = new TextButton("(Sub Speed -)", skin);
+        TextButton playerSpeedUpBtn      = new TextButton(" Sub Speed + ", skin, "small");
+        TextButton playerSpeedDownBtn    = new TextButton(" Sub Speed - ", skin);
+        playerSpeedUpBtn.setPosition(10,10);
 
-        TextButton playerFireRateUpBtn = new TextButton("(Sub FireRate + )", skin);
-        TextButton playerFireRateDownBtn = new TextButton("(Sub FireRate -)", skin);
+        TextButton playerFireRateUpBtn   = new TextButton("Sub FireRate +", skin, "small");
+        TextButton playerFireRateDownBtn = new TextButton("Sub FireRate -", skin);
 
         playerSpeedDisplay = new ProgressBar(2, 100, 1, false, skin);
         int percent = 0;
@@ -212,18 +218,59 @@ public class UpgradeStore implements Screen {
         int percentFireRate = 0;
         playerFireRateDisplay.setValue(percentFireRate);
 
-        TextButton exitBtn = new TextButton("Exit", skin);
+        TextButton exitBtn = new TextButton("Exit", skin, "small");
 
-        table.add(playerSpeedUpBtn);
-        table.add(playerSpeedDownBtn);
-        table.add(speedCost);
-        table.add(playerSpeedDisplay);
-        table.row();
-        table.add(playerFireRateUpBtn);
-        table.add(playerFireRateDownBtn);
-        table.add(fireRateCost);
-        table.add(playerFireRateDisplay);
-        table.add(exitBtn);
+//        table.add(playerSpeedUpBtn);
+//        table.add(playerSpeedDownBtn);
+//        table.add(speedCost);
+//        table.add(playerSpeedDisplay);
+//        table.row();
+//        table.add(playerFireRateUpBtn);
+//        table.add(playerFireRateDownBtn);
+//        table.add(fireRateCost);
+//        table.add(playerFireRateDisplay);
+//        table.add(exitBtn);
+
+
+//        window.add(playerSpeedUpBtn);
+//        window.add(speedCost);
+//        window.add(playerSpeedDisplay);
+//        window.row();
+//        window.add(playerFireRateUpBtn);
+//        window.add(fireRateCost);
+//        window.add(playerFireRateDisplay);
+//        window.row();
+//        window.add(exitBtn);
+
+        //Speed Up
+        stage.addActor(playerSpeedUpBtn);
+        playerSpeedUpBtn.setPosition(10, WORLD_HEIGHT * 0.8f);
+
+        stage.addActor(playerSpeedDisplay);
+        playerSpeedDisplay.setPosition(200,WORLD_HEIGHT * 0.820f);
+        playerSpeedDisplay.setWidth(200f);
+
+        stage.addActor(speedCost);
+        speedCost.setColor(Color.BLACK);
+        speedCost.setPosition(275,WORLD_HEIGHT * 0.826f);
+
+
+        //Fire Rate
+        stage.addActor(playerFireRateUpBtn);
+        playerFireRateUpBtn.setPosition(10, WORLD_HEIGHT * 0.65f);
+
+        stage.addActor(playerFireRateDisplay);
+        playerFireRateDisplay.setPosition(200,WORLD_HEIGHT * 0.67f);
+        playerFireRateDisplay.setWidth(200f);
+
+        stage.addActor(fireRateCost);
+        fireRateCost.setColor(Color.BLACK);
+        fireRateCost.setPosition(275,WORLD_HEIGHT * 0.676f);
+
+
+        //Exit
+        stage.addActor(exitBtn);
+        exitBtn.setPosition(875,20);
 
         String property = "Speed";
         addListeners(playerSpeedUpBtn, property, -1, speedCost, playerSpeedDisplay);
@@ -300,11 +347,9 @@ public class UpgradeStore implements Screen {
                 if (behavior == -1) {
                     playerScore += baseCost;
                     upgrades.get(property).upgrade();
-
                 } else {
                     playerScore += baseCost;
                     upgrades.get(property).downgrade();
-
                 }
                 float newSpeed = speed + upgAmount;
                 setProperty(property, newSpeed);
@@ -348,8 +393,8 @@ public class UpgradeStore implements Screen {
 
     @Override
     public void render(float delta) {
-        scoreLbl.setText("(Score:)" + playing.getPlayer().getPlayerScore());
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        scoreLbl.setText("Score: " + playing.getPlayer().getPlayerScore());
+        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();

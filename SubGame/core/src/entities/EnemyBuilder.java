@@ -95,9 +95,6 @@ import static utilz.HelpMethods.initHitBox;
             enemy.setHitbox(initHitBox(spawnPosX, sub ? spawnPosY : WORLD_HEIGHT - SKY_SIZE   - (enemyHeight / 3f) , enemyWidth, enemyHeight));
             enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
             enemy.setFadeDelay(new Timing(7));
-//            enemy.setBoatIdleAnimation(new Animation<>(0.2f, enemy.getBoatSprites()[0]));
-//            enemy.setBoatExplodeAnimation(new Animation<>(1.0f, enemy.getBoatSprites()[1]));
-//            enemy.setBoatHitAnimation(new Animation<>(0.2f, enemy.getBoatSprites()[2]));
             return enemy;
         }
 }

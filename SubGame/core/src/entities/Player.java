@@ -124,15 +124,13 @@ public class Player {
 //        hitbox.y += velocity.y;
 
         drawPlayer.draw();
-
-
     }
 
     // Animate the player character, resets statetime on non-looping animations
     private void checkAnimation() {
         stateTime += Gdx.graphics.getDeltaTime();
 
-        System.out.println(lastDirection);
+
 
         if (sunk) {
             currentFrame = getSunkAnimations().getKeyFrame(stateTime, true);
@@ -359,4 +357,11 @@ public class Player {
         this.reload = reload;
     }
 
+    public void exit() {
+        for (int i = 0; i <= 5; i++) {
+            for (int j = 0; j <= 5; j++) {
+                uBoatSprites[i][j].getTexture().dispose();
+            }
+        }
+    }
 }

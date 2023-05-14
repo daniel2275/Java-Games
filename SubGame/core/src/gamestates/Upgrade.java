@@ -102,15 +102,5 @@ public class Upgrade  implements Serializable {
         this.level = level;
     }
 
-//    @Override
-//    public String toString() {
-//        System.out.println("name:" + this.name +
-//        "\ncost: " + this.cost +
-//        "\ncostIncrements:" + this.costIncrements +
-//        "\nminUpg:" + this.minUpg +
-//        "\nmaxUpg:" + this.maxUpg +
-//        "\nupgTicks:" + this.upgTicks +
-//        "\nlevel: " + this.level );
-//        return super.toString();
-//    }
+
 }

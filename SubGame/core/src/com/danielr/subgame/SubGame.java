@@ -138,7 +138,6 @@ public class SubGame extends ApplicationAdapter  {
 		background.draw(batch);
 		if (pause) {
 			pauseSprite.draw(batch);
-//			Gamestate.state = Gamestate.PAUSE;
 		}
 		batch.end();
 
@@ -153,13 +152,10 @@ public class SubGame extends ApplicationAdapter  {
 				upgradeStore.setPlayerScore(playing.getPlayer().getPlayerScore());
 			}break;
 			case MENU:{
-//				pause = true;
 				menu.update();
-//				playing.update();
 			}
 			break;
 			case STORE:{
-//				pause = true;
 				upgradeStore.render(stateTime);
 			}
 			break;
@@ -167,7 +163,6 @@ public class SubGame extends ApplicationAdapter  {
 				System.out.println("GAME_OVER");
 				pause = true;
 				gameOver.render(stateTime);
-//				Gamestate.state = Gamestate.MENU;
 			}break;
 			case OPTIONS:{
 				System.out.println("Options");
@@ -196,8 +191,13 @@ public class SubGame extends ApplicationAdapter  {
 
 	@Override
 	public void dispose () {
-		playing.getPlayer().getBatch().dispose();
+		System.out.println("dispose");
+		getPlaying().getObjectManager().exit();
+		getPlaying().getEnemyManager().exit();
+		getPlaying().getPlayer().exit();
 		shapeRendered.dispose();
+		batch.dispose();
+		super.dispose();
 	}
 
 	public Playing getPlaying() {

@@ -69,6 +69,9 @@ public class UpgradeStore implements Screen {
 
         float playerSpeed = prefs.getFloat("playerSpeed");
         playing.getPlayer().setPlayerSpeed(playerSpeed);
+
+        float volume = prefs.getFloat("volume");
+        playing.getSubGame().getOptions().setVolume(volume);
     }
 
 
@@ -83,6 +86,9 @@ public class UpgradeStore implements Screen {
 
         float playerSpeed = prefs.getFloat("playerSpeed");
         playing.getPlayer().setPlayerSpeed(playerSpeed);
+
+        float volume = prefs.getFloat("volume");
+        playing.getSubGame().getOptions().setVolume(volume);
     }
 
 
@@ -101,6 +107,8 @@ public class UpgradeStore implements Screen {
 
         prefs.putFloat("reloadSpeed", playing.getPlayer().getReloadSpeed());
         prefs.putFloat("playerSpeed", playing.getPlayer().getPlayerSpeed());
+
+        prefs.putFloat("volume", playing.getSubGame().getOptions().getVolume());
 
         prefs.flush();
     }
@@ -130,6 +138,8 @@ public class UpgradeStore implements Screen {
         prefs.putFloat("default_reloadSpeed", reloadSpeed);
         prefs.putFloat("default_playerSpeed", playerSpeed);
 
+//        prefs.putFloat("volume", 1.0f);
+
         prefs.flush();
     }
 
@@ -155,6 +165,9 @@ public class UpgradeStore implements Screen {
         float playerSpeed = prefs.getFloat("default_playerSpeed");
         playing.getPlayer().setPlayerSpeed(playerSpeed);
 
+        float volume = prefs.getFloat("volume");
+        playing.getSubGame().getOptions().setVolume(volume);
+
         saveGame();
 
         show();
@@ -168,35 +181,18 @@ public class UpgradeStore implements Screen {
 
         speedCost.setText(" " + upgrades.get("Speed").getCost());
         fireRateCost.setText(" " + upgrades.get("FireRate").getCost());
+
     }
 
+    @Override
     public void show() {
 
         // create a skin object
-//        Skin skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         Skin skin = new Skin(Gdx.files.internal("glassyui/glassy-ui.json"));
         stage = new Stage();
 
-
-//        Table table;
-//        table = new Table();
-//        table.setFillParent(true);
-//        table.defaults().align(Align.left).pad(15);
-//        table.align(Align.left);
-//        table.setSkin(skin);
-
-
         speedCost = new Label("00", skin);
         fireRateCost = new Label("00", skin);
-
-//        Window window = new Window("Upgrades", skin);
-//        Label titleLabel = window.getTitleLabel();
-//        titleLabel.setAlignment(Align.center);
-//        window.align(Align.left);
-////        window.add(table);
-//        window.setWidth(WORLD_WIDTH);
-//        window.setHeight(WORLD_HEIGHT - 25);
-//        stage.addActor(window);
 
         // Score label creation
         scoreLbl = new Label("(Score:)" + playing.getPlayer().getPlayerScore(), skin);
@@ -219,28 +215,6 @@ public class UpgradeStore implements Screen {
         playerFireRateDisplay.setValue(percentFireRate);
 
         TextButton exitBtn = new TextButton("Exit", skin, "small");
-
-//        table.add(playerSpeedUpBtn);
-//        table.add(playerSpeedDownBtn);
-//        table.add(speedCost);
-//        table.add(playerSpeedDisplay);
-//        table.row();
-//        table.add(playerFireRateUpBtn);
-//        table.add(playerFireRateDownBtn);
-//        table.add(fireRateCost);
-//        table.add(playerFireRateDisplay);
-//        table.add(exitBtn);
-
-
-//        window.add(playerSpeedUpBtn);
-//        window.add(speedCost);
-//        window.add(playerSpeedDisplay);
-//        window.row();
-//        window.add(playerFireRateUpBtn);
-//        window.add(fireRateCost);
-//        window.add(playerFireRateDisplay);
-//        window.row();
-//        window.add(exitBtn);
 
         //Speed Up
         stage.addActor(playerSpeedUpBtn);

@@ -1,19 +1,28 @@
 package gamestates;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.danielr.subgame.SubGame;
 
-import static com.danielr.subgame.SubGame.*;
+import static com.danielr.subgame.SubGame.upgradeStore;
 import static utilz.Constants.Game.WORLD_HEIGHT;
 import static utilz.Constants.Game.WORLD_WIDTH;
 
 public class Menu extends State {
 
-    private Sprite menu;
-
+    private Stage stage;
+    private TextButton menuPlay;
+    private TextButton menuReset;
+    private TextButton menuOption;
+    private TextButton menuQuit;
+    private Skin skin;
 
     public Menu(SubGame subGame) {
         super(subGame);
@@ -21,40 +30,80 @@ public class Menu extends State {
     }
 
     public void update() {
-        render();
+        float stateTime = Gdx.graphics.getDeltaTime();
+        render(stateTime);
     }
 
     public void create() {
-        menu = new Sprite(new Texture(Gdx.files.internal("menu.png")));
-        menu.setPosition(0,0);
-        menu.setSize(WORLD_WIDTH, WORLD_HEIGHT);
+
+        skin = new Skin(Gdx.files.internal("glassyui/glassy-ui.json"));
+        stage = new Stage();
+
+        Label menuTitle = new Label("Menu", skin);
+        menuTitle.setColor(Color.WHITE);
+        menuTitle.setFontScale(3);
+
+        menuTitle.setPosition((WORLD_WIDTH/2f) - 40, WORLD_HEIGHT * 0.9f);
+
+        menuPlay = new TextButton(" Play ", skin);
+        menuPlay.setPosition(10, WORLD_HEIGHT * 0.7f);
+        menuReset = new TextButton(" Reset ", skin);
+        menuReset.setPosition(10,WORLD_HEIGHT * 0.5f);
+        menuOption = new TextButton(" Options ", skin);
+        menuOption.setPosition(10,WORLD_HEIGHT * 0.3f);
+        menuQuit = new TextButton(" Quit ", skin);
+        menuQuit.setPosition(10,WORLD_HEIGHT * 0.1f);
+
+        stage.addActor(menuTitle);
+        stage.addActor(menuPlay);
+        stage.addActor(menuReset);
+        stage.addActor(menuOption);
+        stage.addActor(menuQuit);
+
+        menuPlay.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                getSubGame().getPlaying().getEnemyManager().resume();
+                setGameState(Gamestate.PLAYING);
+            }
+        });
+
+        menuReset.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                subGame.getPlaying().reset();
+            }
+        });
+
+        menuOption.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setGameState(Gamestate.OPTIONS);
+            }
+        });
+
+        menuQuit.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                upgradeStore.saveGame();
+                Gdx.app.exit();
+            }
+        });
+
     }
 
-    public void render() {
-        batch.begin();
-        menu.draw(batch);
-        batch.end();
+    public void render(float delta) {
+        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (!Gdx.input.isTouched()) {
-            return;
-        }
+//        menuPlay.setChecked(false);
+        stage.act(delta);
+        stage.draw();
 
-        float x = Gdx.input.getX();
-        float y = Gdx.input.getY();
-        Vector3 worldCoordinates = camera.unproject(new Vector3(x, y, 0));
-        System.out.println("Mouse position: (" + worldCoordinates.x + ", " + worldCoordinates.y + ")");
-
-        if(worldCoordinates.y > 438 && worldCoordinates.y < 528) {
-            getSubGame().getPlaying().getEnemyManager().resume();
-            setGameState(Gamestate.PLAYING);
-            pause = false;
-        } else if (worldCoordinates.y > 20 && worldCoordinates.y < 113) {
-            upgradeStore.saveGame();
-            Gdx.app.exit();
-        } else if (worldCoordinates.y > 295 && worldCoordinates.y < 387) {
-            subGame.getPlaying().reset();
-        }
+        Gdx.input.setInputProcessor(stage);
     }
+
+
 }
 
 

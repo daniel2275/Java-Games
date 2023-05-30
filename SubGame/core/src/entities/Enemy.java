@@ -1,7 +1,6 @@
 package entities;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,8 +10,10 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
+import com.danielr.subgame.SubGame;
 import utilz.DrawAsset;
 import utilz.HelpMethods;
+import utilz.SoundManager;
 import utilz.Timing;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -70,10 +71,11 @@ public class Enemy {
     private ScheduledExecutorService ses;
 
     private boolean delayComplete;
+    private SoundManager soundManager;
 
-    Sound explodeSound = Gdx.audio.newSound(Gdx.files.internal("audio/exploded1.mp3"));
+//    Sound explodeSound = Gdx.audio.newSound(Gdx.files.internal("audio/exploded1.mp3"));
 
-    public Enemy(long delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints) {
+    public Enemy(long delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints, SubGame subGame) {
         this.flipX = flipX;
         this.delay = delay;
         this.enemyWidth = 64;
@@ -89,11 +91,12 @@ public class Enemy {
         loadAnimations(spriteAtlas);
         this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
         this.hitbox = initHitBox(spawnPosX, WORLD_HEIGHT - SKY_SIZE - enemyHeight / 3f , enemyWidth, enemyHeight);
+        this.soundManager = SoundManager.getInstance(subGame);
     }
 
 
-    public Enemy(long delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints) {
-        this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro, currentHealth, maxHealth, enemyPoints);
+    public Enemy(long delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, SubGame subGame) {
+        this(delay,spawnPosX,flipX,spriteAtlas,speed,aggro, currentHealth, maxHealth, enemyPoints, subGame);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
@@ -101,8 +104,8 @@ public class Enemy {
     }
 
 
-    public Enemy(long delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight) {
-        this(delay,spawnPosX, spawnPosY, flipX, spriteAtlas,speed,aggro, currentHealth, maxHealth, sub, enemyPoints);
+    public Enemy(long delay, int spawnPosX , int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+        this(delay,spawnPosX, spawnPosY, flipX, spriteAtlas,speed,aggro, currentHealth, maxHealth, sub, enemyPoints, subGame);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
@@ -314,7 +317,7 @@ public class Enemy {
 
     public void setDying(boolean dying) {
         this.dying = dying;
-        explodeSound.play();
+          soundManager.sunkRnd();
         fadeDelay.init(); // initialize fade timer
         stateTime = 0; // reset animation time
     }
@@ -465,7 +468,7 @@ public class Enemy {
     }
 
     public void exit(){
-        explodeSound.dispose();
+//        explodeSound.dispose();
     }
 
 }

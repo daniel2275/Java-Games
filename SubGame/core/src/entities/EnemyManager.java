@@ -12,8 +12,6 @@ public class EnemyManager {
 
     private ArrayList<Enemy> listOfEnemies = new ArrayList<>();
 
-
-
     public EnemyManager(Playing playing) {
     }
     public void reset() {

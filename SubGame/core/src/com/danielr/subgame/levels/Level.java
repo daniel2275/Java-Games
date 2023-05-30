@@ -1,6 +1,7 @@
-package levels;
+package com.danielr.subgame.levels;
 
 
+import com.danielr.subgame.SubGame;
 import entities.Enemy;
 import entities.EnemyBuilder;
 import entities.EnemyManager;
@@ -17,9 +18,11 @@ public class Level {
     private float currentHealth = 100f;
 
     private float maxHealth = currentHealth;
+    private SubGame subGame;
 
-    public Level(EnemyManager enemyManager) {
+    public Level(EnemyManager enemyManager, SubGame subGame) {
         this.enemyManager = enemyManager;
+        this.subGame = subGame;
     }
 
     public void levelSelector() {
@@ -46,7 +49,7 @@ public class Level {
     }
 
     private void level1() {
-        Enemy enemy1 = new EnemyBuilder()
+        Enemy enemy1 = new EnemyBuilder(subGame)
                 .withSpawnPosX(-125)
                 .withSpriteAtlas("cv6-atlas.png")
                 .withSpeed(13f)
@@ -62,7 +65,7 @@ public class Level {
 
     private void level2() {
 
-        Enemy enemy1 = new EnemyBuilder()
+        Enemy enemy1 = new EnemyBuilder(subGame)
                 .withSpawnPosX(-65)
                 .withFlipX(-1)
                 .withSpriteAtlas("tanker-atlas.png")
@@ -72,7 +75,7 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-        Enemy enemy2 = new EnemyBuilder()
+        Enemy enemy2 = new EnemyBuilder(subGame)
                 .withDelay(5)
                 .withSpawnPosX((int) WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
@@ -83,7 +86,7 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-        Enemy enemy3 = new EnemyBuilder()
+        Enemy enemy3 = new EnemyBuilder(subGame)
                 .withDelay(15)
                 .withSpawnPosX((int) WORLD_WIDTH + 65)
                 .withSpawnPosY(100)
@@ -96,7 +99,7 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-        Enemy enemy4 = new EnemyBuilder()
+        Enemy enemy4 = new EnemyBuilder(subGame)
                 .withDelay(24)
                 .withSpawnPosX(-65)
                 .withSpawnPosY(100)
@@ -116,7 +119,7 @@ public class Level {
     }
 
     private void level3() {
-        Enemy enemy1 = new EnemyBuilder()
+        Enemy enemy1 = new EnemyBuilder(subGame)
                 .withSpawnPosX(-65)
                 .withFlipX(-1)
                 .withSpriteAtlas("tanker-atlas.png")
@@ -126,7 +129,7 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-        Enemy enemy2 = new EnemyBuilder()
+        Enemy enemy2 = new EnemyBuilder(subGame)
                 .withDelay(3)
                 .withSpawnPosX((int) WORLD_WIDTH + 65)
                 .withSpriteAtlas("tanker-atlas.png")
@@ -136,7 +139,7 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-        Enemy enemy3 = new EnemyBuilder()
+        Enemy enemy3 = new EnemyBuilder(subGame)
                 .withDelay(10)
                 .withSpawnPosX((int) WORLD_WIDTH + 65)
                 .withSpawnPosY(100)
@@ -148,7 +151,7 @@ public class Level {
                 .build();
 
 
-        Enemy enemy4 = new EnemyBuilder()
+        Enemy enemy4 = new EnemyBuilder(subGame)
                 .withDelay(4)
                 .withSpawnPosX((int) WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
@@ -159,7 +162,7 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-        Enemy enemy5 = new EnemyBuilder()
+        Enemy enemy5 = new EnemyBuilder(subGame)
                 .withDelay(10)
                 .withSpawnPosX((int) WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
@@ -170,7 +173,7 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-        Enemy enemy6 = new EnemyBuilder()
+        Enemy enemy6 = new EnemyBuilder(subGame)
                 .withDelay(12)
                 .withSpawnPosX((int) WORLD_WIDTH + 65)
                 .withSpawnPosY(100)

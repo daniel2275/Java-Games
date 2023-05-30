@@ -4,10 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Rectangle;
+import com.danielr.subgame.SubGame;
 import entities.Enemy;
 import entities.EnemyManager;
 import entities.Player;
-import levels.LevelManager;
+import com.danielr.subgame.levels.LevelManager;
 import objects.ObjectManager;
 
 import java.util.Optional;
@@ -25,8 +26,11 @@ public class Playing implements InputProcessor {
 
     private float stateTime;
 
+    private SubGame subGame;
 
-    public Playing(float delta) {
+
+    public Playing(float delta, SubGame subGame) {
+        this.subGame = subGame;
         initClasses();
         stateTime = delta;
     }
@@ -212,5 +216,9 @@ public class Playing implements InputProcessor {
 
     public LevelManager getLevelManager() {
         return levelManager;
+    }
+
+    public SubGame getSubGame() {
+        return subGame;
     }
 }

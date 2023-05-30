@@ -23,28 +23,18 @@ public class Torpedo {
     public static final int TORPEDO_HEIGHT = 16 ;
     private int torpedoDamage = 20;
     private String direction;
-
     private Rectangle hitbox;
-
     private boolean enemy = false;
-
     private float stateTime;
-
     private final TextureRegion[][] torpedoSprites =  new TextureRegion[4][8];;
     private Animation<TextureRegion> torpedoUpAnimation;
-
     private Animation<TextureRegion> torpedoExplode;
     private boolean explode = false;
-
     private float targetX;
     private float targetY;
-
     private boolean atTarget;
-
     private float angle;
-
     private boolean calculateSpeed = false;
-
     private float velocityX;
     private float velocityY;
 
@@ -68,9 +58,9 @@ public class Torpedo {
         render();
     }
 
-    // Torpedo direction and translation
+    // Torpedo screen coordinates
     public void updatePos() {
-        directionTranslation();
+        getShotCoordinates();
     }
 
 
@@ -89,9 +79,7 @@ public class Torpedo {
         }
 
         DrawAsset drawTorpedo = new DrawAsset(currentFrame, hitbox, 0, 0, 1, 1, -1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle);
-
         drawTorpedo.draw();
-
     }
 
     private void loadAnimations(String sprites) {
@@ -102,12 +90,11 @@ public class Torpedo {
                 torpedoSprites[i][j] = new TextureRegion(boatAtlas, 16 * j , 16 * i ,TORPEDO_WIDTH,TORPEDO_HEIGHT);
             }
         }
-
         torpedoUpAnimation = boatAnimation(0,8, torpedoSprites, 0.03f);
         torpedoExplode = boatAnimation(1,1, torpedoSprites, 8.0f);
     }
 
-    private void directionTranslation() {
+    private void getShotCoordinates() {
         if (enemy) {
             targetShot(targetX, targetY);
         } else {
@@ -127,11 +114,12 @@ public class Torpedo {
             angle = (float)  atan2(destY,destX);
             angle = MathUtils.radiansToDegrees * angle;
 
-            // different tubes
-            if(Math.abs(angle) > 90) {
-//                hitbox.x += 24;
-                hitbox.y -= 16;
-            }
+            // center tubes : (player size - torpedo size) / 2 middle of the sub
+             hitbox.x += (48f-16f) /2f;
+//            if(Math.abs(angle) > 90) {
+//                System.out.println(" -- ANGLE :" + Math.abs(angle) + " -- -- --");
+//                hitbox.y -= 16;
+//            }
 
             float dist = (float) Math.sqrt(destX * destX + destY * destY);
             destX = destX / dist;
@@ -139,13 +127,14 @@ public class Torpedo {
 
             velocityX = destX * this.speed;
             velocityY = destY * this.speed;
+
+
+
             calculateSpeed = true;
         }
-
         hitbox.x += velocityX;
         hitbox.y += velocityY;
-
-        }
+    }
 
     public Rectangle getHitbox() {
         return hitbox;

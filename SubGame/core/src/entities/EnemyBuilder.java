@@ -1,5 +1,6 @@
 package entities;
 
+import com.danielr.subgame.SubGame;
 import utilz.HelpMethods;
 import utilz.Timing;
 
@@ -21,8 +22,9 @@ import static utilz.HelpMethods.initHitBox;
         private int enemyPoints = 10;
         private int enemyWidth = 64;
         private int enemyHeight = 32;
+        private SubGame subGame;
 
-        public EnemyBuilder() {
+        public EnemyBuilder(SubGame subGame) {
         }
 
         public EnemyBuilder withDelay(long delay) {
@@ -91,7 +93,7 @@ import static utilz.HelpMethods.initHitBox;
         }
 
         public Enemy build() {
-            Enemy enemy = new Enemy(delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight);
+            Enemy enemy = new Enemy(delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, subGame);
             enemy.setHitbox(initHitBox(spawnPosX, sub ? spawnPosY : WORLD_HEIGHT - SKY_SIZE   - (enemyHeight / 3f) , enemyWidth, enemyHeight));
             enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
             enemy.setFadeDelay(new Timing(7));

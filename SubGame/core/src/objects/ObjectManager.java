@@ -1,15 +1,11 @@
 package objects;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.math.MathUtils;
 import entities.Enemy;
 import gamestates.Playing;
+import utilz.SoundManager;
 import utilz.Timing;
-
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import static com.danielr.subgame.SubGame.pause;
 import static objects.Torpedo.TORPEDO_HEIGHT;
 import static utilz.Constants.Game.*;
@@ -21,23 +17,21 @@ public class ObjectManager {
 
     private Timing torpedoLoading;
 
-    Sound torpedoHitSound = Gdx.audio.newSound(Gdx.files.internal("audio/BoatTorpHit.mp3"));
-    Sound torpedoHitSound1 = Gdx.audio.newSound(Gdx.files.internal("audio/BoatTorpHit1.mp3"));
-    Sound depthChargeHit = Gdx.audio.newSound(Gdx.files.internal("audio/depthchargeHit1.mp3"));
-    Sound depthChargeFar = Gdx.audio.newSound(Gdx.files.internal("audio/depthChargeFar1.mp3"));
+    private SoundManager soundManager;
 
     public ObjectManager(Playing playing) {
         torpedoes = new ArrayList<>();
         depthCharges = new ArrayList<>();
         this.playing = playing;
+        this.soundManager = SoundManager.getInstance(playing.getSubGame());
         torpedoLoading = new Timing(playing.getPlayer().getReloadSpeed());
     }
 
     public void reset() {
+        // Reset any other variables or objects that need to be reset to their default values.
         torpedoes.clear();
         depthCharges.clear();
         torpedoLoading.reset();
-        // Reset any other variables or objects that need to be reset to their default values.
     }
 
     public void fireProjectile() {
@@ -46,6 +40,7 @@ public class ObjectManager {
             // update timing with reloadSpeed updates
             torpedoLoading.setDuration(playing.getPlayer().getReloadSpeed());
             torpedoes.add(new Torpedo(playing.getPlayer().getuBoatHitBox().getX(), playing.getPlayer().getuBoatHitBox().getY()));
+            soundManager.playLaunchTorpedoRnd();
         }
     }
 
@@ -72,24 +67,14 @@ public class ObjectManager {
                     if (playing.getPlayer().getHitbox().overlaps(torpedo.getHitbox())) {
                         playing.getPlayer().doHit(torpedo);
                         torpedo.setExplode(true);
-                        boolean randomBit = MathUtils.randomBoolean() ? true : false;
-                        if (randomBit) {
-                            torpedoHitSound.play();
-                        } else {
-                            torpedoHitSound1.play();
-                        }
+                        soundManager.playTorpedoHitRnd();
                         torpedo.update();
                         torpedoIterator.remove();
                     }
                 } else {
                     if (playing.checkCollision(torpedo.getHitbox(), torpedo.getTorpedoDamage())) {
                         torpedo.setExplode(true);
-                        boolean randomBit = MathUtils.randomBoolean() ? true : false;
-                        if (randomBit) {
-                            torpedoHitSound.play();
-                        } else {
-                            torpedoHitSound1.play();
-                        }
+                        soundManager.playTorpedoHitRnd();
                         torpedo.update();
                         torpedoIterator.remove();
                     }
@@ -98,7 +83,6 @@ public class ObjectManager {
             torpedo.update();
         }
     }
-
 
     private void handleDeepCharges() {
         Iterator<DepthCharge> depthChargeIterator = depthCharges.iterator();
@@ -109,7 +93,7 @@ public class ObjectManager {
                     if (!depthCharge.isExplode()) {
                         playing.getPlayer().doHit(depthCharge);
                         depthCharge.setExplode(true);
-                        depthChargeHit.play();
+                        soundManager.playDepthChargeHit();
                         depthCharge.setSpeed(0);
                     }
                 }
@@ -142,17 +126,22 @@ public class ObjectManager {
 
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
+//        float angleOffset  = (torpedo.getAngle() > 95) ? -8.0f:0.0f; // offset contact of rotated angle hitbox with surface
+//        if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - SKY_SIZE - TORPEDO_HEIGHT + angleOffset || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
         if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - SKY_SIZE - TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
-            torpedoIterator.remove();
-            return true;
-        }
+                System.out.println("Y of torpedo:" + torpedo.getHitbox().getY());
+                System.out.println("removed angle:" + torpedo.getAngle());
+                torpedoIterator.remove();
+                return true;
+            }
+
         return false;
     }
 
     public boolean checkDpcLimit(Iterator<DepthCharge> depthChargeIterator, DepthCharge depthCharge) {
         if (depthCharge.getHitbox().getY() <= 0) {
             depthChargeIterator.remove();
-            depthChargeFar.play();
+            soundManager.playDepthChargeFar();
             return true;
         }
         return false;
@@ -175,10 +164,6 @@ public class ObjectManager {
     }
 
     public void exit () {
-        torpedoHitSound.dispose();
-        torpedoHitSound1.dispose();
-        depthChargeHit.dispose();
-        depthChargeFar.dispose();
         for (Torpedo torpedo : torpedoes) {
             torpedo.exit();
         }
@@ -186,10 +171,4 @@ public class ObjectManager {
             depthCharge.exit();
         }
     }
-
 }
-
-
-
-
-

@@ -1,4 +1,4 @@
-package levels;
+package com.danielr.subgame.levels;
 
 import entities.Enemy;
 import gamestates.Playing;
@@ -11,7 +11,7 @@ public class LevelManager {
     private boolean currentRun;
 
     public LevelManager(Playing playing) {
-        level = new Level(playing.getEnemyManager());
+        level = new Level(playing.getEnemyManager(), playing.getSubGame());
         this.playing = playing;
     }
 

@@ -16,12 +16,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Json;
 import entities.Enemy;
+import utilz.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.danielr.subgame.SubGame.pause;
-import static utilz.Constants.Game.WORLD_HEIGHT;
 
 public class UpgradeStore implements Screen {
     private Stage stage;
@@ -196,7 +196,7 @@ public class UpgradeStore implements Screen {
 
         // Score label creation
         scoreLbl = new Label("(Score:)" + playing.getPlayer().getPlayerScore(), skin);
-        scoreLbl.setPosition(5, WORLD_HEIGHT - 25);
+        scoreLbl.setPosition(5, Constants.Game.WORLD_HEIGHT - 25);
         stage.addActor(scoreLbl);
 
         TextButton playerSpeedUpBtn      = new TextButton(" Sub Speed + ", skin, "small");
@@ -218,28 +218,28 @@ public class UpgradeStore implements Screen {
 
         //Speed Up
         stage.addActor(playerSpeedUpBtn);
-        playerSpeedUpBtn.setPosition(10, WORLD_HEIGHT * 0.8f);
+        playerSpeedUpBtn.setPosition(10, Constants.Game.WORLD_HEIGHT * 0.8f);
 
         stage.addActor(playerSpeedDisplay);
-        playerSpeedDisplay.setPosition(200,WORLD_HEIGHT * 0.820f);
+        playerSpeedDisplay.setPosition(200, Constants.Game.WORLD_HEIGHT * 0.820f);
         playerSpeedDisplay.setWidth(200f);
 
         stage.addActor(speedCost);
         speedCost.setColor(Color.BLACK);
-        speedCost.setPosition(275,WORLD_HEIGHT * 0.826f);
+        speedCost.setPosition(275, Constants.Game.WORLD_HEIGHT * 0.826f);
 
 
         //Fire Rate
         stage.addActor(playerFireRateUpBtn);
-        playerFireRateUpBtn.setPosition(10, WORLD_HEIGHT * 0.65f);
+        playerFireRateUpBtn.setPosition(10, Constants.Game.WORLD_HEIGHT * 0.65f);
 
         stage.addActor(playerFireRateDisplay);
-        playerFireRateDisplay.setPosition(200,WORLD_HEIGHT * 0.67f);
+        playerFireRateDisplay.setPosition(200, Constants.Game.WORLD_HEIGHT * 0.67f);
         playerFireRateDisplay.setWidth(200f);
 
         stage.addActor(fireRateCost);
         fireRateCost.setColor(Color.BLACK);
-        fireRateCost.setPosition(275,WORLD_HEIGHT * 0.676f);
+        fireRateCost.setPosition(275, Constants.Game.WORLD_HEIGHT * 0.676f);
 
 
         //Exit

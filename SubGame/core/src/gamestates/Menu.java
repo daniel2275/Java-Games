@@ -10,10 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.danielr.subgame.SubGame;
+import utilz.Constants;
 
 import static com.danielr.subgame.SubGame.upgradeStore;
-import static utilz.Constants.Game.WORLD_HEIGHT;
-import static utilz.Constants.Game.WORLD_WIDTH;
 
 public class Menu extends State {
 
@@ -43,16 +42,16 @@ public class Menu extends State {
         menuTitle.setColor(Color.WHITE);
         menuTitle.setFontScale(3);
 
-        menuTitle.setPosition((WORLD_WIDTH/2f) - 40, WORLD_HEIGHT * 0.9f);
+        menuTitle.setPosition((Constants.Game.WORLD_WIDTH/2f) - 40, Constants.Game.WORLD_HEIGHT * 0.9f);
 
         menuPlay = new TextButton(" Play ", skin);
-        menuPlay.setPosition(10, WORLD_HEIGHT * 0.7f);
+        menuPlay.setPosition(10, Constants.Game.WORLD_HEIGHT * 0.7f);
         menuReset = new TextButton(" Reset ", skin);
-        menuReset.setPosition(10,WORLD_HEIGHT * 0.5f);
+        menuReset.setPosition(10, Constants.Game.WORLD_HEIGHT * 0.5f);
         menuOption = new TextButton(" Options ", skin);
-        menuOption.setPosition(10,WORLD_HEIGHT * 0.3f);
+        menuOption.setPosition(10, Constants.Game.WORLD_HEIGHT * 0.3f);
         menuQuit = new TextButton(" Quit ", skin);
-        menuQuit.setPosition(10,WORLD_HEIGHT * 0.1f);
+        menuQuit.setPosition(10, Constants.Game.WORLD_HEIGHT * 0.1f);
 
         stage.addActor(menuTitle);
         stage.addActor(menuPlay);

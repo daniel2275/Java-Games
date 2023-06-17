@@ -11,12 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.danielr.subgame.SubGame;
+import utilz.Constants;
 import utilz.SoundManager;
 
 import java.util.Random;
-
-import static utilz.Constants.Game.WORLD_HEIGHT;
-import static utilz.Constants.Game.WORLD_WIDTH;
 
 public class Options extends State {
     AudioDevice audioDevice = Gdx.audio.newAudioDevice(44100,true);
@@ -44,12 +42,12 @@ public class Options extends State {
         Label title = new Label("Options", skin);
         title.setColor(Color.WHITE);
         title.setFontScale(3);
-        title.setPosition((WORLD_WIDTH / 2f) - 150, WORLD_HEIGHT * 0.9f);
+        title.setPosition((Constants.Game.WORLD_WIDTH / 2f) - 150, Constants.Game.WORLD_HEIGHT * 0.9f);
 
         Label titleVolume = new Label("Volume", skin);
         titleVolume.setColor(Color.WHITE);
         titleVolume.setFontScale(3);
-        titleVolume.setPosition(10 , WORLD_HEIGHT * 0.8f);
+        titleVolume.setPosition(10 , Constants.Game.WORLD_HEIGHT * 0.8f);
 
         // slider
         float minValue = 0.0f;
@@ -57,7 +55,7 @@ public class Options extends State {
         float stepSize = 0.01f;
         Slider.SliderStyle sliderStyle = skin.get("default-horizontal", Slider.SliderStyle.class);
         slider = new Slider(minValue, maxValue, stepSize, false, sliderStyle);
-        slider.setBounds(WORLD_WIDTH/2 - 265, WORLD_HEIGHT * 0.78f, 250, 40);
+        slider.setBounds(Constants.Game.WORLD_WIDTH/2 - 265, Constants.Game.WORLD_HEIGHT * 0.78f, 250, 40);
 
 //        // buttons
 //
@@ -70,7 +68,7 @@ public class Options extends State {
 //        displayVolume.setPosition(WORLD_WIDTH/2 - 265, WORLD_HEIGHT * 0.8f);
 
         quit = new TextButton("Back", skin, "small");
-        quit.setPosition(WORLD_WIDTH - 150f, WORLD_HEIGHT * 0.1f);
+        quit.setPosition(Constants.Game.WORLD_WIDTH - 150f, Constants.Game.WORLD_HEIGHT * 0.1f);
 
         stage.addActor(title);
         stage.addActor(titleVolume);

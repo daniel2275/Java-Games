@@ -1,4 +1,4 @@
-package com.danielr.subgame.levels;
+package levels;
 
 import entities.Enemy;
 import gamestates.Playing;

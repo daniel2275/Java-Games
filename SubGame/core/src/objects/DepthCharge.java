@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import utilz.DrawAsset;
+import utilz.HelpMethods;
 
 import static com.danielr.subgame.SubGame.pause;
-import static utilz.HelpMethods.initHitBox;
 import static utilz.LoadSave.boatAnimation;
 
 public class DepthCharge {
@@ -30,7 +30,7 @@ public class DepthCharge {
 
     public DepthCharge(float x, float y) {
         loadAnimations("dephtcharge-atlas.png");
-        hitbox = initHitBox(x, y, DPC_WIDTH, DPC_HEIGHT);
+        hitbox = HelpMethods.initHitBox(x, y, DPC_WIDTH, DPC_HEIGHT);
     }
 
     public void update() {

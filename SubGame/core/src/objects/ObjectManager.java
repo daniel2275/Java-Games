@@ -2,13 +2,13 @@ package objects;
 
 import entities.Enemy;
 import gamestates.Playing;
+import utilz.Constants;
 import utilz.SoundManager;
 import utilz.Timing;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import static com.danielr.subgame.SubGame.pause;
-import static objects.Torpedo.TORPEDO_HEIGHT;
-import static utilz.Constants.Game.*;
 
 public class ObjectManager {
     private final Playing playing;
@@ -126,9 +126,7 @@ public class ObjectManager {
 
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
-//        float angleOffset  = (torpedo.getAngle() > 95) ? -8.0f:0.0f; // offset contact of rotated angle hitbox with surface
-//        if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - SKY_SIZE - TORPEDO_HEIGHT + angleOffset || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
-        if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - SKY_SIZE - TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
+        if (torpedo.getHitbox().getY() >= Constants.Game.WORLD_HEIGHT - Constants.Game.SKY_SIZE - Torpedo.TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
                 System.out.println("Y of torpedo:" + torpedo.getHitbox().getY());
                 System.out.println("removed angle:" + torpedo.getAngle());
                 torpedoIterator.remove();
@@ -156,11 +154,11 @@ public class ObjectManager {
     }
 
     private boolean checkBounds(Enemy enemy) {
-        return ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < WORLD_HEIGHT - SKY_SIZE));
+        return ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < Constants.Game.WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < Constants.Game.WORLD_HEIGHT - Constants.Game.SKY_SIZE));
     }
 
     private boolean checkBoundsT(Torpedo enemy) {
-        return ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < WORLD_HEIGHT - SKY_SIZE));
+        return ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < Constants.Game.WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < Constants.Game.WORLD_HEIGHT - Constants.Game.SKY_SIZE));
     }
 
     public void exit () {

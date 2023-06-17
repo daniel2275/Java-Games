@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import static com.danielr.subgame.SubGame.*;
-import static utilz.Constants.Game.VISIBLE_HITBOXES;
+import static utilz.Constants.Game.SCALE;
 
 public class DrawAsset {
     private TextureRegion currentFrame;
@@ -69,10 +69,9 @@ public class DrawAsset {
             if (currentFrame != null) {
                 if (maxHealth == -1) {
                     rotate();
-                    batch.draw(currentFrame, transformedX, transformedY, originX, originY, width, height, scaleX, scaleY, angle);
-//                    batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY, width, height, scaleX, scaleY, angle);
+                    batch.draw(currentFrame, transformedX, transformedY, originX, originY, width, height, scaleX * SCALE, scaleY * SCALE, angle);
                 } else {
-                    batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX, hitbox.getHeight() * flipY);
+                    batch.draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX , hitbox.getHeight() * flipY );
                 }
             }
             batch.end();
@@ -86,7 +85,7 @@ public class DrawAsset {
                 } else {
                     shapeRendered.setColor(Color.GREEN);
                 }
-                shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 5, (int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)), 2);
+                shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 5, (int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)) , 2 );
                 shapeRendered.end();
             }
 
@@ -100,16 +99,15 @@ public class DrawAsset {
                     shapeRendered.setColor(Color.FIREBRICK);
                 }
                 float width = hitbox.getWidth() - (hitbox.getWidth() / reloadSpeed * reload);
-                shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 8, width, 1);
+                shapeRendered.rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 8, width , 1 );
                 shapeRendered.end();
             }
 
-            if (VISIBLE_HITBOXES) {
+            if (Constants.Game.VISIBLE_HITBOXES) {
                 shapeRendered.setColor(Color.WHITE);
                 shapeRendered.begin();
                 rotate();
-//                shapeRendered.rect(hitbox.getX(), hitbox.getY(), hitbox.getWidth(), hitbox.getHeight(), width, height, scaleX, scaleY, angle);
-                shapeRendered.rect(transformedX, transformedY, originX, originY, width, height, scaleX, scaleY, angle);
+                shapeRendered.rect(transformedX, transformedY, originX, originY, width, height, scaleX * SCALE, scaleY * SCALE, angle);
                 shapeRendered.end();
             }
         }

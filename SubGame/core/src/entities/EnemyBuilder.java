@@ -1,14 +1,11 @@
 package entities;
 
 import com.danielr.subgame.SubGame;
+import utilz.Constants;
 import utilz.HelpMethods;
 import utilz.Timing;
 
-import static utilz.Constants.Game.SKY_SIZE;
-import static utilz.Constants.Game.WORLD_HEIGHT;
-import static utilz.HelpMethods.initHitBox;
-
-    public class EnemyBuilder {
+public class EnemyBuilder {
         private long delay = 0;
         private int spawnPosX = 0;
         private int spawnPosY = 0;
@@ -20,11 +17,12 @@ import static utilz.HelpMethods.initHitBox;
         private float maxHealth = 0f;
         private boolean sub = false;
         private int enemyPoints = 10;
-        private int enemyWidth = 64;
-        private int enemyHeight = 32;
+        private int enemyWidth = 64 ;
+        private int enemyHeight = 32 ;
         private SubGame subGame;
 
         public EnemyBuilder(SubGame subGame) {
+            this.subGame = subGame;
         }
 
         public EnemyBuilder withDelay(long delay) {
@@ -94,7 +92,7 @@ import static utilz.HelpMethods.initHitBox;
 
         public Enemy build() {
             Enemy enemy = new Enemy(delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, subGame);
-            enemy.setHitbox(initHitBox(spawnPosX, sub ? spawnPosY : WORLD_HEIGHT - SKY_SIZE   - (enemyHeight / 3f) , enemyWidth, enemyHeight));
+            enemy.setHitbox(HelpMethods.initHitBox(spawnPosX, sub ? spawnPosY : Constants.Game.WORLD_HEIGHT - Constants.Game.SKY_SIZE   - (enemyHeight / 3f) , enemyWidth, enemyHeight));
             enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
             enemy.setFadeDelay(new Timing(7));
             return enemy;

@@ -1,12 +1,11 @@
-package com.danielr.subgame.levels;
+package levels;
 
 
 import com.danielr.subgame.SubGame;
 import entities.Enemy;
 import entities.EnemyBuilder;
 import entities.EnemyManager;
-
-import static utilz.Constants.Game.*;
+import utilz.Constants;
 
 public class Level {
 
@@ -48,7 +47,7 @@ public class Level {
         }
     }
 
-    private void level1() {
+    private void level4() {
         Enemy enemy1 = new EnemyBuilder(subGame)
                 .withSpawnPosX(-125)
                 .withSpriteAtlas("cv6-atlas.png")
@@ -63,8 +62,22 @@ public class Level {
         enemyManager.addEnemy(enemy1);
     }
 
-    private void level2() {
 
+    private void level1() {
+        Enemy enemy1 = new EnemyBuilder(subGame)
+                .withSpawnPosX(-65)
+                .withFlipX(-1)
+                .withSpriteAtlas("tanker-atlas.png")
+                .withSpeed(10f)
+                .withCurrentHealth(maxHealth)
+                .withMaxHealth(currentHealth)
+                .withEnemyPoints(10)
+                .build();
+
+        enemyManager.addEnemy(enemy1);
+    }
+
+    private void level2() {
         Enemy enemy1 = new EnemyBuilder(subGame)
                 .withSpawnPosX(-65)
                 .withFlipX(-1)
@@ -77,7 +90,7 @@ public class Level {
 
         Enemy enemy2 = new EnemyBuilder(subGame)
                 .withDelay(5)
-                .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpawnPosX((int) Constants.Game.WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
                 .withSpeed(15f)
                 .withAggro(true)
@@ -88,7 +101,7 @@ public class Level {
 
         Enemy enemy3 = new EnemyBuilder(subGame)
                 .withDelay(15)
-                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpawnPosX((int) Constants.Game.WORLD_WIDTH + 65)
                 .withSpawnPosY(100)
                 .withSpriteAtlas("enemy-sub1.png")
                 .withSpeed(13f)
@@ -131,7 +144,7 @@ public class Level {
 
         Enemy enemy2 = new EnemyBuilder(subGame)
                 .withDelay(3)
-                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpawnPosX((int) Constants.Game.WORLD_WIDTH + 65)
                 .withSpriteAtlas("tanker-atlas.png")
                 .withSpeed(11f)
                 .withCurrentHealth(maxHealth)
@@ -141,7 +154,7 @@ public class Level {
 
         Enemy enemy3 = new EnemyBuilder(subGame)
                 .withDelay(10)
-                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpawnPosX((int) Constants.Game.WORLD_WIDTH + 65)
                 .withSpawnPosY(100)
                 .withSpriteAtlas("tanker2-atlas.png")
                 .withSpeed(10f)
@@ -150,10 +163,9 @@ public class Level {
                 .withEnemyPoints(10)
                 .build();
 
-
         Enemy enemy4 = new EnemyBuilder(subGame)
                 .withDelay(4)
-                .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpawnPosX((int) Constants.Game.WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
                 .withSpeed(15f)
                 .withAggro(true)
@@ -164,7 +176,7 @@ public class Level {
 
         Enemy enemy5 = new EnemyBuilder(subGame)
                 .withDelay(10)
-                .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpawnPosX((int) Constants.Game.WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
                 .withSpeed(20f)
                 .withAggro(true)
@@ -175,7 +187,7 @@ public class Level {
 
         Enemy enemy6 = new EnemyBuilder(subGame)
                 .withDelay(12)
-                .withSpawnPosX((int) WORLD_WIDTH + 65)
+                .withSpawnPosX((int) Constants.Game.WORLD_WIDTH + 65)
                 .withSpawnPosY(100)
                 .withSpriteAtlas("enemy-sub1.png")
                 .withSpeed(13f)
@@ -193,7 +205,6 @@ public class Level {
         enemyManager.addEnemy(enemy5);
         enemyManager.addEnemy(enemy6);
     }
-
 
     public void setCurrentScreen(int currentScreen) {
         this.currentScreen = currentScreen;

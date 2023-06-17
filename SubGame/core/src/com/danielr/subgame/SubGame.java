@@ -2,10 +2,7 @@ package com.danielr.subgame;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -42,11 +39,12 @@ public class SubGame extends ApplicationAdapter  {
 	public static UpgradeStore upgradeStore;
 	private Options options;
 
-
 	@Override
 	public void create() {
 		stateTime = Gdx.graphics.getDeltaTime();
-		Skin skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
+//		Skin skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
+		Skin skin = new Skin(Gdx.files.internal("glassyui/glassy-ui.json"));
+
 		// set up mouse cross-hair
 		Pixmap cursorTexture = new Pixmap(Gdx.files.internal("CrossHair.png"));
 		int xHotSpot = cursorTexture.getWidth() /2;
@@ -59,6 +57,10 @@ public class SubGame extends ApplicationAdapter  {
 		scoreLabel1 = new Label("Score:", skin);
 		scoreLabel2 = new Label("Level:", skin);
 		scoreLabel3 = new Label("Health:", skin);
+		scoreLabel.setColor(Color.YELLOW);
+		scoreLabel1.setColor(Color.GOLD);
+		scoreLabel2.setColor(Color.YELLOW);
+		scoreLabel3.setColor(Color.GREEN);
 
 		scoreLabel.setPosition(5, WORLD_HEIGHT - 20);
 		scoreLabel1.setPosition(5, WORLD_HEIGHT - 35);
@@ -71,13 +73,13 @@ public class SubGame extends ApplicationAdapter  {
 		uiStage.addActor(scoreLabel3);
 
 		batch = new SpriteBatch();
-		background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
-		background.setPosition(0, 0);
-		background.setSize(WORLD_WIDTH, WORLD_HEIGHT);
+//		background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
+//		background.setPosition(0, 0);
+//		background.setSize(WORLD_WIDTH, WORLD_HEIGHT);
 
 		//background images
 		skyLine =  new Sprite(new Texture(Gdx.files.internal("skyline.png")));
-		skyLine.setPosition(0 , WORLD_HEIGHT );
+		skyLine.setPosition(0 , WORLD_HEIGHT -120 );
 		skyLine.setSize(1009, 450);
 
 		underSea =  new Sprite(new Texture(Gdx.files.internal("sea1.png")));
@@ -119,22 +121,27 @@ public class SubGame extends ApplicationAdapter  {
 		camera.update();
 
 		batch.begin();
-//		background.draw(batch);
+		skyLine.draw(batch);
+		skyLine.setPosition(0 , WORLD_HEIGHT - SKY_SIZE);
+		skyLine.setSize(WORLD_WIDTH,SKY_SIZE);
+
 		underSea.draw(batch);
 		underSea.setPosition(0, 0);
 		underSea.setSize(WORLD_WIDTH,WORLD_HEIGHT - SKY_SIZE);
+
 		if (pause) {
 			pauseSprite.draw(batch);
 		}
 		batch.end();
 
-		switch (Gamestate.state) {
+		switch ( Gamestate.state) {
 			case PLAYING:{
 				playing.update();
 				scoreLabel.setText("Enemies remaining:" + playing.getEnemyManager().getListOfEnemies().size());
 				scoreLabel1.setText("Score:" + playing.getPlayer().getPlayerScore());
 				scoreLabel2.setText("Level:" + playing.getLevelManager().getLevel().getTotalLevels());
-				scoreLabel3.setText("Health:" + playing.getPlayer().getPlayerHealth());
+				scoreLabel3.setText("Health:" + (int) (playing.getPlayer().getPlayerHealth()));
+				uiStage.act();
 				uiStage.draw();
 				upgradeStore.setPlayerScore(playing.getPlayer().getPlayerScore());
 			}break;
@@ -192,6 +199,10 @@ public class SubGame extends ApplicationAdapter  {
 
 	public Options getOptions() {
 		return options;
+	}
+
+	public Stage getUiStage() {
+		return uiStage;
 	}
 }
 

@@ -12,21 +12,18 @@ import gamestates.Gamestate;
 import gamestates.Playing;
 import objects.DepthCharge;
 import objects.Torpedo;
-import utilz.DrawAsset;
-import utilz.HelpMethods;
+import utilz.*;
 
 import java.util.Objects;
 
 import static com.danielr.subgame.SubGame.*;
-import static utilz.Constants.Game.*;
-import static utilz.LoadSave.boatAnimation;
 
 public class Player {
 
     public static final int PLAYER_WIDTH = 48;
     public static final int PLAYER_HEIGHT = 16;
-    public static float SPAWN_X = WORLD_WIDTH / 2;
-    public static float SPAWN_Y = WORLD_HEIGHT / 2;
+    public static float SPAWN_X = Constants.Game.WORLD_WIDTH / 2;
+    public static float SPAWN_Y = Constants.Game.WORLD_HEIGHT / 2;
     private float maxHealth = 100f;
     private float playerHealth = 100f;
     private float collisionDamage = 20f;
@@ -108,12 +105,12 @@ public class Player {
                 uBoatSprites[i][j] = new TextureRegion(uBoatAtlas, j * 64, i * 16, PLAYER_WIDTH, PLAYER_HEIGHT);
             }
         }
-        idleAnimations = boatAnimation(0, 5, uBoatSprites, 2.0f);
-        movingAnimations = boatAnimation(1, 3, uBoatSprites, 0.055f);
-        upAnimations = boatAnimation(2, 3, uBoatSprites, 0.7f);
-        downAnimations = boatAnimation(3, 3, uBoatSprites, 0.7f);
-        hitAnimations = boatAnimation(4, 1, uBoatSprites, 0.7f);
-        sunkAnimations = boatAnimation(5, 1, uBoatSprites, 0.7f);
+        idleAnimations = LoadSave.boatAnimation(0, 5, uBoatSprites, 2.0f);
+        movingAnimations = LoadSave.boatAnimation(1, 3, uBoatSprites, 0.055f);
+        upAnimations = LoadSave.boatAnimation(2, 3, uBoatSprites, 0.7f);
+        downAnimations = LoadSave.boatAnimation(3, 3, uBoatSprites, 0.7f);
+        hitAnimations = LoadSave.boatAnimation(4, 1, uBoatSprites, 0.7f);
+        sunkAnimations = LoadSave.boatAnimation(5, 1, uBoatSprites, 0.7f);
     }
 
     public void render() {
@@ -175,6 +172,10 @@ public class Player {
 
     public void doHit(Torpedo torpedo) {
         playerHealth = (playerHealth - torpedo.getTorpedoDamage());
+        // display hit values
+        HitNumber hitNumber = new HitNumber(hitbox.getX() , hitbox.getY(), torpedo.getTorpedoDamage());
+        playing.getSubGame().getUiStage().addActor(hitNumber);
+
         if (playerHealth <= 0) {
             playerHealth = 0;
             sunk = true;
@@ -186,6 +187,10 @@ public class Player {
 
     public void doHit(DepthCharge depthCharge) {
         playerHealth = (playerHealth - depthCharge.getDpcDamage());
+        // display hit values
+        HitNumber hitNumber = new HitNumber(hitbox.getX()  , hitbox.getY(), (int) depthCharge.getDpcDamage());
+        playing.getSubGame().getUiStage().addActor(hitNumber);
+
         if (playerHealth <= 0) {
             playerHealth = 0;
             sunk = true;
@@ -233,7 +238,7 @@ public class Player {
 
     public void checkDirection() {
         if (up) {
-            if (hitbox.getY() + PLAYER_HEIGHT < WORLD_HEIGHT - SKY_SIZE + PLAYER_HEIGHT / 2.0f) {
+            if (hitbox.getY() + PLAYER_HEIGHT < Constants.Game.WORLD_HEIGHT - Constants.Game.SKY_SIZE + PLAYER_HEIGHT / 2.0f) {
 //                velocity.y = playerSpeed;
                 hitbox.y += playerSpeed * Gdx.graphics.getDeltaTime();
             }
@@ -256,7 +261,7 @@ public class Player {
         if (right) {
             flipX = -1;
             xOffset = -PLAYER_WIDTH;
-            if (hitbox.getX() < WORLD_WIDTH + xOffset) {
+            if (hitbox.getX() < Constants.Game.WORLD_WIDTH + xOffset) {
 //                velocity.x = playerSpeed;
                 hitbox.x += playerSpeed * Gdx.graphics.getDeltaTime();
             }

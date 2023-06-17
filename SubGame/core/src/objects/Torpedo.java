@@ -10,11 +10,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import utilz.DrawAsset;
 import utilz.HelpMethods;
+import utilz.LoadSave;
 
 import static com.danielr.subgame.SubGame.camera;
 import static com.danielr.subgame.SubGame.pause;
 import static java.lang.Math.atan2;
-import static utilz.LoadSave.boatAnimation;
 
 public class Torpedo {
     // Torpedo default parameters
@@ -90,8 +90,8 @@ public class Torpedo {
                 torpedoSprites[i][j] = new TextureRegion(boatAtlas, 16 * j , 16 * i ,TORPEDO_WIDTH,TORPEDO_HEIGHT);
             }
         }
-        torpedoUpAnimation = boatAnimation(0,8, torpedoSprites, 0.03f);
-        torpedoExplode = boatAnimation(1,1, torpedoSprites, 8.0f);
+        torpedoUpAnimation = LoadSave.boatAnimation(0,8, torpedoSprites, 0.03f);
+        torpedoExplode = LoadSave.boatAnimation(1,1, torpedoSprites, 8.0f);
     }
 
     private void getShotCoordinates() {
@@ -116,10 +116,6 @@ public class Torpedo {
 
             // center tubes : (player size - torpedo size) / 2 middle of the sub
              hitbox.x += (48f-16f) /2f;
-//            if(Math.abs(angle) > 90) {
-//                System.out.println(" -- ANGLE :" + Math.abs(angle) + " -- -- --");
-//                hitbox.y -= 16;
-//            }
 
             float dist = (float) Math.sqrt(destX * destX + destY * destY);
             destX = destX / dist;
@@ -127,8 +123,6 @@ public class Torpedo {
 
             velocityX = destX * this.speed;
             velocityY = destY * this.speed;
-
-
 
             calculateSpeed = true;
         }

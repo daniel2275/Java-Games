@@ -8,7 +8,7 @@ import com.danielr.subgame.SubGame;
 import entities.Enemy;
 import entities.EnemyManager;
 import entities.Player;
-import com.danielr.subgame.levels.LevelManager;
+import levels.LevelManager;
 import objects.ObjectManager;
 
 import java.util.Optional;
@@ -31,6 +31,7 @@ public class Playing implements InputProcessor {
 
     public Playing(float delta, SubGame subGame) {
         this.subGame = subGame;
+
         initClasses();
         stateTime = delta;
     }
@@ -202,8 +203,6 @@ public class Playing implements InputProcessor {
         levelManager.reset();
         player.reset();
         upgradeStore.resetUpgrades();
-        //upgradeStore.render(Gdx.graphics.getDeltaTime());
-//        initClasses();
     }
 
     public EnemyManager getEnemyManager() {

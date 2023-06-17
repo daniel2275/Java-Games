@@ -11,18 +11,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.danielr.subgame.SubGame;
-import utilz.DrawAsset;
-import utilz.HelpMethods;
-import utilz.SoundManager;
-import utilz.Timing;
+import utilz.*;
 
 import java.util.concurrent.ScheduledExecutorService;
 
 import static com.danielr.subgame.SubGame.batch;
 import static com.danielr.subgame.SubGame.pause;
-import static utilz.Constants.Game.*;
-import static utilz.HelpMethods.initHitBox;
-import static utilz.HelpMethods.updateHitbox;
 import static utilz.LoadSave.boatAnimation;
 
 public class Enemy {
@@ -73,6 +67,8 @@ public class Enemy {
     private boolean delayComplete;
     private SoundManager soundManager;
 
+    private SubGame subGame;
+
 //    Sound explodeSound = Gdx.audio.newSound(Gdx.files.internal("audio/exploded1.mp3"));
 
     public Enemy(long delay, int spawnPosX , int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints, SubGame subGame) {
@@ -90,8 +86,9 @@ public class Enemy {
         this.fadeDelay = new Timing(7); // seconds dispose delay
         loadAnimations(spriteAtlas);
         this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
-        this.hitbox = initHitBox(spawnPosX, WORLD_HEIGHT - SKY_SIZE - enemyHeight / 3f , enemyWidth, enemyHeight);
+        this.hitbox = HelpMethods.initHitBox(spawnPosX, Constants.Game.WORLD_HEIGHT - Constants.Game.SKY_SIZE - enemyHeight / 3f , enemyWidth, enemyHeight);
         this.soundManager = SoundManager.getInstance(subGame);
+        this.subGame = subGame;
     }
 
 
@@ -100,7 +97,7 @@ public class Enemy {
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
-        this.hitbox = initHitBox(spawnPosX, spawnPosY , enemyWidth, enemyHeight);
+        this.hitbox = HelpMethods.initHitBox(spawnPosX, spawnPosY , enemyWidth, enemyHeight);
     }
 
 
@@ -113,7 +110,7 @@ public class Enemy {
         this.enemyHeight = enemyHeight;
         loadAnimations(spriteAtlas);
         this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
-        this.hitbox = initHitBox(spawnPosX, spawnPosY , this.enemyWidth, this.enemyHeight);
+        this.hitbox = HelpMethods.initHitBox(spawnPosX, spawnPosY , this.enemyWidth, this.enemyHeight);
     }
 
 
@@ -134,7 +131,6 @@ public class Enemy {
         for (int i= 0; i <= 1; i++) {
             for (int j= 0; j <= 4; j++) {
         boatSprites[i][j] = new TextureRegion(boatAtlas, enemyWidth * j, enemyHeight * i, enemyWidth, enemyHeight);
-//                System.out.println(enemyWidth + " " + enemyHeight);
             }
         }
 
@@ -149,22 +145,22 @@ public class Enemy {
         } else {
             direction = "";
 
-            if (flipX == -1 && hitbox.getX() <= WORLD_WIDTH) {
+            if (flipX == -1 && hitbox.getX() <= Constants.Game.WORLD_WIDTH) {
                 if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
                     hitbox.x += enemySpeed * Gdx.graphics.getDeltaTime();
                 }
                 xOffset = enemyWidth;
                 direction = "right";
-            } else if (flipX == -1 && hitbox.getX() > WORLD_WIDTH) {
+            } else if (flipX == -1 && hitbox.getX() > Constants.Game.WORLD_WIDTH) {
                 flipX = 1;
             }
-            if (flipX == 1 && hitbox.getX() >= -65) {
+            if (flipX == 1 && hitbox.getX() >= -65 ) {
                 if ((Math.abs(player.getHitbox().getX() - hitbox.x) > 5) || !sub) {
                     hitbox.x -= enemySpeed * Gdx.graphics.getDeltaTime();
                 }
                 xOffset = 0;
                 direction = "left";
-            } else if (flipX == 1 && hitbox.getX() <= -65) {
+            } else if (flipX == 1 && hitbox.getX() <= -65 ) {
                 if (!aggro) {
                     enemyPoints -= enemyPoints * 0.1;
                 }
@@ -233,7 +229,7 @@ public class Enemy {
 
         if (!pause) {
 
-            hitbox = updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
+            hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
 
             stateTime += Gdx.graphics.getDeltaTime();
 
@@ -283,6 +279,14 @@ public class Enemy {
     public boolean checkHit(Rectangle hitBox, float damage) {
         boolean collision = Intersector.overlaps(hitBox, this.hitbox);
         if (collision && !dying) {
+            // display hit values for enemies
+            HitNumber hitNumber = new HitNumber(hitbox.getX() + hitBox.getWidth(), hitbox.getY(), (int) damage);
+
+        if (subGame !=null ) {
+            subGame.getUiStage().addActor(hitNumber);
+            System.out.println("Adding Hit numbers X:" + hitbox.getX() + " Y:" + hitbox.getY());
+        }
+
             this.currentHealth -= damage;
             float newSpeed = speed - (0.25f * speed);
             if (this.currentHealth <= 0) {

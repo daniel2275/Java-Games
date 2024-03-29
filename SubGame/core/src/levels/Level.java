@@ -41,6 +41,10 @@ public class Level {
                 level3();
                 break;
             }
+            case 4: {
+                level4();
+                break;
+            }
             default: {
                 currentScreen = 0;
             }

@@ -193,7 +193,6 @@ public class Playing implements InputProcessor {
                 })
                 .findFirst();
         return deadEnemy.isPresent();
-
     }
 
 

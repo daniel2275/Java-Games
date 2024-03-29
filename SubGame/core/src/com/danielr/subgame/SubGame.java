@@ -18,7 +18,7 @@ import static utilz.Constants.Game.*;
 
 public class SubGame extends ApplicationAdapter  {
 
-	private Sprite background;
+
 	private Sprite underSea;
 	private Sprite skyLine;
 	private Sprite pauseSprite;
@@ -26,6 +26,7 @@ public class SubGame extends ApplicationAdapter  {
 	public static Viewport viewport;
 	public static ShapeRenderer shapeRendered;
 	public static SpriteBatch batch;
+
 	public static boolean pause = false;
 	private Playing playing;
 	private Menu menu;
@@ -73,9 +74,6 @@ public class SubGame extends ApplicationAdapter  {
 		uiStage.addActor(scoreLabel3);
 
 		batch = new SpriteBatch();
-//		background = new Sprite(new Texture(Gdx.files.internal("sea_background.png")));
-//		background.setPosition(0, 0);
-//		background.setSize(WORLD_WIDTH, WORLD_HEIGHT);
 
 		//background images
 		skyLine =  new Sprite(new Texture(Gdx.files.internal("skyline.png")));

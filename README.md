@@ -1,2 +1,3 @@
 # Java-Games
-LIBGDX Submarine action game practice.
+LIBGDX Submarine action game 
+

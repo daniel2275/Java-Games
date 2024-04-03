@@ -12,7 +12,6 @@ public class Player {
     private float stateTime;
     private boolean left, right, up, down, sunk = true;
     private float reload = 0;
-    private float reloadSpeed = 3f;
     private int xOffset = 0;
     private PlayerAnimationManager playerAnimationManager;
     private PlayerCollisionDetector playerCollisionDetector;
@@ -41,15 +40,12 @@ public class Player {
                 playerAnimationManager.getHitAnimations(),
                 playerAnimationManager.getSunkAnimations(),
                 reload,
-                reloadSpeed,
                 playerHealthManager.getMaxHealth(),
-                playerHealthManager.getPlayerHealth(),
-                false,
-                false,
                 PLAYER_WIDTH,
                 PLAYER_HEIGHT,
                 playerMovement.getSPAWN_X(),
                 playerMovement.getSPAWN_Y());
+        playerActor.setReloadSpeed(3f);
     }
 
     public void update() {
@@ -67,7 +63,7 @@ public class Player {
         stateTime = 0;
         sunk = false;
         reload = 0;
-        reloadSpeed = 3f;
+       // reloadSpeed = 3f;
         xOffset = 0;
     }
 
@@ -119,17 +115,8 @@ public class Player {
         this.playerScore = playerScore;
     }
 
-    public float getReloadSpeed() {
-        return reloadSpeed;
-    }
-
     public float getPlayerSpeed() {
         return playerMovement.getPlayerSpeed();
-    }
-
-    public void setReloadSpeed(float reloadSpeed) {
-
-        this.reloadSpeed = reloadSpeed;
     }
 
     public void setPlayerSpeed(float playerSpeed) {

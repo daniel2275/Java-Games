@@ -32,11 +32,7 @@ public class AnimatedActor extends Actor {
                          Animation<TextureRegion> hitAnimation,
                          Animation<TextureRegion> sunkAnimation,
                          float reload,
-                         float reloadSpeed,
                          float maxHealth,
-                         float currentHealth,
-                         boolean isHit,
-                         boolean sunk,
                          float frameWidth,
                          float frameHeight,
                          float spawnPosX,
@@ -49,12 +45,15 @@ public class AnimatedActor extends Actor {
         this.downAnimation = downAnimation;
         this.hitAnimation = hitAnimation;
         this.sunkAnimation = sunkAnimation;
-        this.isHit = isHit;
-        this.sunk = sunk;
         this.reload = reload;
-        this.reloadSpeed = reloadSpeed;
         this.maxHealth = maxHealth;
-        this.currentHealth = currentHealth;
+
+        this.currentHealth = maxHealth;
+
+        this.isHit = false;
+        this.sunk = false;
+
+        this.reloadSpeed = 0;
 
         setWidth(frameWidth);
         setHeight(frameHeight);
@@ -124,6 +123,7 @@ public class AnimatedActor extends Actor {
 
         // If sunk, gradually fade out the actor
         if (sunk) {
+            moveDown(2);
             float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
             batch.setColor(1, 1, 1, alpha);
             if (stateTime >= sunkAnimation.getAnimationDuration()) {
@@ -141,6 +141,13 @@ public class AnimatedActor extends Actor {
         drawReloadBar(batch);
 
         isHit = false;
+    }
+
+    // Method to check collision with another actor
+    public boolean collidesWith(AnimatedActor otherActor) {
+        Rectangle myRect = getBoundingRectangle();
+        Rectangle otherRect = otherActor.getBoundingRectangle();
+        return myRect.overlaps(otherRect);
     }
 
     private void drawHealthBar(Batch batch) {
@@ -241,6 +248,14 @@ public class AnimatedActor extends Actor {
 
     public void setReload(float reload) {
         this.reload = reload;
+    }
+
+    public void setReloadSpeed(float reloadSpeed) {
+        this.reloadSpeed = reloadSpeed;
+    }
+
+    public float getReloadSpeed() {
+        return reloadSpeed;
     }
 
     public Vector2 getPosition() {

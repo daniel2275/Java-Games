@@ -36,7 +36,7 @@ public class Enemy {
     private String name;
     private boolean doHitAnimation = false;
     private boolean dying = false;
-    private boolean sunk = false;
+    //private boolean sunk = false;
     private final String spriteAtlas;
     private long delay;
     private int flipX, flipY;
@@ -125,11 +125,7 @@ public class Enemy {
                 enemyAnimationManager.getHitAnimations(),
                 enemyAnimationManager.getSunkAnimations(),
                 -1,
-                0,
                 enemyHealthManager.getMaxHealth(),
-                enemyHealthManager.getEnemyHealth(),
-                false,
-                false,
                 enemyWidth,
                 enemyHeight,
                 spawnPosX,
@@ -260,7 +256,7 @@ public class Enemy {
                 //currentFrame = shipExplode.getKeyFrame(stateTime, false);
 
 //                if (hitbox.y <= -16f || fadeDelay.getTimeRemaining() <= 0) {
-                this.sunk = true;
+                //this.sunk = true;
 //                }
             } else if (doHitAnimation) {
                 enemyActor.setHit(true);
@@ -346,13 +342,13 @@ public class Enemy {
         return dying;
     }
 
-    public void setSunk(boolean sunk) {
-        this.sunk = sunk;
-    }
+//    public void setSunk(boolean sunk) {
+//        this.sunk = sunk;
+//    }
 
-    public boolean isSunk() {
-        return sunk;
-    }
+//    public boolean isSunk() {
+//        return sunk;
+//    }
 
     public boolean isAggro() {
         return aggro;

@@ -28,7 +28,7 @@ public class ObjectManager {
         depthCharges = new ArrayList<>();
         this.gamePlayScreen = gamePlayScreen;
         this.soundManager = SoundManager.getInstance(gamePlayScreen.getSubGame());
-        torpedoLoading = new Timing(gamePlayScreen.getPlayer().getReloadSpeed());
+        torpedoLoading = new Timing(gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
     }
 
     public void reset() {
@@ -42,7 +42,7 @@ public class ObjectManager {
         if (!pause && (torpedoLoading.getStartTime() == 0) || !pause && (torpedoLoading.getTimeRemaining() <= 0)) {
             torpedoLoading.init();
             // update timing with reloadSpeed updates
-            torpedoLoading.setDuration(gamePlayScreen.getPlayer().getReloadSpeed());
+            torpedoLoading.setDuration(gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
             torpedoes.add(new Torpedo(gamePlayScreen, gamePlayScreen.getPlayer().getHitbox().getX(), gamePlayScreen.getPlayer().getHitbox().getY()));
             soundManager.playLaunchTorpedoRnd();
          }

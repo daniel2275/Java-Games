@@ -45,6 +45,11 @@ public class Torpedo {
         hitbox = HelpMethods.initHitBox(x, y, TORPEDO_WIDTH, TORPEDO_HEIGHT);
     }
 
+    public void initializeTorpedo() {
+
+    }
+
+
     public Torpedo(GamePlayScreen gamePlayScreen, float x, float y, boolean enemy) {
        this(gamePlayScreen,x,y);
        this.enemy = enemy;

@@ -96,7 +96,7 @@ public class UpgradeStore implements Screen {
         gamePlayScreen.getLevelManager().getLevel().setTotalLevels(levelInit);
 
         float reloadSpeed = prefs.getFloat("reloadSpeed", 1.0f); // Default reload speed if not set
-        gamePlayScreen.getPlayer().setReloadSpeed(reloadSpeed);
+        gamePlayScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
 
         float playerSpeed = prefs.getFloat("playerSpeed", 1.0f); // Default player speed if not set
         gamePlayScreen.getPlayer().setPlayerSpeed(playerSpeed);
@@ -114,7 +114,7 @@ public class UpgradeStore implements Screen {
         upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
 
         float reloadSpeed = prefs.getFloat("reloadSpeed");
-        gamePlayScreen.getPlayer().setReloadSpeed(reloadSpeed);
+        gamePlayScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
 
         float playerSpeed = prefs.getFloat("playerSpeed");
         gamePlayScreen.getPlayer().setPlayerSpeed(playerSpeed);
@@ -137,7 +137,7 @@ public class UpgradeStore implements Screen {
 //        prefs.putInteger("level", ((Gamestate.state == Gamestate.MENU) ? level - 1 : level ) );
         prefs.putInteger("level", level);
 
-        prefs.putFloat("reloadSpeed", gamePlayScreen.getPlayer().getReloadSpeed());
+        prefs.putFloat("reloadSpeed", gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
         prefs.putFloat("playerSpeed", gamePlayScreen.getPlayer().getPlayerSpeed());
 
         prefs.putFloat("volume", gamePlayScreen.getSubGame().getOptions().getVolume());
@@ -192,7 +192,7 @@ public class UpgradeStore implements Screen {
         gamePlayScreen.getLevelManager().getLevel().setTotalLevels(levelInit);
 
         float reloadSpeed = prefs.getFloat("default_reloadSpeed");
-        gamePlayScreen.getPlayer().setReloadSpeed(reloadSpeed);
+        gamePlayScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
 
         float playerSpeed = prefs.getFloat("default_playerSpeed");
         gamePlayScreen.getPlayer().setPlayerSpeed(playerSpeed);
@@ -379,7 +379,7 @@ public class UpgradeStore implements Screen {
                 return gamePlayScreen.getPlayer().getPlayerSpeed();
             }
             case "FireRate": {
-                return gamePlayScreen.getPlayer().getReloadSpeed();
+                return gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed();
             }
         }
         return 0;
@@ -392,7 +392,7 @@ public class UpgradeStore implements Screen {
                 break;
             }
             case "FireRate": {
-                gamePlayScreen.getPlayer().setReloadSpeed(speed);
+                gamePlayScreen.getPlayer().getPlayerActor().setReloadSpeed(speed);
                 break;
             }
         }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import gamestates.GamePlayScreen;
 import gamestates.Gamestate;
 import objects.DepthCharge;
-import objects.Torpedo;
+import objects.torpedo.Torpedo;
 
 public class PlayerCollisionDetector {
     private GamePlayScreen gamePlayScreen;

@@ -3,6 +3,7 @@ package objects;
 import com.badlogic.gdx.math.Intersector;
 import entities.enemies.Enemy;
 import gamestates.GamePlayScreen;
+import objects.torpedo.Torpedo;
 import utilities.Constants;
 import utilities.SoundManager;
 import utilities.Timing;
@@ -41,19 +42,37 @@ public class ObjectManager {
     public void fireProjectile() {
         if (!pause && (torpedoLoading.getStartTime() == 0) || !pause && (torpedoLoading.getTimeRemaining() <= 0)) {
             torpedoLoading.init();
+
+            // Get the center coordinates of the PlayerActor's hitbox
+            float playerX = gamePlayScreen.getPlayer().getHitbox().getX();
+            float playerY = gamePlayScreen.getPlayer().getHitbox().getY();
+            float playerWidth = gamePlayScreen.getPlayer().getHitbox().getWidth();
+            float playerHeight = gamePlayScreen.getPlayer().getHitbox().getHeight();
+
+            // Calculate the center coordinates
+            float playerCenterX = playerX + (playerWidth / 2);
+            float playerCenterY = playerY + (playerHeight / 2);
+
+
             // update timing with reloadSpeed updates
             torpedoLoading.setDuration(gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
-            torpedoes.add(new Torpedo(gamePlayScreen, gamePlayScreen.getPlayer().getHitbox().getX(), gamePlayScreen.getPlayer().getHitbox().getY()));
+//            torpedoes.add(new Torpedo(gamePlayScreen, gamePlayScreen.getPlayer().getHitbox().getX(), gamePlayScreen.getPlayer().getHitbox().getY()));
+
+            // Create and add the torpedo using the center coordinates
+            torpedoes.add(new Torpedo(gamePlayScreen, playerCenterX, playerCenterY));
+
+
             soundManager.playLaunchTorpedoRnd();
          }
     }
 
+
     public void dropCharge(Enemy enemy) {
         if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && !enemy.isSub()) {
-            depthCharges.add(new DepthCharge(gamePlayScreen,enemy.getEnemyActor().getX() + (enemy.getEnemyWidth()/2f), enemy.getEnemyActor().getY()));
+            depthCharges.add(new DepthCharge(gamePlayScreen,enemy.getEnemyActor().getX(), enemy.getEnemyActor().getY()));
         } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
             if (checkBounds(enemy)) {
-                torpedoes.add(new Torpedo(gamePlayScreen, enemy.getEnemyActor().getX(), enemy.getEnemyActor().getY(), true, gamePlayScreen.getPlayer().getHitbox().getX(), gamePlayScreen.getPlayer().getHitbox().getY()));
+                torpedoes.add(new Torpedo(gamePlayScreen, enemy.getEnemyActor().getX() + (enemy.getEnemyWidth()/2f), enemy.getEnemyActor().getY()  + (enemy.getEnemyHeight()/2f), true, gamePlayScreen.getPlayer().getPlayerActor().getX(), gamePlayScreen.getPlayer().getPlayerActor().getY()));
 
             }
         }
@@ -74,6 +93,7 @@ public class ObjectManager {
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.update();
+                        gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
                         torpedoIterator.remove();
                     }
                 } else {
@@ -81,6 +101,7 @@ public class ObjectManager {
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.update();
+                        gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
                         torpedoIterator.remove();
                     }
                 }
@@ -132,6 +153,7 @@ public class ObjectManager {
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
         if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - Constants.Game.SKY_SIZE - Torpedo.TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
+                gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
                 torpedoIterator.remove();
                 return true;
             }
@@ -160,8 +182,8 @@ public class ObjectManager {
         return ((enemy.getEnemyActor().getX() > 0 && enemy.getEnemyActor().getX() < WORLD_WIDTH) && (enemy.getEnemyActor().getY() > 0 && enemy.getEnemyActor().getY() < WORLD_HEIGHT - Constants.Game.SKY_SIZE));
     }
 
-    private boolean checkBoundsT(Torpedo enemy) {
-        return ((enemy.getHitbox().getX() > 0 && enemy.getHitbox().getX() < WORLD_WIDTH) && (enemy.getHitbox().getY() > 0 && enemy.getHitbox().getY() < WORLD_HEIGHT - Constants.Game.SKY_SIZE ));
+    private boolean checkBoundsT(Torpedo enemyTorpedo) {
+        return ((enemyTorpedo.getTorpedoActor().getX() > 0 && enemyTorpedo.getTorpedoActor().getX() < WORLD_WIDTH) && (enemyTorpedo.getTorpedoActor().getY() > 0 && enemyTorpedo.getTorpedoActor().getY() < WORLD_HEIGHT - Constants.Game.SKY_SIZE ));
     }
 
     public void exit () {

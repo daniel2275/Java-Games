@@ -24,6 +24,8 @@ public class AnimatedActor extends Actor {
     private boolean isHit, sunk, loops, killed;
     private String direction;
 
+    private float angle;
+
     public AnimatedActor(String name,
                          Animation<TextureRegion> idleAnimation,
                          Animation<TextureRegion> moveAnimation,
@@ -54,6 +56,8 @@ public class AnimatedActor extends Actor {
         this.sunk = false;
 
         this.reloadSpeed = 0;
+
+        this.angle = 0;
 
         setWidth(frameWidth);
         setHeight(frameHeight);
@@ -110,7 +114,7 @@ public class AnimatedActor extends Actor {
     }
 
     private void updateAnimation() {
-        if (Objects.equals(direction, "R")) {
+        if (Objects.equals(direction, "R") && !name.equals("torpedo")) {
             currentAnimation = LoadSave.invertHorizontal(tempAnimation);
         } else {
             currentAnimation = tempAnimation;
@@ -135,7 +139,9 @@ public class AnimatedActor extends Actor {
         loops = (tempAnimation == idleAnimation || tempAnimation == moveAnimation);
 
         // Draw the current animation with SpriteBatch
-        batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY());
+        //batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY());
+
+        batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY(), 0, 0, getWidth(), getHeight(), 1f, 1f, angle);
 
         drawHealthBar(batch);
         drawReloadBar(batch);
@@ -273,4 +279,11 @@ public class AnimatedActor extends Actor {
         return killed;
     }
 
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
 }

@@ -1,7 +1,7 @@
-package objects;
+package objects.torpedo;
 
+import Components.AnimatedActor;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,9 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import gamestates.GamePlayScreen;
-import utilities.DrawAsset;
 import utilities.HelpMethods;
-import utilities.LoadSave;
 
 import static com.mygdx.sub.SubGame.pause;
 import static java.lang.Math.atan2;
@@ -39,14 +37,30 @@ public class Torpedo {
     private float velocityY;
     private GamePlayScreen gamePlayScreen;
 
+    private TorpedoAnimationManager animationManager;
+
+    private AnimatedActor torpedoActor;
+
     public Torpedo(GamePlayScreen gamePlayScreen, float x, float y) {
-        loadAnimations("torpedo-atlas.png");
+        animationManager = new TorpedoAnimationManager(new Texture("torpedo-atlas.png"));
+        //loadAnimations("torpedo-atlas.png");
         this.gamePlayScreen = gamePlayScreen;
         hitbox = HelpMethods.initHitBox(x, y, TORPEDO_WIDTH, TORPEDO_HEIGHT);
+
+        initializeTorpedo(x,y);
+
+        gamePlayScreen.getGmStage().addActor(torpedoActor);
     }
 
-    public void initializeTorpedo() {
-
+    public void initializeTorpedo(float x,float y) {
+        torpedoActor = new AnimatedActor("torpedo",
+                animationManager.getTorpedoUpAnimation(),
+                animationManager.getTorpedoUpAnimation(),
+                animationManager.getTorpedoUpAnimation(),
+                animationManager.getTorpedoUpAnimation(),
+                animationManager.getTorpedoUpAnimation(),
+                animationManager.getTorpedoExplodeAnimation(),
+                0, 0, TORPEDO_WIDTH, TORPEDO_HEIGHT, x, y);
     }
 
 
@@ -81,26 +95,15 @@ public class Torpedo {
         }
 
         if (this.explode) {
-            currentFrame = torpedoExplode.getKeyFrame(stateTime, false);
+            torpedoActor.isSunk(true);
+            currentFrame = animationManager.getTorpedoExplodeAnimation().getKeyFrame(stateTime, false);
         } else {
-            currentFrame = torpedoUpAnimation.getKeyFrame(stateTime, true);
+            currentFrame = animationManager.getTorpedoUpAnimation().getKeyFrame(stateTime, true);
         }
 
-        DrawAsset drawTorpedo = new DrawAsset(gamePlayScreen, currentFrame, hitbox, 0, 0, 1, 1, -1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle);
-        drawTorpedo.draw();
+       // DrawAsset drawTorpedo = new DrawAsset(gamePlayScreen, currentFrame, hitbox, 0, 0, 1, 1, -1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle);
+  //      drawTorpedo.draw();
 
-    }
-
-    private void loadAnimations(String sprites) {
-        Texture boatAtlas = new Texture(sprites);
-
-        for (int i= 0; i <= 1; i++) {
-            for (int j= 0; j <= 7; j++) {
-                torpedoSprites[i][j] = new TextureRegion(boatAtlas, 16 * j , 16 * i ,TORPEDO_WIDTH,TORPEDO_HEIGHT);
-            }
-        }
-        torpedoUpAnimation = LoadSave.boatAnimation(0,8, torpedoSprites, 0.03f);
-        torpedoExplode = LoadSave.boatAnimation(1,1, torpedoSprites, 8.0f);
     }
 
     private void getShotCoordinates() {
@@ -124,7 +127,9 @@ public class Torpedo {
             angle = MathUtils.radiansToDegrees * angle;
 
             // center tubes : (player size - torpedo size) / 2 middle of the sub
-            hitbox.x += (48f-16f) /2f;
+            //hitbox.x += (48f-16f) /2f;
+            //torpedoActor.setX( torpedoActor.getX() +(48f-16f) /2f);
+
 
             float dist = (float) Math.sqrt(destX * destX + destY * destY);
             destX = destX / dist;
@@ -134,7 +139,9 @@ public class Torpedo {
             velocityY = destY * this.speed;
 
             calculateSpeed = true;
+            torpedoActor.setAngle(angle);
         }
+        torpedoActor.moveBy(velocityX,velocityY);
         hitbox.x += velocityX;
         hitbox.y += velocityY;
     }
@@ -191,6 +198,10 @@ public class Torpedo {
                 torpedoSprites[i][j].getTexture().dispose();
             }
         }
+    }
+
+    public AnimatedActor getTorpedoActor() {
+        return torpedoActor;
     }
 }
 

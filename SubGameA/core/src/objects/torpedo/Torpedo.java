@@ -63,12 +63,13 @@ public class Torpedo {
                 0, 0, TORPEDO_WIDTH, TORPEDO_HEIGHT, x, y);
     }
 
-
+    // Constructor for Enemy torpedo
     public Torpedo(GamePlayScreen gamePlayScreen, float x, float y, boolean enemy) {
        this(gamePlayScreen,x,y);
        this.enemy = enemy;
     }
 
+    // Constructor for Player torpedo
     public Torpedo(GamePlayScreen gamePlayScreen, float x, float y, boolean enemy, float targetX, float targetY) {
         this(gamePlayScreen,x,y,enemy);
         this.targetX = targetX;
@@ -76,35 +77,38 @@ public class Torpedo {
 
     }
 
-    public void update() {
-        render();
-    }
+//    public void update() {
+//        render();
+//    }
 
     // Torpedo screen coordinates
     public void updatePos() {
+        if (!pause) {
+            stateTime += Gdx.graphics.getDeltaTime();
+        }
         getShotCoordinates();
     }
 
 
-    public void render() {
-        TextureRegion currentFrame;
-
-        if (!pause) {
-            stateTime += Gdx.graphics.getDeltaTime();
-            updatePos();
-        }
-
-        if (this.explode) {
-            torpedoActor.isSunk(true);
-            currentFrame = animationManager.getTorpedoExplodeAnimation().getKeyFrame(stateTime, false);
-        } else {
-            currentFrame = animationManager.getTorpedoUpAnimation().getKeyFrame(stateTime, true);
-        }
-
-       // DrawAsset drawTorpedo = new DrawAsset(gamePlayScreen, currentFrame, hitbox, 0, 0, 1, 1, -1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle);
-  //      drawTorpedo.draw();
-
-    }
+//    public void render() {
+//        TextureRegion currentFrame;
+//
+//        if (!pause) {
+//            stateTime += Gdx.graphics.getDeltaTime();
+//            updatePos();
+//        }
+//
+//        if (this.explode) {
+//        //    torpedoActor.isSunk(true);
+//            currentFrame = animationManager.getTorpedoExplodeAnimation().getKeyFrame(stateTime, false);
+//        } else {
+//            currentFrame = animationManager.getTorpedoUpAnimation().getKeyFrame(stateTime, true);
+//        }
+//
+//       // DrawAsset drawTorpedo = new DrawAsset(gamePlayScreen, currentFrame, hitbox, 0, 0, 1, 1, -1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle);
+//  //      drawTorpedo.draw();
+//
+//    }
 
     private void getShotCoordinates() {
         if (enemy) {

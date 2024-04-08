@@ -34,16 +34,18 @@ public class EnemyManager {
             if (enemy.getEnemyActor().isSunk()) {
                 player.setPlayerScore(player.getPlayerScore() + enemy.getEnemyPoints());
                 if (enemy.getEnemyActor().killed()) {
-                    gamePlayScreen.getGmStage().getActors().removeValue(enemy.getEnemyActor(), true);
+                    gamePlayScreen.getGmStage().getActors().removeValue(enemy.getEnemyActor(), false);
+                    enemy.getEnemyActor().remove();
                     enemyIterator.remove();
                 }
             } else if (enemy.isQuit()) {
                 enemy.setQuit(false);
                 enemyIterator.remove();
-            }
+            } else {
                 enemy.update(player);
                 avoidEnemies();
                 objectManager.dropCharge(enemy);
+            }
             }
         }
 

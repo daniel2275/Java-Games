@@ -174,7 +174,7 @@ public class Enemy {
             }
 
             if (sub) {
-                if (enemyActor.getY() > player.getHitbox().getY()) {
+                if (enemyActor.getY() > player.getPlayerActor().getY()) {
                     enemyActor.moveDown(enemySpeed);
                     if (direction.equals("") || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
                         direction = "down";

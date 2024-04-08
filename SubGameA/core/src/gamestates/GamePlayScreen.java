@@ -135,7 +135,7 @@ public class GamePlayScreen implements Screen {
         Optional<Enemy> deadEnemy = enemyManager.getListOfEnemies().stream()
                 .filter(enemy -> {
                     boolean isHit = enemy.checkHit(hitBox, damage);
-                    if (isHit && enemy.getCurrentHealth() <= 0) {
+                    if (isHit && enemy.getEnemyActor().getCurrentHealth() <= 0) {
                         enemy.setDying(true);
                     }
                     return isHit;

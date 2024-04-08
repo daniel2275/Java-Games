@@ -252,6 +252,10 @@ public class AnimatedActor extends Actor {
         this.currentHealth = currentHealth;
     }
 
+    public float getCurrentHealth() {
+        return currentHealth;
+    }
+
     public void setReload(float reload) {
         this.reload = reload;
     }

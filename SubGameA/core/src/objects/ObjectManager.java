@@ -92,21 +92,23 @@ public class ObjectManager {
                         gamePlayScreen.getPlayer().getPlayerCollisionDetector().doHit(torpedo);
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
-                        torpedo.update();
+                        torpedo.updatePos();
                         gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
+                        torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
                     }
                 } else {
-                    if (gamePlayScreen.checkCollision(torpedo.getHitbox(), torpedo.getTorpedoDamage())) {
+                    if (gamePlayScreen.checkCollision(torpedo.getTorpedoActor().getBoundingRectangle(), torpedo.getTorpedoDamage())) {
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
-                        torpedo.update();
+                        torpedo.updatePos();
                         gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
+                        torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
                     }
                 }
             }
-            torpedo.render();
+            torpedo.updatePos();
         }
     }
 

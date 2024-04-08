@@ -85,6 +85,7 @@ public class Level {
 
     private void level2() {
         Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
+                .withName("enemy1")
                 .withSpawnPosX(-65)
                 .withFlipX(-1)
                 .withSpriteAtlas("tanker-atlas.png")
@@ -95,6 +96,7 @@ public class Level {
                 .build();
 
         Enemy enemy2 = new EnemyBuilder(gamePlayScreen)
+                .withName("enemy2")
                 .withDelay(5)
                 .withSpawnPosX((int) WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
@@ -106,6 +108,7 @@ public class Level {
                 .build();
 
         Enemy enemy3 = new EnemyBuilder(gamePlayScreen)
+                .withName("enemy3")
                 .withDelay(15)
                 .withSpawnPosX((int) WORLD_WIDTH + 65)
                 .withSpawnPosY(100)
@@ -119,6 +122,7 @@ public class Level {
                 .build();
 
         Enemy enemy4 = new EnemyBuilder(gamePlayScreen)
+                .withName("enemy4")
                 .withDelay(24)
                 .withSpawnPosX(-65)
                 .withSpawnPosY(100)

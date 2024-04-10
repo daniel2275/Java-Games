@@ -84,24 +84,27 @@ public class ObjectManager {
 
     private void handleTorpedo() {
         Iterator<Torpedo> torpedoIterator = torpedoes.iterator();
+        System.out.println(torpedoes.size());
         while (torpedoIterator.hasNext()) {
             Torpedo torpedo = torpedoIterator.next();
             if (!checkProjectileLimit(torpedoIterator, torpedo)) {
                 if (torpedo.isEnemy()) {
-                    if (Intersector.overlaps(gamePlayScreen.getPlayer().getPlayerActor().getBoundingRectangle(), torpedo.getHitbox())) {
+                    if (Intersector.overlaps(gamePlayScreen.getPlayer().getPlayerActor().getBoundingRectangle(), torpedo.getTorpedoActor().getBoundingRectangle())) {
                         gamePlayScreen.getPlayer().getPlayerCollisionDetector().doHit(torpedo);
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
+                        torpedo.getTorpedoActor().setCurrentHealth(0);
                         gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
                         torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
                     }
                 } else {
-                    if (gamePlayScreen.checkCollision(torpedo.getTorpedoActor().getBoundingRectangle(), torpedo.getTorpedoDamage())) {
+                    if (gamePlayScreen.checkCollision(torpedo.getTorpedoActor(), torpedo.getTorpedoDamage())) {
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
+                        torpedo.getTorpedoActor().setCurrentHealth(0);
                         gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
                         torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
@@ -154,7 +157,7 @@ public class ObjectManager {
 
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
-        if (torpedo.getHitbox().getY() >= WORLD_HEIGHT - Constants.Game.SKY_SIZE - Torpedo.TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
+        if (torpedo.getTorpedoActor().getY() >= WORLD_HEIGHT - Constants.Game.SKY_SIZE - Torpedo.TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
                 gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
                 torpedoIterator.remove();
                 return true;

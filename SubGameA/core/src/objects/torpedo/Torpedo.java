@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import gamestates.GamePlayScreen;
-import utilities.HelpMethods;
 
 import static com.mygdx.sub.SubGame.pause;
 import static java.lang.Math.atan2;
@@ -45,7 +44,7 @@ public class Torpedo {
         animationManager = new TorpedoAnimationManager(new Texture("torpedo-atlas.png"));
         //loadAnimations("torpedo-atlas.png");
         this.gamePlayScreen = gamePlayScreen;
-        hitbox = HelpMethods.initHitBox(x, y, TORPEDO_WIDTH, TORPEDO_HEIGHT);
+        //hitbox = HelpMethods.initHitBox(x, y, TORPEDO_WIDTH, TORPEDO_HEIGHT);
 
         initializeTorpedo(x,y);
 
@@ -60,7 +59,7 @@ public class Torpedo {
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoExplodeAnimation(),
-                0, 0, TORPEDO_WIDTH, TORPEDO_HEIGHT, x, y);
+                0, 1, TORPEDO_WIDTH, TORPEDO_HEIGHT, x, y);
     }
 
     // Constructor for Enemy torpedo
@@ -74,7 +73,6 @@ public class Torpedo {
         this(gamePlayScreen,x,y,enemy);
         this.targetX = targetX;
         this.targetY = targetY;
-
     }
 
 //    public void update() {
@@ -124,8 +122,8 @@ public class Torpedo {
 
     private void targetShot(float goalX, float goalY) {
          if(!calculateSpeed) {
-            float destX = goalX - hitbox.x;
-            float destY = goalY - hitbox.y;
+            float destX = goalX - torpedoActor.getX();
+            float destY = goalY - torpedoActor.getY();
 
             angle = (float)  atan2(destY,destX);
             angle = MathUtils.radiansToDegrees * angle;
@@ -146,13 +144,13 @@ public class Torpedo {
             torpedoActor.setAngle(angle);
         }
         torpedoActor.moveBy(velocityX,velocityY);
-        hitbox.x += velocityX;
-        hitbox.y += velocityY;
+//        hitbox.x += velocityX;
+  //      hitbox.y += velocityY;
     }
 
-    public Rectangle getHitbox() {
-        return hitbox;
-    }
+//    public Rectangle getHitbox() {
+//        return hitbox;
+//    }
 
     public void setExplode(boolean explode) {
         if(explode) {

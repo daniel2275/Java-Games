@@ -1,14 +1,14 @@
 package gamestates;
 
-import UI.GameUIManager;
+import Components.AnimatedActor;
 import Components.InputHandler;
+import UI.GameUIManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -19,7 +19,9 @@ import entities.enemies.EnemyManager;
 import entities.player.Player;
 import levels.LevelManager;
 import objects.ObjectManager;
+
 import java.util.Optional;
+
 import static utilities.Constants.Game.WORLD_HEIGHT;
 import static utilities.Constants.Game.WORLD_WIDTH;
 
@@ -84,7 +86,7 @@ public class GamePlayScreen implements Screen {
         gameUIManager.getScoreLabel().setText("Enemies remaining:" + getEnemyManager().getListOfEnemies().size());
         gameUIManager.getScoreLabel1().setText("Score:" + getPlayer().getPlayerScore());
         gameUIManager.getScoreLabel2().setText("Level:" + getLevelManager().getLevel().getTotalLevels());
-        gameUIManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerHealth()));
+        gameUIManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerActor().getCurrentHealth()));
         upgrades.setPlayerScore(getPlayer().getPlayerScore());
 
         objectManager.update();
@@ -131,10 +133,10 @@ public class GamePlayScreen implements Screen {
 
     }
 
-    public boolean checkCollision(Rectangle hitBox, float damage) {
+    public boolean checkCollision(AnimatedActor actor, float damage) {
         Optional<Enemy> deadEnemy = enemyManager.getListOfEnemies().stream()
                 .filter(enemy -> {
-                    boolean isHit = enemy.checkHit(hitBox, damage);
+                    boolean isHit = enemy.checkHit(actor, damage);
                     if (isHit && enemy.getEnemyActor().getCurrentHealth() <= 0) {
                         enemy.setDying(true);
                     }

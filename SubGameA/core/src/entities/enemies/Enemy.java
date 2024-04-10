@@ -2,11 +2,7 @@ package entities.enemies;
 
 import Components.AnimatedActor;
 import Components.HitNumberActor;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.sub.SubGame;
@@ -231,46 +227,46 @@ public class Enemy {
     }
 
     public void render() {
-        Color color = Color.WHITE;
+//        Color color = Color.WHITE;
+//
+//        if (!pause) {
+//
+//            // hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
+//
+//            stateTime += Gdx.graphics.getDeltaTime();
 
-        if (!pause) {
-
-            // hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
-
-            stateTime += Gdx.graphics.getDeltaTime();
-
-            if (dying) {
-                enemySpeed = 0;
-                //fadeDelay.checkPaused(false);
-                //fadeDelay.update();
-
-                if (stateTime > 3 && stateTime < 6) {  // delay for 3 frames of animation (smoke above water) & 3 to sink
-//                     hitbox.y -= 0.5;
-                } else if (stateTime > 6) {
-//                    hitbox.y -= 0.5;
-//                    fadingAnimation.update(stateTime);
-//                    color = fadingAnimation.color(gamePlayScreen);
-                }
-                enemyActor.isSunk(true);
-
-                //currentFrame = shipExplode.getKeyFrame(stateTime, false);
-
-//                if (hitbox.y <= -16f || fadeDelay.getTimeRemaining() <= 0) {
-                //this.sunk = true;
+//            if (dying) {
+//                enemySpeed = 0;
+//                //fadeDelay.checkPaused(false);
+//                //fadeDelay.update();
+//
+//                if (stateTime > 3 && stateTime < 6) {  // delay for 3 frames of animation (smoke above water) & 3 to sink
+////                     hitbox.y -= 0.5;
+//                } else if (stateTime > 6) {
+////                    hitbox.y -= 0.5;
+////                    fadingAnimation.update(stateTime);
+////                    color = fadingAnimation.color(gamePlayScreen);
 //                }
-            } else if (doHitAnimation) {
-                enemyActor.setHit(true);
-//                //currentFrame = shipHit.getKeyFrame(stateTime, false);
-                if (stateTime > 1) {
-                    doHitAnimation = false;
-                }
-//            } else {
-//                //currentFrame = shipIdle.getKeyFrame(stateTime, true);
+//                //enemyActor.isSunk(true);
+//
+//                //currentFrame = shipExplode.getKeyFrame(stateTime, false);
+//
+////                if (hitbox.y <= -16f || fadeDelay.getTimeRemaining() <= 0) {
+//                //this.sunk = true;
+////                }
+//            } else if (doHitAnimation) {
+//                enemyActor.setHit(true);
+////                //currentFrame = shipHit.getKeyFrame(stateTime, false);
+////                if (stateTime > 1) {
+////                    doHitAnimation = false;
+////                }
+////            } else {
+////                //currentFrame = shipIdle.getKeyFrame(stateTime, true);
+////            }
+////        } else {
+////            fadeDelay.checkPaused(true);
 //            }
-//        } else {
-//            fadeDelay.checkPaused(true);
-            }
-        }
+//        }
     }
 
         //DrawAsset drawEnemy = new DrawAsset(gamePlayScreen, currentFrame, hitbox, xOffset, 0, flipX, 1, maxHealth, currentHealth, -1, color);
@@ -286,29 +282,15 @@ public class Enemy {
 //        return currentFrame;
 //    }
 
-    public boolean checkHit(Rectangle hitBox, float damage) {
-        boolean collision = Intersector.overlaps(hitBox, enemyActor.getBoundingRectangle());
+    public boolean checkHit(AnimatedActor actor, float damage) {
+        //boolean collision = Intersector.overlaps(hitBox, enemyActor.getBoundingRectangle());
+        boolean collision = enemyActor.collidesWith(actor);
         if (collision && !dying) {
             // display hit values for enemies
-            HitNumberActor hitNumberActor = new HitNumberActor(enemyActor.getX() + hitBox.getWidth(), enemyActor.getY(), (int) damage);
-
+            HitNumberActor hitNumberActor = new HitNumberActor(enemyActor.getX() + actor.getWidth(), enemyActor.getY(), (int) damage);
+            enemyActor.setHit(true,damage);
             if (gamePlayScreen != null) {
                 gamePlayScreen.getGameStage().getStage().addActor(hitNumberActor);
-
-            }
-
-            this.currentHealth -= damage;
-            enemyActor.setCurrentHealth(currentHealth);
-            float newSpeed = speed - (0.25f * speed);
-            if (this.currentHealth <= 0) {
-                this.currentHealth = 0;
-                enemyActor.setCurrentHealth(currentHealth);
-            }
-            if (enemySpeed > 0) {
-                speed = Math.max(newSpeed, 0);
-                enemySpeed = speed;
-                doHitAnimation = true;
-                stateTime = 0;
             }
             return true;
         }

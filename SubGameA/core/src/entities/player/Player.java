@@ -57,7 +57,7 @@ public class Player {
 
     public void reset() {
         playerHealthManager.setPlayerHealth(100f);
-        playerCollisionDetector.setCollisionDamage(20f);
+        playerCollisionDetector.setCollisionDamage(5f);
         playerMovement.setPlayerSpeed(0.2f);
         playerScore = 1000;
         stateTime = 0;

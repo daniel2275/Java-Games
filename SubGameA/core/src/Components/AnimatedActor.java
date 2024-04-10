@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import utilities.LoadSave;
 
 import java.util.Objects;
@@ -108,7 +109,7 @@ public class AnimatedActor extends Actor {
 
         if (isHit) {
             tempAnimation = hitAnimation;
-        } else if (sunk) {
+        } else if (currentHealth == 0) {
             tempAnimation = sunkAnimation;
         }
     }
@@ -126,7 +127,16 @@ public class AnimatedActor extends Actor {
         super.draw(batch, parentAlpha);
 
         // If sunk, gradually fade out the actor
-        if (sunk) {
+        if (currentHealth == 0) {
+            // Make the label fade out and move up
+            addAction(Actions.sequence(
+                    Actions.parallel(
+                            Actions.fadeOut(1.0f),
+                            Actions.moveBy(0, -1, 3.0f)
+                    ),
+                    Actions.removeActor()
+            ));
+
             moveDown(2);
             float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
             batch.setColor(1, 1, 1, alpha);
@@ -143,8 +153,10 @@ public class AnimatedActor extends Actor {
 
         batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY(), 0, 0, getWidth(), getHeight(), 1f, 1f, angle);
 
-        drawHealthBar(batch);
-        drawReloadBar(batch);
+        if (!name.equals("torpedo")) {
+            drawHealthBar(batch);
+            drawReloadBar(batch);
+        }
 
         isHit = false;
     }
@@ -204,8 +216,14 @@ public class AnimatedActor extends Actor {
         }
     }
 
-    public void setHit(boolean hit) {
+    public void setHit(boolean hit, float damage) {
         isHit = hit;
+        speed = Math.max((speed - (0.25f * speed)),0);
+
+        currentHealth -= damage;
+        if (currentHealth < 0) {
+            currentHealth = 0;
+        }
         stateTime = 0; // Reset state time when hit animation starts
     }
 

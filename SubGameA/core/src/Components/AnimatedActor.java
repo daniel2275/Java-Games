@@ -42,6 +42,7 @@ public class AnimatedActor extends Actor {
                          float spawnPosY
     ) {
         this.name = name;
+        setName(name);
         this.idleAnimation = idleAnimation;
         this.moveAnimation = moveAnimation;
         this.upAnimation = upAnimation;
@@ -127,22 +128,20 @@ public class AnimatedActor extends Actor {
         super.draw(batch, parentAlpha);
 
         // If sunk, gradually fade out the actor
-        if (currentHealth == 0) {
+        if (currentHealth == 0 && !isSunk()) {
+            System.out.println("add actions");
             // Make the label fade out and move up
             addAction(Actions.sequence(
                     Actions.parallel(
                             Actions.fadeOut(1.0f),
-                            Actions.moveBy(0, -1, 3.0f)
+                            Actions.moveBy(0,  -50f, 4.0f)
                     ),
                     Actions.removeActor()
             ));
-
-            moveDown(2);
-            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
-            batch.setColor(1, 1, 1, alpha);
-            if (stateTime >= sunkAnimation.getAnimationDuration()) {
-                killed = true;
-            }
+            isSunk(true);
+//            moveDown(2);
+//            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
+//            batch.setColor(1, 1, 1, alpha);
         }
 
         // Define looping animation

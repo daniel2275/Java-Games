@@ -39,7 +39,7 @@ public class EnemyAnimationManager {
         upAnimations = boatAnimation(0, 5, boatSprites, 0.2f);
         downAnimations = boatAnimation(0, 5, boatSprites, 0.2f);
         hitAnimations = boatAnimation(1, 3, boatSprites, 0.2f);
-        sunkAnimations = boatAnimation(1, 5, boatSprites, 1.0f);
+        sunkAnimations = boatAnimation(1, 5, boatSprites, 0.5f);
     }
 
     public Animation<TextureRegion> getIdleAnimations() {

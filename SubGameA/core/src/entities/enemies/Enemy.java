@@ -136,9 +136,7 @@ public class Enemy {
         if (!dying) {
             scheduleAnimation(player);
         }
-        render();
     }
-
 
 
     public void scheduleAnimation(Player player) {
@@ -225,62 +223,6 @@ public class Enemy {
         int launch = rnd.nextInt(3000);
         return launch < 10;
     }
-
-    public void render() {
-//        Color color = Color.WHITE;
-//
-//        if (!pause) {
-//
-//            // hitbox = HelpMethods.updateHitbox(hitbox, hitbox.getX(), hitbox.getY());
-//
-//            stateTime += Gdx.graphics.getDeltaTime();
-
-//            if (dying) {
-//                enemySpeed = 0;
-//                //fadeDelay.checkPaused(false);
-//                //fadeDelay.update();
-//
-//                if (stateTime > 3 && stateTime < 6) {  // delay for 3 frames of animation (smoke above water) & 3 to sink
-////                     hitbox.y -= 0.5;
-//                } else if (stateTime > 6) {
-////                    hitbox.y -= 0.5;
-////                    fadingAnimation.update(stateTime);
-////                    color = fadingAnimation.color(gamePlayScreen);
-//                }
-//                //enemyActor.isSunk(true);
-//
-//                //currentFrame = shipExplode.getKeyFrame(stateTime, false);
-//
-////                if (hitbox.y <= -16f || fadeDelay.getTimeRemaining() <= 0) {
-//                //this.sunk = true;
-////                }
-//            } else if (doHitAnimation) {
-//                enemyActor.setHit(true);
-////                //currentFrame = shipHit.getKeyFrame(stateTime, false);
-////                if (stateTime > 1) {
-////                    doHitAnimation = false;
-////                }
-////            } else {
-////                //currentFrame = shipIdle.getKeyFrame(stateTime, true);
-////            }
-////        } else {
-////            fadeDelay.checkPaused(true);
-//            }
-//        }
-    }
-
-        //DrawAsset drawEnemy = new DrawAsset(gamePlayScreen, currentFrame, hitbox, xOffset, 0, flipX, 1, maxHealth, currentHealth, -1, color);
-
-        //drawEnemy.draw();
-   // }
-
-//    public SpriteBatch getBatch() {
-//        return batch;
-//    }
-
-//    public TextureRegion getCurrentFrame() {
-//        return currentFrame;
-//    }
 
     public boolean checkHit(AnimatedActor actor, float damage) {
         //boolean collision = Intersector.overlaps(hitBox, enemyActor.getBoundingRectangle());

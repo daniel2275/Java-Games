@@ -4,10 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import entities.enemies.Enemy;
-import entities.player.Player;
-
-import java.util.Iterator;
 
 public class LoadSave {
 
@@ -88,14 +84,14 @@ public class LoadSave {
         return new Animation<>(originalAnimation.getFrameDuration(), flippedFrames);
     }
 
-    public static void iterateEnemies(Iterator<Enemy> enemyIterator, Player player) {
-        while (enemyIterator.hasNext()) {
-            Enemy enemy = enemyIterator.next();
-
-            enemy.update(player);
-
-        }
-    }
+//    public static void iterateEnemies(Iterator<Enemy> enemyIterator, Player player) {
+//        while (enemyIterator.hasNext()) {
+//            Enemy enemy = enemyIterator.next();
+//
+//            enemy.update(player);
+//
+//        }
+//    }
 
 //    public static void removeEnemy(Iterator<Enemy> enemyIterator, Enemy enemyToRemove) {
 //        while (enemyIterator.hasNext()) {

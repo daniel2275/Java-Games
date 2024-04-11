@@ -18,7 +18,7 @@ public class Torpedo {
     private int speed = 1;
     public static final int TORPEDO_WIDTH = 16 ;
     public static final int TORPEDO_HEIGHT = 16 ;
-    private int torpedoDamage = 20;
+    private int torpedoDamage = 50;
     private String direction;
     private Rectangle hitbox;
     private boolean enemy = false;

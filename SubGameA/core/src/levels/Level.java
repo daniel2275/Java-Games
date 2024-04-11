@@ -29,7 +29,7 @@ public class Level {
     public void levelSelector() {
         maxHealth += totalLevels * (1 + totalLevels) / 2f;
         currentHealth = maxHealth;
-        System.out.println("Health"  + maxHealth);
+
         switch ( currentScreen ) {
             case 1: {
                 level1();

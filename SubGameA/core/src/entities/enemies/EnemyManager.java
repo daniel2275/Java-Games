@@ -17,6 +17,7 @@ public class EnemyManager {
     public EnemyManager(GamePlayScreen gamePlayScreen) {
         this.gamePlayScreen = gamePlayScreen;
     }
+
     public void reset() {
         // clear the list of enemies
         Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
@@ -31,13 +32,17 @@ public class EnemyManager {
         Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
-            if (enemy.getEnemyActor().isSunk()) {
+
+
+            if (enemy.getEnemyActor().getParent() == null) {
+
+            //if (enemy.getEnemyActor().isSunk()) {
                 player.setPlayerScore(player.getPlayerScore() + enemy.getEnemyPoints());
-                if (enemy.getEnemyActor().killed()) {
-                    gamePlayScreen.getGmStage().getActors().removeValue(enemy.getEnemyActor(), false);
-                    enemy.getEnemyActor().remove();
+                //if (enemy.getEnemyActor().killed()) {
+                    //gamePlayScreen.getGmStage().getActors().removeValue(enemy.getEnemyActor(), false);
+
                     enemyIterator.remove();
-                }
+                //}
             } else if (enemy.isQuit()) {
                 enemy.setQuit(false);
                 enemyIterator.remove();
@@ -46,10 +51,10 @@ public class EnemyManager {
                 avoidEnemies();
                 objectManager.dropCharge(enemy);
             }
-            }
         }
+    }
 
-// avoid overlapping of submarine enemies
+    // avoid overlapping of submarine enemies
     public void avoidEnemies() {
         if (pause) {
             return;

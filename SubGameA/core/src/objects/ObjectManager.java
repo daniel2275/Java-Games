@@ -84,7 +84,6 @@ public class ObjectManager {
 
     private void handleTorpedo() {
         Iterator<Torpedo> torpedoIterator = torpedoes.iterator();
-        System.out.println(torpedoes.size());
         while (torpedoIterator.hasNext()) {
             Torpedo torpedo = torpedoIterator.next();
             if (!checkProjectileLimit(torpedoIterator, torpedo)) {

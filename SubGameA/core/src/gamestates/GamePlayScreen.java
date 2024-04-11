@@ -60,7 +60,7 @@ public class GamePlayScreen implements Screen {
     @Override
     public void show() {
         gmStage = gameUIManager.build();
-        gmStage.getViewport().setWorldSize(WORLD_WIDTH, WORLD_HEIGHT );
+        gmStage.getViewport().setWorldSize(WORLD_WIDTH, WORLD_HEIGHT);
         Gdx.input.setInputProcessor(inputHandler);
         gmStage.addActor(player.getPlayerActor());
     }

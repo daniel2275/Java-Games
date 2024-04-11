@@ -31,8 +31,6 @@ public class GameUIManager {
 
     public GameUIManager(SubGame subGame){
             gmStage = new Stage(new FitViewport(640,480));
-            //gmStage = new Stage(new ScreenViewport());
-
             this.subGame = subGame;
     }
         public Stage build() {
@@ -53,8 +51,6 @@ public class GameUIManager {
             //set up UI display
             //background images
             skyLine = new CustomActor(new Texture(Gdx.files.internal("skyline.png")), 109f, 45f,0 , WORLD_HEIGHT - SKY_SIZE  + 15 );
-
-
             underSea = new CustomActor(new Texture(Gdx.files.internal("sea1.png")), 109f , 45f, 0,- SKY_SIZE + 45 );
 
             scoreLabel = new Label("Enemies remaining:", gameSkin);
@@ -70,18 +66,14 @@ public class GameUIManager {
             scoreLabel1.setPosition(5, WORLD_HEIGHT - 35);
             scoreLabel2.setPosition(5, WORLD_HEIGHT - 50);
             scoreLabel3.setPosition(5, WORLD_HEIGHT - 65);
-            gmStage = new Stage();
-
-
-
 
             //background images
             pauseSprite = new Sprite(new Texture(Gdx.files.internal("paused.png")));
             pauseSprite.setPosition((float) Gdx.graphics.getWidth() /2 - 100f, 500);
             pauseSprite.setSize(200f, 80f);
 
-            //gmStage.addActor(underSea);
-            //gmStage.addActor(skyLine);
+            gmStage.addActor(underSea);
+            gmStage.addActor(skyLine);
 
             gmStage.addActor(scoreLabel);
             gmStage.addActor(scoreLabel1);

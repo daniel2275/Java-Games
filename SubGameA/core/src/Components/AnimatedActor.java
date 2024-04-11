@@ -89,6 +89,24 @@ public class AnimatedActor extends Actor {
         previousY = getY();
         deltaTime = delta;
         stateTime += delta;
+
+
+        // If sunk, gradually fade out the actor
+        if (currentHealth == 0 && !isSunk()) {
+            System.out.println("Actions added");
+            // Make the label fade out and move up
+            addAction(Actions.sequence(
+                    Actions.parallel(
+                            Actions.fadeOut(1.0f),
+                            Actions.moveBy(0,  -50f, 4.0f)
+                    ),
+                    Actions.removeActor()
+            ));
+            isSunk(true);
+//            moveDown(2);
+//            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
+//            batch.setColor(1, 1, 1, alpha);
+        }
     }
 
     private void updateMovementState() {
@@ -127,22 +145,22 @@ public class AnimatedActor extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        // If sunk, gradually fade out the actor
-        if (currentHealth == 0 && !isSunk()) {
-            System.out.println("add actions");
-            // Make the label fade out and move up
-            addAction(Actions.sequence(
-                    Actions.parallel(
-                            Actions.fadeOut(1.0f),
-                            Actions.moveBy(0,  -50f, 4.0f)
-                    ),
-                    Actions.removeActor()
-            ));
-            isSunk(true);
-//            moveDown(2);
-//            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
-//            batch.setColor(1, 1, 1, alpha);
-        }
+//        // If sunk, gradually fade out the actor
+//        if (currentHealth == 0 && !isSunk()) {
+//            System.out.println("Actions added");
+//            // Make the label fade out and move up
+//            addAction(Actions.sequence(
+//                    Actions.parallel(
+//                            Actions.fadeOut(2.0f),
+//                            Actions.moveBy(0,  -50f, 4.0f)
+//                    ),
+//                    Actions.removeActor()
+//            ));
+//            isSunk(true);
+////            moveDown(2);
+////            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
+////            batch.setColor(1, 1, 1, alpha);
+//        }
 
         // Define looping animation
         loops = (tempAnimation == idleAnimation || tempAnimation == moveAnimation);

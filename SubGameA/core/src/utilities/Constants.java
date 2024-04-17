@@ -46,7 +46,7 @@ public class PlayerConstants {
     public static class Game {
         public static final boolean VISIBLE_HITBOXES = true ;
 
-        public static final float WORLD_WIDTH = 640;
+        public static final float WORLD_WIDTH = 800;
         public static final float WORLD_HEIGHT = 480;
 
         public static final float SKY_SIZE = 90f; //150f - 800x600

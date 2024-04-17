@@ -1,6 +1,7 @@
 package UI;
 
 import Components.CustomActor;
+import Components.ParallaxLayer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,8 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.sub.SubGame;
 import gamestates.GameOver;
 
-import static utilities.Constants.Game.SKY_SIZE;
-import static utilities.Constants.Game.WORLD_HEIGHT;
+import static utilities.Constants.Game.*;
 
 public class GameUIManager {
     private Stage gmStage;
@@ -30,7 +30,7 @@ public class GameUIManager {
     private GameOver gameOver;
 
     public GameUIManager(SubGame subGame){
-            gmStage = new Stage(new FitViewport(640,480));
+            gmStage = new Stage(new FitViewport(WORLD_WIDTH,WORLD_HEIGHT));
             this.subGame = subGame;
     }
         public Stage build() {
@@ -50,8 +50,8 @@ public class GameUIManager {
         private void createUIElements() {
             //set up UI display
             //background images
-            skyLine = new CustomActor(new Texture(Gdx.files.internal("skyline.png")), 109f, 45f,0 , WORLD_HEIGHT - SKY_SIZE  + 15 );
-            underSea = new CustomActor(new Texture(Gdx.files.internal("sea1.png")), 109f , 45f, 0,- SKY_SIZE + 45 );
+            skyLine = new CustomActor(new Texture(Gdx.files.internal("skyline.png")), 0 , WORLD_HEIGHT - SKY_SIZE  + 15);
+            underSea = new CustomActor(new Texture(Gdx.files.internal("sea1.png")),  0,- SKY_SIZE + 45 );
 
             scoreLabel = new Label("Enemies remaining:", gameSkin);
             scoreLabel1 = new Label("Score:", gameSkin);
@@ -74,6 +74,31 @@ public class GameUIManager {
 
             gmStage.addActor(underSea);
             gmStage.addActor(skyLine);
+
+            Texture texture1 = new Texture(Gdx.files.internal("clouds.png"));
+            Texture texture2 = new Texture(Gdx.files.internal("clouds2.png"));
+            Texture texture3 = new Texture(Gdx.files.internal("clouds3.png"));
+            float speed1 = 8;
+            float initialX1 = 150;
+            float initialY1 = 415;
+
+            float speed2 = 11;
+            float initialX2 = 500;
+            float initialY2 = 415;
+
+            float speed3 = 15;
+            float initialX3 = 800;
+            float initialY3 = 400;
+
+            //            underSea = new CustomActor(new Texture(Gdx.files.internal("sea1.png")), 109f , 45f, 0,- SKY_SIZE + 45 );
+
+            ParallaxLayer layer1 = new ParallaxLayer(texture1, speed1, initialX1, initialY1);
+            ParallaxLayer layer2 = new ParallaxLayer(texture2, speed2, initialX2, initialY2);
+            ParallaxLayer layer3 = new ParallaxLayer(texture3, speed3, initialX3, initialY3);
+
+            gmStage.addActor(layer1);
+            gmStage.addActor(layer2);
+            gmStage.addActor(layer3);
 
             gmStage.addActor(scoreLabel);
             gmStage.addActor(scoreLabel1);
@@ -111,8 +136,14 @@ public class GameUIManager {
         return scoreLabel3;
     }
 
+    public CustomActor getSkyLine() {
+        return skyLine;
+    }
 
 
+    public CustomActor getUndersea() {
+        return underSea;
+    }
 }
 
 

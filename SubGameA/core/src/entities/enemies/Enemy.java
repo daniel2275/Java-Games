@@ -126,7 +126,6 @@ public class Enemy {
                 enemyHeight,
                 spawnPosX,
                 spawnPosY);
-
     }
 
     public void update(Player player) {
@@ -137,7 +136,6 @@ public class Enemy {
             scheduleAnimation(player);
         }
     }
-
 
     public void scheduleAnimation(Player player) {
         if (!delayComplete) {

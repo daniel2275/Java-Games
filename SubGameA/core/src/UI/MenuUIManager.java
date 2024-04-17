@@ -23,6 +23,7 @@ public class MenuUIManager {
     private String selectedOption;
     private SubGame subGame;
     private Screen GameScreen;
+
     public MenuUIManager(SubGame subGame){
         this.selectedOption = "Menu";
         uiStage = new Stage(new ScreenViewport());

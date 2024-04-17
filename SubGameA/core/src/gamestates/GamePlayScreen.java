@@ -49,6 +49,8 @@ public class GamePlayScreen implements Screen {
         initClasses();
 
         stateTime = delta;
+
+
         camera = new OrthographicCamera();
 
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
@@ -87,11 +89,18 @@ public class GamePlayScreen implements Screen {
         gameUIManager.getScoreLabel1().setText("Score:" + getPlayer().getPlayerScore());
         gameUIManager.getScoreLabel2().setText("Level:" + getLevelManager().getLevel().getTotalLevels());
         gameUIManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerActor().getCurrentHealth()));
+
+
         upgrades.setPlayerScore(getPlayer().getPlayerScore());
+
+        //adjust background image
+        gameUIManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
+        gameUIManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
 
         objectManager.update();
         enemyManager.update(player, objectManager);
         levelManager.update();
+
     }
 
     @Override
@@ -205,6 +214,8 @@ public class GamePlayScreen implements Screen {
         return viewport;
     }
 
-
+    public GameUIManager getGameUIManager() {
+        return gameUIManager;
+    }
 }
 

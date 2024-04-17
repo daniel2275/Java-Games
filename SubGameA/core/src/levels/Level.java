@@ -55,6 +55,7 @@ public class Level {
 
     private void level3() {
         Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
+                .withName("enemy1")
                 .withSpawnPosX(-125)
                 .withSpriteAtlas("cv6-atlas.png")
                 .withSpeed(13f)
@@ -71,6 +72,7 @@ public class Level {
 
     private void level4() {
         Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
+                .withName("enemy1")
                 .withSpawnPosX(-65)
                 .withFlipX(-1)
                 .withSpriteAtlas("tanker-atlas.png")

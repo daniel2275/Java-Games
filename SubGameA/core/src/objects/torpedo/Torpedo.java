@@ -17,7 +17,7 @@ public class Torpedo {
     // Torpedo default parameters
     private int speed = 1;
     public static final int TORPEDO_WIDTH = 16 ;
-    public static final int TORPEDO_HEIGHT = 16 ;
+    public static final int TORPEDO_HEIGHT = 5 ;
     private int torpedoDamage = 50;
     private String direction;
     private Rectangle hitbox;

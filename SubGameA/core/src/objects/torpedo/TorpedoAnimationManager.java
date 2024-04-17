@@ -17,7 +17,7 @@ public class TorpedoAnimationManager {
         TextureRegion[][] torpedoSprites = new TextureRegion[4][8];
         for (int i = 0; i <= 1; i++) {
             for (int j = 0; j <= 7; j++) {
-                torpedoSprites[i][j] = new TextureRegion(texture, 16 * j, 16 * i, Torpedo.TORPEDO_WIDTH, Torpedo.TORPEDO_HEIGHT);
+                torpedoSprites[i][j] = new TextureRegion(texture, 16 * j, 5 * i, Torpedo.TORPEDO_WIDTH, Torpedo.TORPEDO_HEIGHT);
             }
         }
         torpedoUpAnimation = LoadSave.boatAnimation(0, 8, torpedoSprites, 0.03f);

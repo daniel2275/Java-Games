@@ -4,6 +4,9 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import gamestates.*;
 
+import static utilities.Constants.Game.WORLD_HEIGHT;
+import static utilities.Constants.Game.WORLD_WIDTH;
+
 public class SubGame extends Game {
 
 	public static boolean pause = false;
@@ -14,6 +17,7 @@ public class SubGame extends Game {
 	private GameOver gameOver;
 	private UpgradeStore upgradeStore;
 
+
 	@Override
 	public void create() {
 //		if(Gdx.graphics.supportsDisplayModeChange()) {
@@ -22,8 +26,14 @@ public class SubGame extends Game {
 //			Gdx.graphics.setFullscreenMode(displayMode);
 //		}
 //		camera = new OrthographicCamera();
-//		camera.position.set(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
+		//camera.position.set(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
 //
+		float screenWidth = WORLD_WIDTH; // set your desired screen width
+		float screenHeight = WORLD_HEIGHT; // set your desired screen height
+
+
+// Set the screen resolution
+		Gdx.graphics.setWindowedMode((int) screenWidth, (int) screenHeight);
 
 		menuRenderer = new MenuRenderer(this);
 

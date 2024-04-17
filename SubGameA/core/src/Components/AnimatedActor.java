@@ -94,18 +94,15 @@ public class AnimatedActor extends Actor {
         // If sunk, gradually fade out the actor
         if (currentHealth == 0 && !isSunk()) {
             System.out.println("Actions added");
-            // Make the label fade out and move up
+            // Make the label "?fade out" and move down
             addAction(Actions.sequence(
                     Actions.parallel(
-                            Actions.fadeOut(1.0f),
+                            //Actions.fadeOut(1.0f),
                             Actions.moveBy(0,  -50f, 4.0f)
                     ),
                     Actions.removeActor()
             ));
             isSunk(true);
-//            moveDown(2);
-//            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
-//            batch.setColor(1, 1, 1, alpha);
         }
     }
 
@@ -145,28 +142,14 @@ public class AnimatedActor extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-//        // If sunk, gradually fade out the actor
-//        if (currentHealth == 0 && !isSunk()) {
-//            System.out.println("Actions added");
-//            // Make the label fade out and move up
-//            addAction(Actions.sequence(
-//                    Actions.parallel(
-//                            Actions.fadeOut(2.0f),
-//                            Actions.moveBy(0,  -50f, 4.0f)
-//                    ),
-//                    Actions.removeActor()
-//            ));
-//            isSunk(true);
-////            moveDown(2);
-////            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
-////            batch.setColor(1, 1, 1, alpha);
-//        }
+        // If sunk, gradually fade out the actor
+        if (currentHealth == 0) {
+            float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
+            batch.setColor(1, 1, 1, alpha);
+        }
 
         // Define looping animation
         loops = (tempAnimation == idleAnimation || tempAnimation == moveAnimation);
-
-        // Draw the current animation with SpriteBatch
-        //batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY());
 
         batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY(), 0, 0, getWidth(), getHeight(), 1f, 1f, angle);
 
@@ -253,10 +236,6 @@ public class AnimatedActor extends Actor {
 
         // Create and return the bounding rectangle
         return new Rectangle(x, y, width, height);
-    }
-
-    public boolean isHit() {
-        return isHit;
     }
 
     public void isSunk(boolean sunk) {

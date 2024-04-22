@@ -31,7 +31,7 @@ public class Torpedo {
     private float targetY;
     private boolean atTarget;
     private float angle;
-    private boolean calculateSpeed = false;
+    private boolean calculateVector = false;
     private float velocityX;
     private float velocityY;
     private GamePlayScreen gamePlayScreen;
@@ -121,7 +121,7 @@ public class Torpedo {
     }
 
     private void targetShot(float goalX, float goalY) {
-         if(!calculateSpeed) {
+         if(!calculateVector) {
             float destX = goalX - torpedoActor.getX();
             float destY = goalY - torpedoActor.getY();
 
@@ -132,7 +132,6 @@ public class Torpedo {
             //hitbox.x += (48f-16f) /2f;
             //torpedoActor.setX( torpedoActor.getX() +(48f-16f) /2f);
 
-
             float dist = (float) Math.sqrt(destX * destX + destY * destY);
             destX = destX / dist;
             destY = destY / dist;
@@ -140,7 +139,7 @@ public class Torpedo {
             velocityX = destX * this.speed;
             velocityY = destY * this.speed;
 
-            calculateSpeed = true;
+            calculateVector = true;
             torpedoActor.setAngle(angle);
         }
         torpedoActor.moveBy(velocityX,velocityY);

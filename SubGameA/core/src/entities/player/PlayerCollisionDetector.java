@@ -3,7 +3,7 @@ package entities.player;
 import Components.HitNumberActor;
 import gamestates.GamePlayScreen;
 import gamestates.Gamestate;
-import objects.DepthCharge;
+import objects.depthChage.DepthCharge;
 import objects.torpedo.Torpedo;
 
 public class PlayerCollisionDetector {

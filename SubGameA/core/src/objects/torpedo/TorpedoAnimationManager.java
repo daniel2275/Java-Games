@@ -21,7 +21,7 @@ public class TorpedoAnimationManager {
             }
         }
         torpedoUpAnimation = LoadSave.boatAnimation(0, 8, torpedoSprites, 0.03f);
-        torpedoExplode = LoadSave.boatAnimation(1, 1, torpedoSprites, 8.0f);
+        torpedoExplode = LoadSave.boatAnimation(1, 4, torpedoSprites, 0.5f);
     }
 
     public Animation<TextureRegion> getTorpedoUpAnimation() {

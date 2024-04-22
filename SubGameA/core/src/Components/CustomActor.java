@@ -23,6 +23,7 @@ public class CustomActor extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
         // Draw sprite
         sprite.setPosition(getX() - 100, getY());
         sprite.draw(batch);

@@ -175,16 +175,17 @@ public class Level {
 //                .withEnemyPoints(10)
 //                .build();
 //
-//        Enemy enemy4 = new EnemyBuilder(gamePlayScreen)
-//                .withDelay(4)
-//                .withSpawnPosX((int) WORLD_WIDTH + 64)
-//                .withSpriteAtlas("destroyer-atlas.png")
-//                .withSpeed(15f)
-//                .withAggro(true)
-//                .withMaxHealth(maxHealth)
-//                .withCurrentHealth(currentHealth)
-//                .withEnemyPoints(10)
-//                .build();
+        Enemy enemy4 = new EnemyBuilder(gamePlayScreen)
+                .withName("enemy4")
+                .withDelay(0)
+                .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpriteAtlas("destroyer-atlas.png")
+                .withSpeed(15f)
+                .withAggro(true)
+                .withMaxHealth(maxHealth)
+                .withCurrentHealth(currentHealth)
+                .withEnemyPoints(10)
+                .build();
 //
 //        Enemy enemy5 = new EnemyBuilder(gamePlayScreen)
 //                .withDelay(10)
@@ -197,26 +198,26 @@ public class Level {
 //                .withEnemyPoints(10)
 //                .build();
 
-        Enemy enemy6 = new EnemyBuilder(gamePlayScreen)
-                .withName("Enemy6")
-                .withDelay(0)
-                .withSpawnPosX((int) WORLD_WIDTH + 65)
-                .withSpawnPosY(100)
-                .withSpriteAtlas("enemy-sub1.png")
-                .withSpeed(13f)
-                .withAggro(true)
-                .withMaxHealth(maxHealth)
-                .withCurrentHealth(currentHealth)
-                .withSub(true)
-                .withEnemyPoints(10)
-                .build();
+//        Enemy enemy6 = new EnemyBuilder(gamePlayScreen)
+//                .withName("Enemy6")
+//                .withDelay(0)
+//                .withSpawnPosX((int) WORLD_WIDTH + 65)
+//                .withSpawnPosY(100)
+//                .withSpriteAtlas("enemy-sub1.png")
+//                .withSpeed(13f)
+//                .withAggro(true)
+//                .withMaxHealth(maxHealth)
+//                .withCurrentHealth(currentHealth)
+//                .withSub(true)
+//                .withEnemyPoints(10)
+//                .build();
 
 //        enemyManager.addEnemy(enemy1);
 //        enemyManager.addEnemy(enemy2);
 //        enemyManager.addEnemy(enemy3);
-//        enemyManager.addEnemy(enemy4);
+        enemyManager.addEnemy(enemy4);
 //        enemyManager.addEnemy(enemy5);
-        enemyManager.addEnemy(enemy6);
+//        enemyManager.addEnemy(enemy6);
     }
 
     public void setCurrentScreen(int currentScreen) {

@@ -16,12 +16,12 @@ import java.util.Objects;
 
 public class AnimatedActor extends Actor {
     private static final float FADE_DURATION = 6f;
-    private static final float DEFAULT_SPEED = 10.5f;
+    private float moveSpeed = 10.5f;
 
     private String name;
     private Animation<TextureRegion> idleAnimation, moveAnimation, upAnimation, downAnimation, hitAnimation, sunkAnimation, currentAnimation, tempAnimation;
     private TextureRegion healthBarTextureRegion;
-    private float stateTime, previousX, previousY, reload, reloadSpeed, maxHealth, currentHealth, speed = DEFAULT_SPEED, deltaTime = 0;
+    private float stateTime, previousX, previousY, reload, reloadSpeed, maxHealth, currentHealth, speed = moveSpeed, deltaTime = 0;
     private boolean isHit, sunk, loops, killed;
     private String direction;
 
@@ -93,15 +93,26 @@ public class AnimatedActor extends Actor {
 
         // If sunk, gradually fade out the actor
         if (currentHealth == 0 && !isSunk()) {
+
+            stateTime = 0;
             System.out.println("Actions added");
             // Make the label "?fade out" and move down
-            addAction(Actions.sequence(
-                    Actions.parallel(
-                            //Actions.fadeOut(1.0f),
-                            Actions.moveBy(0,  -50f, 4.0f)
-                    ),
-                    Actions.removeActor()
-            ));
+            if (!(name.equals("torpedo") || name.equals("depthCharge"))) {
+                addAction(Actions.sequence(
+                        Actions.parallel(
+                                Actions.fadeOut(1.0f),
+                                Actions.moveBy(0, -50f, 4.0f)
+                        ),
+                        Actions.removeActor()
+                ));
+            } else {
+                addAction(Actions.sequence(
+                        Actions.parallel(
+                                Actions.delay(4.0f)
+                        ),
+                        Actions.removeActor()
+                ));
+            }
             isSunk(true);
         }
     }
@@ -143,7 +154,7 @@ public class AnimatedActor extends Actor {
         super.draw(batch, parentAlpha);
 
         // If sunk, gradually fade out the actor
-        if (currentHealth == 0) {
+        if (currentHealth == 0 && !(name.equals("torpedo") || name.equals("depthCharge")) ) {
             float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
             batch.setColor(1, 1, 1, alpha);
         }
@@ -153,7 +164,7 @@ public class AnimatedActor extends Actor {
 
         batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY(), 0, 0, getWidth(), getHeight(), 1f, 1f, angle);
 
-        if (!name.equals("torpedo")) {
+        if (!name.equals("torpedo") && !name.equals("depthCharge")) {
             drawHealthBar(batch);
             drawReloadBar(batch);
         }
@@ -303,5 +314,9 @@ public class AnimatedActor extends Actor {
 
     public void setAngle(float angle) {
         this.angle = angle;
+    }
+
+    public void setMoveSpeed(float moveSpeed) {
+        this.moveSpeed = moveSpeed;
     }
 }

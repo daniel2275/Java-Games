@@ -3,6 +3,7 @@ package objects;
 import com.badlogic.gdx.math.Intersector;
 import entities.enemies.Enemy;
 import gamestates.GamePlayScreen;
+import objects.depthChage.DepthCharge;
 import objects.torpedo.Torpedo;
 import utilities.Constants;
 import utilities.SoundManager;
@@ -73,7 +74,6 @@ public class ObjectManager {
         } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
             if (checkBounds(enemy)) {
                 torpedoes.add(new Torpedo(gamePlayScreen, enemy.getEnemyActor().getX() + (enemy.getEnemyWidth()/2f), enemy.getEnemyActor().getY()  + (enemy.getEnemyHeight()/2f), true, gamePlayScreen.getPlayer().getPlayerActor().getX(), gamePlayScreen.getPlayer().getPlayerActor().getY()));
-
             }
         }
     }
@@ -94,8 +94,8 @@ public class ObjectManager {
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
                         torpedo.getTorpedoActor().setCurrentHealth(0);
-                        gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
-                        torpedo.getTorpedoActor().remove();
+                        //gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
+                        //torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
                     }
                 } else {
@@ -104,8 +104,8 @@ public class ObjectManager {
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
                         torpedo.getTorpedoActor().setCurrentHealth(0);
-                        gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
-                        torpedo.getTorpedoActor().remove();
+                        //gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
+                        //torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
                     }
                 }
@@ -119,17 +119,24 @@ public class ObjectManager {
         while (depthChargeIterator.hasNext()) {
             DepthCharge depthCharge = depthChargeIterator.next();
             if (!checkDpcLimit(depthChargeIterator, depthCharge)) {
-                if (Intersector.overlaps(gamePlayScreen.getPlayer().getPlayerActor().getBoundingRectangle(), depthCharge.getHitbox())) {
-                    if (!depthCharge.isExplode()) {
+                if (Intersector.overlaps(gamePlayScreen.getPlayer().getPlayerActor().getBoundingRectangle(), depthCharge.getDepthChargeActor().getBoundingRectangle())) {
+                    //if (!depthCharge.isExplode()) {
                         gamePlayScreen.getPlayer().getPlayerCollisionDetector().doHit(depthCharge);
                         depthCharge.setExplode(true);
                         soundManager.playDepthChargeHit();
-                        depthCharge.setSpeed(0);
-                    }
+                        depthCharge.getDepthChargeActor().setCurrentHealth(0);
+                        //gamePlayScreen.getGmStage().getActors().removeValue(depthCharge.getDepthChargeActor(),false);
+
+                        // depthupdate?
+
+                        //depthCharge.getDepthChargeActor().remove();
+                        depthChargeIterator.remove();
+                    //}
                 }
-            }
-            if (depthCharge.getAnimationFinished() && depthCharge.isExplode()) {
-                depthChargeIterator.remove();
+//            } else {
+//                depthCharge.getDepthChargeActor().setCurrentHealth(0);
+//                depthCharge.getDepthChargeActor().remove();
+//                depthChargeIterator.remove();
             }
             depthCharge.update();
         }
@@ -166,9 +173,10 @@ public class ObjectManager {
     }
 
     public boolean checkDpcLimit(Iterator<DepthCharge> depthChargeIterator, DepthCharge depthCharge) {
-        if (depthCharge.getHitbox().getY() <= 0) {
-            depthChargeIterator.remove();
+        if (depthCharge.getDepthChargeActor().getY() <= 0) {
             soundManager.playDepthChargeFar();
+            depthCharge.getDepthChargeActor().remove();
+            depthChargeIterator.remove();
             return true;
         }
         return false;

@@ -42,7 +42,7 @@ public class ObjectManager {
 
     public void fireProjectile() {
         if (!pause && (torpedoLoading.getStartTime() == 0) || !pause && (torpedoLoading.getTimeRemaining() <= 0)) {
-            torpedoLoading.init();
+            torpedoLoading.start();
 
             // Get the center coordinates of the PlayerActor's hitbox
             float playerX = gamePlayScreen.getPlayer().getHitbox().getX();
@@ -57,7 +57,6 @@ public class ObjectManager {
 
             // update timing with reloadSpeed updates
             torpedoLoading.setDuration(gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
-//            torpedoes.add(new Torpedo(gamePlayScreen, gamePlayScreen.getPlayer().getHitbox().getX(), gamePlayScreen.getPlayer().getHitbox().getY()));
 
             // Create and add the torpedo using the center coordinates
             torpedoes.add(new Torpedo(gamePlayScreen, playerCenterX, playerCenterY));
@@ -69,9 +68,9 @@ public class ObjectManager {
 
 
     public void dropCharge(Enemy enemy) {
-        if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && !enemy.isSub()) {
+        if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying() && !enemy.isSub()) {
             depthCharges.add(new DepthCharge(gamePlayScreen,enemy.getEnemyActor().getX(), enemy.getEnemyActor().getY()));
-        } else if (enemy.deployCharges() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
+        } else if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
             if (checkBounds(enemy)) {
                 torpedoes.add(new Torpedo(gamePlayScreen, enemy.getEnemyActor().getX() + (enemy.getEnemyWidth()/2f), enemy.getEnemyActor().getY()  + (enemy.getEnemyHeight()/2f), true, gamePlayScreen.getPlayer().getPlayerActor().getX(), gamePlayScreen.getPlayer().getPlayerActor().getY()));
             }
@@ -94,8 +93,6 @@ public class ObjectManager {
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
                         torpedo.getTorpedoActor().setCurrentHealth(0);
-                        //gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
-                        //torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
                     }
                 } else {
@@ -104,8 +101,6 @@ public class ObjectManager {
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
                         torpedo.getTorpedoActor().setCurrentHealth(0);
-                        //gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
-                        //torpedo.getTorpedoActor().remove();
                         torpedoIterator.remove();
                     }
                 }
@@ -120,23 +115,12 @@ public class ObjectManager {
             DepthCharge depthCharge = depthChargeIterator.next();
             if (!checkDpcLimit(depthChargeIterator, depthCharge)) {
                 if (Intersector.overlaps(gamePlayScreen.getPlayer().getPlayerActor().getBoundingRectangle(), depthCharge.getDepthChargeActor().getBoundingRectangle())) {
-                    //if (!depthCharge.isExplode()) {
                         gamePlayScreen.getPlayer().getPlayerCollisionDetector().doHit(depthCharge);
                         depthCharge.setExplode(true);
                         soundManager.playDepthChargeHit();
                         depthCharge.getDepthChargeActor().setCurrentHealth(0);
-                        //gamePlayScreen.getGmStage().getActors().removeValue(depthCharge.getDepthChargeActor(),false);
-
-                        // depthupdate?
-
-                        //depthCharge.getDepthChargeActor().remove();
                         depthChargeIterator.remove();
-                    //}
                 }
-//            } else {
-//                depthCharge.getDepthChargeActor().setCurrentHealth(0);
-//                depthCharge.getDepthChargeActor().remove();
-//                depthChargeIterator.remove();
             }
             depthCharge.update();
         }
@@ -146,7 +130,7 @@ public class ObjectManager {
     public void render() {
         if (!pause) {
             gamePlayScreen.getPlayer().setReload(torpedoLoading.getTimeRemaining());
-            torpedoLoading.checkPaused(false);
+            torpedoLoading.pause(false);
             torpedoLoading.update();
 
             if (!torpedoes.isEmpty()) {
@@ -157,7 +141,7 @@ public class ObjectManager {
                 handleDeepCharges();
             }
         } else {
-            torpedoLoading.checkPaused(true);
+            torpedoLoading.pause(true);
         }
     }
 

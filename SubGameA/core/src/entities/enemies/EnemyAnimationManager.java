@@ -65,5 +65,7 @@ public class EnemyAnimationManager {
     public Animation<TextureRegion> getSunkAnimations() {
         return sunkAnimations;
     }
+
+
 }
 

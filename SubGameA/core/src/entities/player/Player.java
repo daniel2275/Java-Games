@@ -8,7 +8,7 @@ import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
 import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
 
 public class Player {
-    private int playerScore = 1000;
+    private float playerScore = 1000;
     private float stateTime;
     private boolean left, right, up, down, sunk = true;
     private float reload = 0;
@@ -107,11 +107,11 @@ public class Player {
         return down;
     }
 
-    public int getPlayerScore() {
+    public float getPlayerScore() {
         return playerScore;
     }
 
-    public void setPlayerScore(int playerScore) {
+    public void setPlayerScore(float playerScore) {
         this.playerScore = playerScore;
     }
 

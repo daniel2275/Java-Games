@@ -64,6 +64,8 @@ public class Level {
                 .withMaxHealth(currentHealth * 3)
                 .withEnemyPoints(200)
                 .withEnemyWidth(128)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
                 .build();
 
         enemyManager.addEnemy(enemy1);
@@ -80,6 +82,8 @@ public class Level {
                 .withCurrentHealth(maxHealth)
                 .withMaxHealth(currentHealth)
                 .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
                 .build();
 
         enemyManager.addEnemy(enemy1);
@@ -95,6 +99,8 @@ public class Level {
                 .withCurrentHealth(maxHealth)
                 .withMaxHealth(currentHealth)
                 .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
                 .build();
 
         Enemy enemy2 = new EnemyBuilder(gamePlayScreen)
@@ -107,6 +113,8 @@ public class Level {
                 .withCurrentHealth(maxHealth)
                 .withMaxHealth(currentHealth)
                 .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
                 .build();
 
         Enemy enemy3 = new EnemyBuilder(gamePlayScreen)
@@ -121,6 +129,8 @@ public class Level {
                 .withCurrentHealth(currentHealth)
                 .withSub(true)
                 .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
                 .build();
 
         Enemy enemy4 = new EnemyBuilder(gamePlayScreen)
@@ -135,6 +145,8 @@ public class Level {
                 .withCurrentHealth(currentHealth)
                 .withSub(true)
                 .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
                 .build();
 
         enemyManager.addEnemy(enemy1);
@@ -152,6 +164,8 @@ public class Level {
 //                .withCurrentHealth(maxHealth)
 //                .withMaxHealth(currentHealth)
 //                .withEnemyPoints(10)
+//                .withEnemyWidth(64)
+//                .withEnemyHeight(32)
 //                .build();
 //
 //        Enemy enemy2 = new EnemyBuilder(gamePlayScreen)
@@ -162,6 +176,8 @@ public class Level {
 //                .withCurrentHealth(maxHealth)
 //                .withMaxHealth(currentHealth)
 //                .withEnemyPoints(10)
+//                .withEnemyWidth(64)
+//                .withEnemyHeight(32)
 //                .build();
 //
 //        Enemy enemy3 = new EnemyBuilder(gamePlayScreen)
@@ -173,6 +189,8 @@ public class Level {
 //                .withMaxHealth(maxHealth)
 //                .withCurrentHealth(currentHealth)
 //                .withEnemyPoints(10)
+//                .withEnemyWidth(64)
+//                .withEnemyHeight(32)
 //                .build();
 //
         Enemy enemy4 = new EnemyBuilder(gamePlayScreen)
@@ -185,6 +203,8 @@ public class Level {
                 .withMaxHealth(maxHealth)
                 .withCurrentHealth(currentHealth)
                 .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
                 .build();
 //
 //        Enemy enemy5 = new EnemyBuilder(gamePlayScreen)
@@ -196,6 +216,8 @@ public class Level {
 //                .withMaxHealth(maxHealth)
 //                .withCurrentHealth(currentHealth)
 //                .withEnemyPoints(10)
+//                .withEnemyWidth(64)
+//                .withEnemyHeight(32)
 //                .build();
 
 //        Enemy enemy6 = new EnemyBuilder(gamePlayScreen)
@@ -210,6 +232,8 @@ public class Level {
 //                .withCurrentHealth(currentHealth)
 //                .withSub(true)
 //                .withEnemyPoints(10)
+//                .withEnemyWidth(64)
+//                .withEnemyHeight(32)
 //                .build();
 
 //        enemyManager.addEnemy(enemy1);

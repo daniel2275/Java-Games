@@ -8,12 +8,11 @@ import com.badlogic.gdx.utils.Timer;
 import com.mygdx.sub.SubGame;
 import entities.player.Player;
 import gamestates.GamePlayScreen;
+import objects.depthChage.ChargeDeployer;
 import utilities.Constants;
 import utilities.HelpMethods;
 import utilities.SoundManager;
 import utilities.Timing;
-
-import java.util.concurrent.ScheduledExecutorService;
 
 import static com.mygdx.sub.SubGame.pause;
 import static utilities.Constants.Game.WORLD_HEIGHT;
@@ -21,18 +20,13 @@ import static utilities.Constants.Game.WORLD_WIDTH;
 
 public class Enemy {
     private int enemyWidth;
-    private int enemyHeight; // 25
+    private int enemyHeight;
     private float currentHealth;
     private float maxHealth;
-    private int enemyPoints = 10;
-  //  private Rectangle hitbox;
+    private float enemyPoints = 10;
     private float enemySpeed, speed;
-    //private final TextureRegion[][] boatSprites =  new TextureRegion[2][6];;
-
     private String name;
-    private boolean doHitAnimation = false;
     private boolean dying = false;
-    //private boolean sunk = false;
     private final String spriteAtlas;
     private long delay;
     private int flipX, flipY;
@@ -45,25 +39,22 @@ public class Enemy {
     private Timing fadeDelay;
     private HelpMethods.FadingAnimation fadingAnimation;
     private boolean quit;
-    private ScheduledExecutorService ses;
     private boolean delayComplete;
     private SoundManager soundManager;
-    private SubGame subGame;
     private GamePlayScreen gamePlayScreen;
     private EnemyAnimationManager enemyAnimationManager;
     private EnemyHealthManager enemyHealthManager;
     private float spawnPosX;
     private float spawnPosY;
     private AnimatedActor enemyActor;
+    ChargeDeployer chargeDeployer;
 
-//    Sound explodeSound = Gdx.audio.newSound(Gdx.files.internal("audio/exploded1.mp3"));
-
-    public Enemy(GamePlayScreen gamePlayScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints, SubGame subGame) {
+    public Enemy(GamePlayScreen gamePlayScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
         this.name = name;
         this.flipX = flipX;
         this.delay = delay;
-        this.enemyWidth = 64;
-        this.enemyHeight = 32; // 25
+        this.enemyWidth = enemyWidth;
+        this.enemyHeight = enemyHeight; // 25
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
         this.speed = speed;
@@ -71,12 +62,7 @@ public class Enemy {
         this.currentHealth = currentHealth;
         this.maxHealth = maxHealth;
         this.enemyPoints = enemyPoints;
-        this.fadeDelay = new Timing(7); // seconds dispose delay
-        //loadAnimations(spriteAtlas);
-        this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
-        //this.hitbox = HelpMethods.initHitBox(spawnPosX, WORLD_HEIGHT - Constants.Game.SKY_SIZE - enemyHeight / 3f, enemyWidth, enemyHeight);
         this.soundManager = SoundManager.getInstance(subGame);
-        this.subGame = subGame;
 
         this.spawnPosX = spawnPosX;
         this.spawnPosY = WORLD_HEIGHT - Constants.Game.SKY_SIZE - enemyHeight / 3f;
@@ -86,29 +72,19 @@ public class Enemy {
 
         this.enemyAnimationManager = new EnemyAnimationManager(this, spriteAtlas);
 
+        this.chargeDeployer = new ChargeDeployer();
+
         initializeEnemyActor();
 
         gamePlayScreen.getGmStage().addActor(enemyActor);
-
     }
 
-    public Enemy(GamePlayScreen gamePlayScreen,String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, SubGame subGame) {
-        this(gamePlayScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, enemyPoints, subGame);
+    public Enemy(GamePlayScreen gamePlayScreen,String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+        this(gamePlayScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, enemyPoints, enemyWidth, enemyHeight,  subGame);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
         this.spawnPosY = spawnPosY;
-
-    }
-
-    public Enemy(GamePlayScreen gamePlayScreen,String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
-        this(gamePlayScreen, name,delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, sub, enemyPoints, subGame);
-        this.sub = sub;
-        this.direction = "";
-        this.flipY = 1;
-        this.enemyWidth = enemyWidth;
-        this.enemyHeight = enemyHeight;
-        this.fadingAnimation = new HelpMethods.FadingAnimation(200); // fade time
     }
 
     private void initializeEnemyActor() {
@@ -140,90 +116,125 @@ public class Enemy {
     public void scheduleAnimation(Player player) {
         if (!delayComplete) {
             delay();
-        } else {
-            direction = "";
+            return; // Exit early if delay is not complete
+        }
 
-            if (flipX == -1 && enemyActor.getX() <= WORLD_WIDTH) {
-                if ((Math.abs(player.getPlayerActor().getX() - enemyActor.getX()) > 5) || !sub) {
-                    enemyActor.moveRight(enemySpeed);
-                }
-                xOffset = enemyWidth;
-                direction = "right";
-            } else if (flipX == -1 && enemyActor.getX() > WORLD_WIDTH) {
-                flipX = 1;
-            }
-            if (flipX == 1 && enemyActor.getX() >= -65) {
-                if ((Math.abs(player.getPlayerActor().getX() - enemyActor.getX()) > 5) || !sub) {
-                    enemyActor.moveLeft(enemySpeed);
-                }
-                xOffset = 0;
-                direction = "left";
-            } else if (flipX == 1 && enemyActor.getX() <= -65) {
-                if (!aggro) {
-                    enemyPoints -= enemyPoints * 0.1;
-                }
-                flipX = -1;
-            }
+        // Reset direction
+        direction = "";
 
-            if (sub) {
-                if (enemyActor.getY() > player.getPlayerActor().getY()) {
-                    enemyActor.moveDown(enemySpeed);
-                    if (direction.equals("") || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
-                        direction = "down";
-                    } else if (Math.abs(enemyActor.getY() - player.getPlayerActor().getY()) > 100) {
-                        direction += "&down";
-                    }
-                } else if (enemyActor.getY() < player.getHitbox().getY()) {
-                    enemyActor.moveUp(enemySpeed);
-                    if (direction.equals("") || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
-                        direction = "up";
-                    } else if (Math.abs(enemyActor.getY() - player.getPlayerActor().getY()) > 100) {
-                        direction += "&up";
-                    }
-                }
+        // Handle movement based on direction and position
+        if (flipX == -1) {
+            if (enemyActor.getX() <= WORLD_WIDTH) {
+                handleHorizontalMovement(player, true);
+            } else {
+                flipX = 1; // Flip direction if out of bounds
             }
+        } else if (flipX == 1) {
+            if (enemyActor.getX() >= -enemyActor.getWidth()) {
+                handleHorizontalMovement(player, false);
+            } else {
+                handleOutOfBounds();
+            }
+        }
 
-            if (direction.equals("")) {
-                direction = flipX == -1 ? "left" : "right";
+        // Handle sub-movement
+        if (sub) {
+            handleSubMovement(player);
+        }
+
+        // Default direction if not set
+        if (direction.isEmpty()) {
+            direction = (flipX == -1) ? "left" : "right";
+        }
+    }
+
+    private void handleHorizontalMovement(Player player, boolean movingRight) {
+        if (Math.abs(player.getPlayerActor().getX() - enemyActor.getX()) > 5 || !sub) {
+            if (movingRight) {
+                enemyActor.moveRight(enemySpeed);
+            } else {
+                enemyActor.moveLeft(enemySpeed);
+            }
+        }
+        xOffset = movingRight ? enemyWidth : 0;
+        direction = movingRight ? "right" : "left";
+    }
+
+    private void handleOutOfBounds() {
+        if (!aggro) {
+            enemyPoints *= 0.9; // Decrease points by 10% if not aggressive
+        }
+        flipX = -1; // Flip direction
+    }
+
+    private void handleSubMovement(Player player) {
+        float playerY = player.getPlayerActor().getY();
+        float enemyY = enemyActor.getY();
+
+        if (enemyY > playerY) {
+            enemyActor.moveDown(enemySpeed); // Move down
+            if (direction.isEmpty() || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
+                direction = "down";
+            } else if (Math.abs(enemyY - playerY) > 100) {
+                direction += "&down";
+            }
+        } else if (enemyY < player.getHitbox().getY()) {
+            enemyActor.moveUp(enemySpeed); // Move up
+            if (direction.isEmpty() || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
+                direction = "up";
+            } else if (Math.abs(enemyY - playerY) > 100) {
+                direction += "&up";
             }
         }
     }
 
-    // aggro behavior
     public void turnTowardsPlayer(Player player) {
         float playerX = player.getPlayerActor().getX();
-        float playerDistX = Math.abs(playerX - enemyActor.getX());
-        float playerDistY = Math.abs(player.getPlayerActor().getY() - enemyActor.getY());
+        float playerY = player.getPlayerActor().getY();
+        float enemyX = enemyActor.getX();
+        float enemyY = enemyActor.getY();
 
-        // check player in radar range
-        if ((((playerDistX < 180) && (playerDistY < 180))) || sub) {
-            // if sub stop near player
-            if ((playerDistX < 80) && (playerDistY) < 60 && (sub)) {
+        // Calculate distances between enemy and player
+        float playerDistX = Math.abs(playerX - enemyX);
+        float playerDistY = Math.abs(playerY - enemyY);
+
+        // Check if player is within radar range
+        boolean playerInRange = playerDistX < 180 && playerDistY < 180;
+
+        // Adjust enemy behavior based on player proximity
+        if (playerInRange || sub) {
+            // Stop near player if submarine and player is close
+            if (sub && playerDistX < 80 && playerDistY < 60) {
                 enemySpeed = 0;
             } else {
                 enemySpeed = speed;
             }
-            // patrol above player
-            if (playerDistX > 70 || sub && playerDistX > 2) {
-                if (playerX > enemyActor.getX()) {
-                    flipX = -1;
-                    xOffset = enemyWidth;
-                } else {
-                    flipX = 1;
-                    xOffset = 0;
-                }
+
+            // Patrol behavior if player is within range, or it's a submarine
+            if ((playerDistX > 70 || sub) && playerDistX > 2) {
+                adjustPatrolDirection(playerX, enemyX);
             }
         }
     }
 
-    public boolean deployCharges() {
+    private void adjustPatrolDirection(float playerX, float enemyX) {
+        // Adjust enemy direction based on player position
+        if (playerX > enemyX) {
+            flipX = -1; // Face left
+            xOffset = enemyWidth;
+        } else {
+            flipX = 1; // Face right
+            xOffset = 0;
+        }
+    }
+
+    public boolean chargeDeployer() {
         java.util.Random rnd = new java.util.Random();
         int launch = rnd.nextInt(3000);
         return launch < 10;
     }
 
     public boolean checkHit(AnimatedActor actor, float damage) {
-        //boolean collision = Intersector.overlaps(hitBox, enemyActor.getBoundingRectangle());
         boolean collision = enemyActor.collidesWith(actor);
         if (collision && !dying) {
             // display hit values for enemies
@@ -237,40 +248,16 @@ public class Enemy {
         return false;
     }
 
-    public float getCurrentHealth() {
-        return currentHealth;
-    }
-
-    public void setCurrentHealth(int currentHealth) {
-        this.currentHealth = currentHealth;
-    }
-
-    public float getEnemySpeed() {
-        return enemySpeed;
-    }
-
-    public void setEnemySpeed(float enemySpeed) {
-        this.enemySpeed = enemySpeed;
-    }
-
     public void setDying(boolean dying) {
         this.dying = dying;
         soundManager.sunkRnd();
-        fadeDelay.init(); // initialize fade timer
+        fadeDelay.start(); // initialize fade timer
         stateTime = 0; // reset animation time
     }
 
     public boolean isDying() {
         return dying;
     }
-
-//    public void setSunk(boolean sunk) {
-//        this.sunk = sunk;
-//    }
-
-//    public boolean isSunk() {
-//        return sunk;
-//    }
 
     public boolean isAggro() {
         return aggro;
@@ -280,19 +267,11 @@ public class Enemy {
         return sub;
     }
 
-    public String getDirection() {
-        return direction;
-    }
-
-    public int getFlipY() {
-        return flipY;
-    }
-
     public void setFlipY(int flipY) {
         this.flipY = flipY;
     }
 
-    public int getEnemyPoints() {
+    public float getEnemyPoints() {
         return enemyPoints;
     }
 
@@ -308,16 +287,8 @@ public class Enemy {
         return enemyWidth;
     }
 
-    public void setEnemyWidth(int enemyWidth) {
-        this.enemyWidth = enemyWidth;
-    }
-
     public int getEnemyHeight() {
         return enemyHeight;
-    }
-
-    public void setEnemyHeight(int enemyHeight) {
-        this.enemyHeight = enemyHeight;
     }
 
     public boolean delay() {
@@ -350,20 +321,8 @@ public class Enemy {
         Timer.instance().start();
     }
 
-//    public void setHitbox(Rectangle hitbox) {
-//        this.hitbox = hitbox;
-//    }
-
-    public Timing getFadeDelay() {
-        return fadeDelay;
-    }
-
     public void setFadeDelay(Timing fadeDelay) {
         this.fadeDelay = fadeDelay;
-    }
-
-    public HelpMethods.FadingAnimation getFadingAnimation() {
-        return fadingAnimation;
     }
 
     public void setFadingAnimation(HelpMethods.FadingAnimation fadingAnimation) {
@@ -379,3 +338,4 @@ public class Enemy {
     }
 
 }
+

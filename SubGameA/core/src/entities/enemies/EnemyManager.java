@@ -33,16 +33,9 @@ public class EnemyManager {
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
 
-
             if (enemy.getEnemyActor().getParent() == null) {
-
-            //if (enemy.getEnemyActor().isSunk()) {
                 player.setPlayerScore(player.getPlayerScore() + enemy.getEnemyPoints());
-                //if (enemy.getEnemyActor().killed()) {
-                    //gamePlayScreen.getGmStage().getActors().removeValue(enemy.getEnemyActor(), false);
-
-                    enemyIterator.remove();
-                //}
+                enemyIterator.remove();
             } else if (enemy.isQuit()) {
                 enemy.setQuit(false);
                 enemyIterator.remove();

@@ -15,8 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Json;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import entities.enemies.Enemy;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +41,7 @@ public class UpgradeStore implements Screen {
     private ProgressBar playerSpeedDisplay;
     private ProgressBar playerFireRateDisplay;
 
-    private int playerScore;
+    private float playerScore;
 
 
 
@@ -80,13 +83,14 @@ public class UpgradeStore implements Screen {
 
         String jsonStringDefault = prefs.getString("upgrades", null);
         if (jsonStringDefault != null) {
-            upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+            //upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+            Map<String, Upgrade> upgrades = new Gson().fromJson(jsonStringDefault, new TypeToken<Map<String, Upgrade>>(){}.getType());
         } else {
             // Handle the case where upgrades are not set yet
             upgrades = new HashMap<>();
         }
 
-        int playerScoreInit = prefs.getInteger("playerScore", 0);
+        float playerScoreInit = prefs.getFloat("playerScore", 0);
         gamePlayScreen.getPlayer().setPlayerScore(playerScoreInit);
 
         float playerHealthInit = prefs.getFloat("playerHealth", 100); // Default health if not set
@@ -111,7 +115,10 @@ public class UpgradeStore implements Screen {
         Preferences prefs = Gdx.app.getPreferences("my_prefs");
 
         String jsonStringDefault = prefs.getString("upgrades", null);
-        upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+        Gson gson = new Gson();
+        Type type = new TypeToken<HashMap<String, Upgrade>>(){}.getType();
+        HashMap<String, Upgrade> upgrades = gson.fromJson(jsonStringDefault, type);
+
 
         float reloadSpeed = prefs.getFloat("reloadSpeed");
         gamePlayScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
@@ -129,12 +136,11 @@ public class UpgradeStore implements Screen {
         String jsonString = new Json().toJson(upgrades);
         prefs.putString("upgrades", jsonString);
 
-        prefs.putInteger("playerScore", gamePlayScreen.getPlayer().getPlayerScore());
+        prefs.putFloat("playerScore", gamePlayScreen.getPlayer().getPlayerScore());
         prefs.putFloat("playerHealth", gamePlayScreen.getPlayer().getPlayerHealth());
 
         int level = gamePlayScreen.getLevelManager().getLevel().getTotalLevels();
         System.out.println(Gamestate.state + " " + level);
-//        prefs.putInteger("level", ((Gamestate.state == Gamestate.MENU) ? level - 1 : level ) );
         prefs.putInteger("level", level);
 
         prefs.putFloat("reloadSpeed", gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
@@ -180,7 +186,10 @@ public class UpgradeStore implements Screen {
 
         String jsonStringDefault = prefs.getString("default_upgrades", null);
 
-        upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+        Gson gson = new Gson();
+        Type type = new TypeToken<HashMap<String, Upgrade>>(){}.getType();
+        //upgrades = new Json().fromJson(HashMap.class, jsonStringDefault);
+        HashMap<String, Upgrade> upgrades = gson.fromJson(jsonStringDefault, type);
 
         int playerScoreInit = prefs.getInteger("default_playerScore");
         gamePlayScreen.getPlayer().setPlayerScore(playerScoreInit);
@@ -340,7 +349,7 @@ public class UpgradeStore implements Screen {
         float speed = getProperty(property);
         float upgAmount = -((maxUpg - minUpg) / upgTicks) * behavior;
         int level = upgrades.get(property).getLevel();
-        int playerScore = gamePlayScreen.getPlayer().getPlayerScore();
+        float playerScore = gamePlayScreen.getPlayer().getPlayerScore();
         float baseCost;
         if (behavior == 1) {
             baseCost = (upgrades.get(property).getCost() - costIncrements) * behavior;
@@ -433,7 +442,7 @@ public class UpgradeStore implements Screen {
 
     }
 
-    public void setPlayerScore(int playerScore) {
+    public void setPlayerScore(float playerScore) {
         this.playerScore = playerScore;
     }
 }

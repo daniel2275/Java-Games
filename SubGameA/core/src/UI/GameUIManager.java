@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.sub.SubGame;
-import gamestates.GameOver;
 
 import static utilities.Constants.Game.*;
 
@@ -22,12 +21,10 @@ public class GameUIManager {
     private Label scoreLabel1;
     private Label scoreLabel2;
     private Label scoreLabel3;
-    private Stage uiStage;
     private CustomActor underSea;
     private CustomActor skyLine;
     private Sprite pauseSprite;
     private SubGame subGame;
-    private GameOver gameOver;
 
     public GameUIManager(SubGame subGame){
             gmStage = new Stage(new FitViewport(WORLD_WIDTH,WORLD_HEIGHT));

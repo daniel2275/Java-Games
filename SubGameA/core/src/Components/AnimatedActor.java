@@ -14,7 +14,7 @@ import utilities.LoadSave;
 
 import java.util.Objects;
 
-public class AnimatedActor extends Actor {
+public class AnimatedActor extends Actor implements  Pausable {
     private static final float FADE_DURATION = 6f;
     private float moveSpeed = 10.5f;
 
@@ -24,6 +24,7 @@ public class AnimatedActor extends Actor {
     private float stateTime, previousX, previousY, reload, reloadSpeed, maxHealth, currentHealth, speed = moveSpeed, deltaTime = 0;
     private boolean isHit, sunk, loops, killed;
     private String direction;
+    private boolean paused = false;
 
     private float angle;
 
@@ -81,39 +82,41 @@ public class AnimatedActor extends Actor {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        if (!paused) {
+            super.act(delta);
 
-        updateMovementState();
-        updateAnimation();
-        previousX = getX();
-        previousY = getY();
-        deltaTime = delta;
-        stateTime += delta;
+            updateMovementState();
+            updateAnimation();
+            previousX = getX();
+            previousY = getY();
+            deltaTime = delta;
+            stateTime += delta;
 
 
-        // If sunk, gradually fade out the actor
-        if (currentHealth == 0 && !isSunk()) {
+            // If sunk, gradually fade out the actor
+            if (currentHealth == 0 && !isSunk()) {
 
-            stateTime = 0;
-            System.out.println("Actions added");
-            // Make the label "?fade out" and move down
-            if (!(name.equals("torpedo") || name.equals("depthCharge"))) {
-                addAction(Actions.sequence(
-                        Actions.parallel(
-                                Actions.fadeOut(1.0f),
-                                Actions.moveBy(0, -50f, 4.0f)
-                        ),
-                        Actions.removeActor()
-                ));
-            } else {
-                addAction(Actions.sequence(
-                        Actions.parallel(
-                                Actions.delay(4.0f)
-                        ),
-                        Actions.removeActor()
-                ));
+                stateTime = 0;
+                System.out.println("Actions added");
+                // Make the label "?fade out" and move down
+                if (!(name.equals("torpedo") || name.equals("depthCharge"))) {
+                    addAction(Actions.sequence(
+                            Actions.parallel(
+                                    Actions.fadeOut(1.0f),
+                                    Actions.moveBy(0, -50f, 4.0f)
+                            ),
+                            Actions.removeActor()
+                    ));
+                } else {
+                    addAction(Actions.sequence(
+                            Actions.parallel(
+                                    Actions.delay(4.0f)
+                            ),
+                            Actions.removeActor()
+                    ));
+                }
+                isSunk(true);
             }
-            isSunk(true);
         }
     }
 
@@ -318,5 +321,10 @@ public class AnimatedActor extends Actor {
 
     public void setMoveSpeed(float moveSpeed) {
         this.moveSpeed = moveSpeed;
+    }
+
+    @Override
+    public void setPaused(boolean paused) {
+        this.paused = paused;
     }
 }

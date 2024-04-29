@@ -8,7 +8,6 @@ import gamestates.GamePlayScreen;
 import gamestates.Gamestate;
 
 public class InputHandler implements InputProcessor {
-
     private GamePlayScreen gamePlayScreen;
     private boolean pause = false;
     private Vector2 playerPosition;
@@ -16,6 +15,7 @@ public class InputHandler implements InputProcessor {
     private Vector2 clickPosition;
 
     public InputHandler(GamePlayScreen gamePlayScreen) {
+
         this.gamePlayScreen = gamePlayScreen;
         this.playerPosition = (gamePlayScreen.getPlayer().getPlayerActor().getPosition());
     }
@@ -78,11 +78,12 @@ public class InputHandler implements InputProcessor {
                 gamePlayScreen.getObjectManager().fireProjectile();
                 break;
             case Input.Keys.P: {
+                System.out.println("PAUSED");
                 pause = !pause;
                 if (pause) {
-                    gamePlayScreen.getEnemyManager().pause();
+                    gamePlayScreen.pause();
                 } else {
-                    gamePlayScreen.getEnemyManager().resume();
+                    gamePlayScreen.resume();
                 }
             }
             break;
@@ -103,14 +104,8 @@ public class InputHandler implements InputProcessor {
             }
             break;
             case Input.Keys.ESCAPE: {
-                if (Gamestate.state.equals(Gamestate.MENU)) {
-                    gamePlayScreen.getEnemyManager().resume();
-                    Gamestate.state = Gamestate.PLAYING;
-                    pause = false;
-                } else if (Gamestate.state.equals(Gamestate.PLAYING)) {
-                    gamePlayScreen.getEnemyManager().pause();
-                    Gamestate.state = Gamestate.MENU;
-                }
+                gamePlayScreen.pause();
+                gamePlayScreen.getSubGame().setScreen(gamePlayScreen.getSubGame().getMenuRenderer());
             }
         }
         return false;

@@ -14,6 +14,7 @@ public class EnemyManager {
     private ArrayList<Enemy> listOfEnemies = new ArrayList<>();
     private GamePlayScreen gamePlayScreen;
 
+
     public EnemyManager(GamePlayScreen gamePlayScreen) {
         this.gamePlayScreen = gamePlayScreen;
     }
@@ -45,6 +46,7 @@ public class EnemyManager {
                 objectManager.dropCharge(enemy);
             }
         }
+
     }
 
     // avoid overlapping of submarine enemies
@@ -98,6 +100,13 @@ public class EnemyManager {
         listOfEnemies.forEach(enemyA -> {
             enemyA.exit();
         });
+    }
+
+    public void toFront() {
+        listOfEnemies.forEach(enemyA -> {
+            enemyA.getEnemyActor().toFront();
+        });
+
     }
 
 }

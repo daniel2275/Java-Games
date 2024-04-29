@@ -2,13 +2,9 @@ package utilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import gamestates.GamePlayScreen;
-
-import static com.mygdx.sub.SubGame.pause;
-import static utilities.Constants.Game.SCALE;
 
 public class DrawAsset {
     private TextureRegion currentFrame;
@@ -64,61 +60,61 @@ public class DrawAsset {
         this.reloadSpeed = reloadSpeed;
     }
 
-    public void draw() {
-
-        if(!pause) {
-            gamePlayScreen.getBatch().setProjectionMatrix(gamePlayScreen.camera.combined);
-            gamePlayScreen.getBatch().begin();
-            gamePlayScreen.getBatch().setColor(color);
-            if (currentFrame != null) {
-                if (maxHealth == -1) {
-                    rotate();
-                    gamePlayScreen.getBatch().draw(currentFrame, transformedX, transformedY, originX, originY, width, height, scaleX * SCALE, scaleY * SCALE, angle);
-                } else {
-                    gamePlayScreen.getBatch().draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX , hitbox.getHeight() * flipY );
-                }
-            }
-            gamePlayScreen.getBatch().end();
-
-            gamePlayScreen.getShapeRenderer().setProjectionMatrix(gamePlayScreen.camera.combined);
-
-            gamePlayScreen.getShapeRenderer().setAutoShapeType(true);
-            if (maxHealth > 0) {
-                gamePlayScreen.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
-                if ((int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)) <= (int) hitbox.getWidth() / 3) {
-                    gamePlayScreen.getShapeRenderer().setColor(Color.RED);
-                } else if ((int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)) <= (int) hitbox.getWidth() / 2) {
-                    gamePlayScreen.getShapeRenderer().setColor(Color.YELLOW);
-                } else {
-                    gamePlayScreen.getShapeRenderer().setColor(Color.GREEN);
-                }
-                gamePlayScreen.getShapeRenderer().rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 5, (int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)) , 2 );
-                gamePlayScreen.getShapeRenderer().end();
-            }
-
-            if (reload >= 0) {
-                gamePlayScreen.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
-                if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 2.5) {
-                    gamePlayScreen.getShapeRenderer().setColor(Color.GREEN);
-                } else if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 1.5) {
-                    gamePlayScreen.getShapeRenderer().setColor(Color.GOLD);
-                } else {
-                    gamePlayScreen.getShapeRenderer().setColor(Color.FIREBRICK);
-                }
-                float width = hitbox.getWidth() - (hitbox.getWidth() / reloadSpeed * reload);
-                gamePlayScreen.getShapeRenderer().rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 8, width , 1 );
-                gamePlayScreen.getShapeRenderer().end();
-            }
-
-            if (Constants.Game.VISIBLE_HITBOXES) {
-                gamePlayScreen.getShapeRenderer().setColor(Color.WHITE);
-                gamePlayScreen.getShapeRenderer().begin();
-                rotate();
-                gamePlayScreen.getShapeRenderer().rect(transformedX, transformedY, originX, originY, width, height, scaleX * SCALE, scaleY * SCALE, angle);
-                gamePlayScreen.getShapeRenderer().end();
-            }
-        }
-    }
+//    public void draw() {
+//
+//        if(!pause) {
+//            gamePlayScreen.getBatch().setProjectionMatrix(gamePlayScreen.camera.combined);
+//            gamePlayScreen.getBatch().begin();
+//            gamePlayScreen.getBatch().setColor(color);
+//            if (currentFrame != null) {
+//                if (maxHealth == -1) {
+//                    rotate();
+//                    gamePlayScreen.getBatch().draw(currentFrame, transformedX, transformedY, originX, originY, width, height, scaleX * SCALE, scaleY * SCALE, angle);
+//                } else {
+//                    gamePlayScreen.getBatch().draw(currentFrame, hitbox.getX() + xOffset, hitbox.getY() + yOffset, hitbox.getWidth() * flipX , hitbox.getHeight() * flipY );
+//                }
+//            }
+//            gamePlayScreen.getBatch().end();
+//
+//            gamePlayScreen.getShapeRenderer().setProjectionMatrix(gamePlayScreen.camera.combined);
+//
+//            gamePlayScreen.getShapeRenderer().setAutoShapeType(true);
+//            if (maxHealth > 0) {
+//                gamePlayScreen.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
+//                if ((int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)) <= (int) hitbox.getWidth() / 3) {
+//                    gamePlayScreen.getShapeRenderer().setColor(Color.RED);
+//                } else if ((int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)) <= (int) hitbox.getWidth() / 2) {
+//                    gamePlayScreen.getShapeRenderer().setColor(Color.YELLOW);
+//                } else {
+//                    gamePlayScreen.getShapeRenderer().setColor(Color.GREEN);
+//                }
+//                gamePlayScreen.getShapeRenderer().rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 5, (int) (hitbox.getWidth() / 100 * ((currentHealth * 100) / maxHealth)) , 2 );
+//                gamePlayScreen.getShapeRenderer().end();
+//            }
+//
+//            if (reload >= 0) {
+//                gamePlayScreen.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
+//                if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 2.5) {
+//                    gamePlayScreen.getShapeRenderer().setColor(Color.GREEN);
+//                } else if (((int) (hitbox.getWidth() / reloadSpeed * reload)) <= (int) hitbox.getWidth() / 1.5) {
+//                    gamePlayScreen.getShapeRenderer().setColor(Color.GOLD);
+//                } else {
+//                    gamePlayScreen.getShapeRenderer().setColor(Color.FIREBRICK);
+//                }
+//                float width = hitbox.getWidth() - (hitbox.getWidth() / reloadSpeed * reload);
+//                gamePlayScreen.getShapeRenderer().rect(hitbox.getX(), hitbox.getY() + hitbox.getHeight() + 8, width , 1 );
+//                gamePlayScreen.getShapeRenderer().end();
+//            }
+//
+//            if (Constants.Game.VISIBLE_HITBOXES) {
+//                gamePlayScreen.getShapeRenderer().setColor(Color.WHITE);
+//                gamePlayScreen.getShapeRenderer().begin();
+//                rotate();
+//                gamePlayScreen.getShapeRenderer().rect(transformedX, transformedY, originX, originY, width, height, scaleX * SCALE, scaleY * SCALE, angle);
+//                gamePlayScreen.getShapeRenderer().end();
+//            }
+//        }
+//    }
 
     public void rotate() {
         float centerX = hitbox.getX() + hitbox.getWidth() / 2;

@@ -120,6 +120,9 @@ public class MenuUIManager {
                 case BUTTON_PLAY_TEXT:
                     // Handle play button click
                     subGame.setScreen(subGame.gamePlayScreen());
+                    if(subGame.gamePlayScreen().isPaused()) {
+                        subGame.gamePlayScreen().resume();
+                    }
                     break;
                 case BUTTON_OPTION_TEXT:
                     // Handle option button click

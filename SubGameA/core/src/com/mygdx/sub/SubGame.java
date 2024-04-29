@@ -42,7 +42,7 @@ public class SubGame extends Game {
 		gamePlayScreen = new GamePlayScreen(Gdx.graphics.getDeltaTime(), this);
 		upgradeStore = new UpgradeStore(gamePlayScreen);
 		gameOver = new GameOver(this);
-		setScreen(new MenuRenderer(this));
+		setScreen(menuRenderer);
 	}
 
 	@Override
@@ -58,5 +58,7 @@ public class SubGame extends Game {
 		return gamePlayScreen;
 	}
 
-
+	public MenuRenderer getMenuRenderer() {
+		return menuRenderer;
+	}
 }

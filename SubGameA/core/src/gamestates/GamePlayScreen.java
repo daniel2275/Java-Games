@@ -1,15 +1,14 @@
 package gamestates;
 
-import Components.AnimatedActor;
-import Components.InputHandler;
+import Components.*;
 import UI.GameUIManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -40,22 +39,20 @@ public class GamePlayScreen implements Screen {
     public OrthographicCamera camera;
     public Viewport viewport;
     public SpriteBatch batch;
-    private ShapeRenderer shapeRenderer;
+    private boolean paused = false;
+    //private ShapeRenderer shapeRenderer;
 
     public GamePlayScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
         this.gameUIManager = new GameUIManager(subGame);
 
         initClasses();
-
         stateTime = delta;
 
-
         camera = new OrthographicCamera();
-
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
 
-        shapeRenderer = new ShapeRenderer();
+        //shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
     }
 
@@ -70,7 +67,7 @@ public class GamePlayScreen implements Screen {
     private void initClasses() {
         player = new Player(this, stateTime);
         inputHandler = new InputHandler(this);
-        objectManager =  new ObjectManager(this);
+        objectManager = new ObjectManager(this);
         enemyManager = new EnemyManager(this);
         levelManager = new LevelManager(this);
         upgrades = new UpgradeStore(this);
@@ -83,24 +80,26 @@ public class GamePlayScreen implements Screen {
     }
 
     public void update() {
-        player.update();
+        if (!paused) {
+            player.update();
 
-        gameUIManager.getScoreLabel().setText("Enemies remaining:" + getEnemyManager().getListOfEnemies().size());
-        gameUIManager.getScoreLabel1().setText("Score:" + getPlayer().getPlayerScore());
-        gameUIManager.getScoreLabel2().setText("Level:" + getLevelManager().getLevel().getTotalLevels());
-        gameUIManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerActor().getCurrentHealth()));
+            gameUIManager.getScoreLabel().setText("Enemies remaining:" + getEnemyManager().getListOfEnemies().size());
+            gameUIManager.getScoreLabel1().setText("Score:" + getPlayer().getPlayerScore());
+            gameUIManager.getScoreLabel2().setText("Level:" + getLevelManager().getLevel().getTotalLevels());
+            gameUIManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerActor().getCurrentHealth()));
 
 
-        upgrades.setPlayerScore(getPlayer().getPlayerScore());
+            upgrades.setPlayerScore(getPlayer().getPlayerScore());
 
-        //adjust background image
-        gameUIManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
-        gameUIManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
+            //adjust background image
+            gameUIManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
+            gameUIManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
 
-        objectManager.update();
-        enemyManager.update(player, objectManager);
-        levelManager.update();
 
+            objectManager.update();
+            enemyManager.update(player, objectManager);
+            levelManager.update();
+        }
     }
 
     @Override
@@ -129,12 +128,29 @@ public class GamePlayScreen implements Screen {
 
     @Override
     public void pause() {
+        paused = true;
+        // Pause your actors
+        objectManager.setPaused(true);
+        for (Actor actor : gmStage.getActors()) {
+            if (actor instanceof Pausable) {
+                ((Pausable) actor).setPaused(true);
+            }
+        }
 
     }
 
     @Override
     public void resume() {
-
+        paused = false;
+        // Pause your actors
+        objectManager.setPaused(false);
+        for (Actor actor : gmStage.getActors()) {
+            if (actor instanceof Pausable) {
+                ((Pausable) actor).setPaused(false);
+            }
+        }
+        getGameUIManager().getSkyLine().toBack();
+        getGameUIManager().getUndersea().toBack();
     }
 
     @Override
@@ -184,7 +200,7 @@ public class GamePlayScreen implements Screen {
         return this.gameUIManager;
     }
 
-    public Stage getGmStage(){
+    public Stage getGmStage() {
         return gmStage;
     }
 
@@ -200,13 +216,13 @@ public class GamePlayScreen implements Screen {
         gameUIManager.getStage().getViewport().update(width, height, true);
     }
 
-    public ShapeRenderer getShapeRenderer()
-    {
-        return shapeRenderer;
-    }
+//    public ShapeRenderer getShapeRenderer()
+//    {
+//        return shapeRenderer;
+//    }
 
     @Override
-    public void dispose(){
+    public void dispose() {
         gameUIManager.dispose();
     }
 
@@ -216,6 +232,10 @@ public class GamePlayScreen implements Screen {
 
     public GameUIManager getGameUIManager() {
         return gameUIManager;
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 }
 

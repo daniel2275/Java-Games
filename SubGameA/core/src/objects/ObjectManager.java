@@ -1,5 +1,6 @@
 package objects;
 
+import Components.Pausable;
 import com.badlogic.gdx.math.Intersector;
 import entities.enemies.Enemy;
 import gamestates.GamePlayScreen;
@@ -16,7 +17,7 @@ import static com.mygdx.sub.SubGame.pause;
 import static utilities.Constants.Game.WORLD_HEIGHT;
 import static utilities.Constants.Game.WORLD_WIDTH;
 
-public class ObjectManager {
+public class ObjectManager implements Pausable {
     private final GamePlayScreen gamePlayScreen;
     private final ArrayList<Torpedo> torpedoes;
     private ArrayList<DepthCharge> depthCharges;
@@ -189,5 +190,10 @@ public class ObjectManager {
         for (DepthCharge depthCharge : depthCharges) {
             depthCharge.exit();
         }
+    }
+
+    @Override
+    public void setPaused(boolean paused) {
+        this.torpedoLoading.pause(paused);
     }
 }

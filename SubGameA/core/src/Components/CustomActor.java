@@ -7,9 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import static utilities.Constants.Game.WORLD_WIDTH;
 
-public class CustomActor extends Actor {
+public class CustomActor extends Actor implements Pausable {
     private Sprite sprite;
     private float playerX;
+    private boolean paused = false;
 
     public CustomActor(Texture texture, float x, float y) {
         sprite = new Sprite(texture);
@@ -31,11 +32,13 @@ public class CustomActor extends Actor {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        if (!paused) {
+            super.act(delta);
 
-        // Adjust position based on playerX
-        float newX = calculateNewX();
-        setPosition(newX, getY());
+            // Adjust position based on playerX
+            float newX = calculateNewX();
+            setPosition(newX, getY());
+        }
     }
 
     private float calculateNewX() {
@@ -53,5 +56,10 @@ public class CustomActor extends Actor {
 
     public void setPlayerX(float playerX) {
         this.playerX = playerX;
+    }
+
+    @Override
+    public void setPaused(boolean paused) {
+        this.paused = paused;
     }
 }

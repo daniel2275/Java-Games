@@ -39,6 +39,7 @@ public class HitNumberActor extends Group {
         public void draw(Batch batch, float parentAlpha) {
             super.draw(batch, parentAlpha);
         }
-    }
+
+}
 
 

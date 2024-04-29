@@ -3,7 +3,7 @@ package entities.player;
 import Components.AnimatedActor;
 import com.badlogic.gdx.math.Rectangle;
 import gamestates.GamePlayScreen;
-import static com.mygdx.sub.SubGame.pause;
+
 import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
 import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
 
@@ -49,10 +49,8 @@ public class Player {
     }
 
     public void update() {
-        if (!pause) {
             playerMovement.checkDirection();
             playerCollisionDetector.checkCollision();
-        }
     }
 
     public void reset() {

@@ -9,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'org.docstr:gwt-gradle-plugin:1.1.29'
+        //classpath 'org.docstr:gwt-gradle-plugin:1.1.29'
         classpath 'org.gretty:gretty:3.1.0'
         classpath 'com.android.tools.build:gradle:8.2.2'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.20'
@@ -99,25 +99,25 @@ project(":ios") {
     }
 }
 
-project(":html") {
-    apply plugin: "java-library"
-    apply plugin: "gwt"
-    apply plugin: "war"
-    apply plugin: "org.gretty"
-
-
-    dependencies {
-        implementation project(":core")
-        api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-        api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
-        api "com.google.jsinterop:jsinterop-annotations:2.0.2:sources"
-        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion:sources"
-        api "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion"
-        api "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion:sources"
-        api 'com.google.code.gson:gson:2.10.1'
-    }
-}
+//project(":html") {
+//    apply plugin: "java-library"
+//    apply plugin: "gwt"
+//    apply plugin: "war"
+//    apply plugin: "org.gretty"
+//
+//
+//    dependencies {
+//        implementation project(":core")
+//        api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+//        api "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+//        api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
+//        api "com.google.jsinterop:jsinterop-annotations:2.0.2:sources"
+//        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion:sources"
+//        api "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion"
+//        api "com.badlogicgames.gdx-controllers:gdx-controllers-gwt:$gdxControllersVersion:sources"
+//        api 'com.google.code.gson:gson:2.10.1'
+//    }
+//}
 
 project(":core") {
     apply plugin: "java-library"

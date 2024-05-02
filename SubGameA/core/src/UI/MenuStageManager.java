@@ -132,6 +132,7 @@ public class MenuStageManager {
                     // Handle reset button click
                     break;
                 case MENU_BUTTON_QUIT_TEXT:
+                    subGame.getUpgradeStore().saveGame();
                     Gdx.app.exit();
                     break;
                 default:

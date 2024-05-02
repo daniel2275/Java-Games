@@ -61,4 +61,8 @@ public class SubGame extends Game {
 	public MenuRenderer getMenuRenderer() {
 		return menuRenderer;
 	}
+
+	public UpgradeStore getUpgradeStore() {
+		return upgradeStore;
+	}
 }

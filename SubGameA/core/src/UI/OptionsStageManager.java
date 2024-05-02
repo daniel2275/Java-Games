@@ -127,7 +127,7 @@ public class OptionsStageManager {
 
     public void setVolume(float volume) {
         this.volume = volume;
-        //this.slider.setValue(volume);
+        this.slider.setValue(volume);
     }
 
     public void hide() {

@@ -1,3 +1,3 @@
 # Java-Games
-LIBGDX Submarine action game 
+LIBGDX action game 
 

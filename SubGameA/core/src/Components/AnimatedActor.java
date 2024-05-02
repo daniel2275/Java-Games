@@ -97,7 +97,6 @@ public class AnimatedActor extends Actor implements  Pausable {
             if (currentHealth == 0 && !isSunk()) {
 
                 stateTime = 0;
-                System.out.println("Actions added");
                 // Make the label "?fade out" and move down
                 if (!(name.equals("torpedo") || name.equals("depthCharge"))) {
                     addAction(Actions.sequence(

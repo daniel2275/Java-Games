@@ -1,7 +1,7 @@
 package gamestates;
 
 import Components.*;
-import UI.GameUIManager;
+import UI.GameStageManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -33,7 +33,7 @@ public class GamePlayScreen implements Screen {
     private float stateTime;
     private SubGame subGame;
     private UpgradeStore upgrades;
-    private GameUIManager gameUIManager;
+    private GameStageManager gameStageManager;
     private Stage gmStage;
     private InputHandler inputHandler;
     public OrthographicCamera camera;
@@ -44,7 +44,7 @@ public class GamePlayScreen implements Screen {
 
     public GamePlayScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
-        this.gameUIManager = new GameUIManager(subGame);
+        this.gameStageManager = new GameStageManager(subGame);
 
         initClasses();
         stateTime = delta;
@@ -54,14 +54,14 @@ public class GamePlayScreen implements Screen {
 
         //shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
+        gmStage = gameStageManager.build();
+        gmStage.addActor(player.getPlayerActor());
     }
 
     @Override
     public void show() {
-        gmStage = gameUIManager.build();
         gmStage.getViewport().setWorldSize(WORLD_WIDTH, WORLD_HEIGHT);
         Gdx.input.setInputProcessor(inputHandler);
-        gmStage.addActor(player.getPlayerActor());
     }
 
     private void initClasses() {
@@ -83,17 +83,17 @@ public class GamePlayScreen implements Screen {
         if (!paused) {
             player.update();
 
-            gameUIManager.getScoreLabel().setText("Enemies remaining:" + getEnemyManager().getListOfEnemies().size());
-            gameUIManager.getScoreLabel1().setText("Score:" + getPlayer().getPlayerScore());
-            gameUIManager.getScoreLabel2().setText("Level:" + getLevelManager().getLevel().getTotalLevels());
-            gameUIManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerActor().getCurrentHealth()));
+            gameStageManager.getScoreLabel().setText("Enemies remaining:" + getEnemyManager().getListOfEnemies().size());
+            gameStageManager.getScoreLabel1().setText("Score:" + getPlayer().getPlayerScore());
+            gameStageManager.getScoreLabel2().setText("Level:" + getLevelManager().getLevel().getTotalLevels());
+            gameStageManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerActor().getCurrentHealth()));
 
 
             upgrades.setPlayerScore(getPlayer().getPlayerScore());
 
             //adjust background image
-            gameUIManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
-            gameUIManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
+            gameStageManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
+            gameStageManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
 
 
             objectManager.update();
@@ -117,6 +117,7 @@ public class GamePlayScreen implements Screen {
         }
 
         update();
+
     }
 
     @Override
@@ -196,8 +197,8 @@ public class GamePlayScreen implements Screen {
         return subGame;
     }
 
-    public GameUIManager getGameStage() {
-        return this.gameUIManager;
+    public GameStageManager getGameStage() {
+        return this.gameStageManager;
     }
 
     public Stage getGmStage() {
@@ -213,7 +214,7 @@ public class GamePlayScreen implements Screen {
     }
 
     public void updateViewport(int width, int height) {
-        gameUIManager.getStage().getViewport().update(width, height, true);
+        gameStageManager.getStage().getViewport().update(width, height, true);
     }
 
 //    public ShapeRenderer getShapeRenderer()
@@ -223,15 +224,15 @@ public class GamePlayScreen implements Screen {
 
     @Override
     public void dispose() {
-        gameUIManager.dispose();
+        gameStageManager.dispose();
     }
 
     public Viewport getViewport() {
         return viewport;
     }
 
-    public GameUIManager getGameUIManager() {
-        return gameUIManager;
+    public GameStageManager getGameUIManager() {
+        return gameStageManager;
     }
 
     public boolean isPaused() {

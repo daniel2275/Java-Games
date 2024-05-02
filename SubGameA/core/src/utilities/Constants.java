@@ -27,14 +27,22 @@ public class Constants {
     public static final Color BUTTON_QUIT_COLOR = Color.ORANGE;
 
     // Texts
-    public static final String TITLE_TEXT = "SubAttack(Alpha)";
-    public static final String BUTTON_PLAY_TEXT = "Play";
-    public static final String BUTTON_OPTION_TEXT = "Options";
-    public static final String BUTTON_RESET_TEXT = "Reset";
-    public static final String BUTTON_QUIT_TEXT = "Quit";
+    // Main-menu
+    public static final String MENU_TITLE_TEXT = "SubAttack(Alpha)";
+    public static final String MENU_BUTTON_PLAY_TEXT = "Play";
+    public static final String MENU_BUTTON_OPTION_TEXT = "Options";
+    public static final String MENU_BUTTON_RESET_TEXT = "Reset";
+    public static final String MENU_BUTTON_QUIT_TEXT = "Quit";
+    // Options
+    public static final String OPTIONS_TITLE_TEXT = "Options";
+    public static final String OPTIONS_BUTTON_VOLUME_TEXT = "Volume";
+    public static final String OPTIONS_BUTTON_BACK_TEXT = "Back";
 
     // Skin file path
     public static final String SKIN_FILE_PATH = "clean-crispy/skin/clean-crispy-ui.json";
+
+    // Misc
+    public static final String SLIDER_TYPE = "default-horizontal";
 }
 
 public class PlayerConstants {

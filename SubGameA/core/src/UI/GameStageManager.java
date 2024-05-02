@@ -14,7 +14,7 @@ import com.mygdx.sub.SubGame;
 
 import static utilities.Constants.Game.*;
 
-public class GameUIManager {
+public class GameStageManager {
     private Stage gmStage;
     private Skin gameSkin;
     private Label scoreLabel;
@@ -26,7 +26,7 @@ public class GameUIManager {
     private Sprite pauseSprite;
     private SubGame subGame;
 
-    public GameUIManager(SubGame subGame){
+    public GameStageManager(SubGame subGame){
             gmStage = new Stage(new FitViewport(WORLD_WIDTH,WORLD_HEIGHT));
             this.subGame = subGame;
     }

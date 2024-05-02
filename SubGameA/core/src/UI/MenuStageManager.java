@@ -16,7 +16,7 @@ import utilities.Constants;
 
 import static utilities.Constants.UIConstants.*;
 
-public class MenuUIManager {
+public class MenuStageManager {
     private Stage uiStage;
     private Table uiTable;
     private Skin uiSkin;
@@ -24,11 +24,12 @@ public class MenuUIManager {
     private SubGame subGame;
     private Screen GameScreen;
 
-    public MenuUIManager(SubGame subGame){
+    public MenuStageManager(SubGame subGame){
         this.selectedOption = "Menu";
         uiStage = new Stage(new ScreenViewport());
         this.subGame = subGame;
     }
+
     public Stage build() {
         uiTable = new Table();
         loadSkin();
@@ -54,10 +55,10 @@ public class MenuUIManager {
         uiTable.add(menuTitle).padBottom(BUTTON_PADDING).row();
 
         String[] buttonLabels = {
-                BUTTON_PLAY_TEXT,
-                BUTTON_OPTION_TEXT,
-                BUTTON_RESET_TEXT,
-                BUTTON_QUIT_TEXT
+                MENU_BUTTON_PLAY_TEXT,
+                MENU_BUTTON_OPTION_TEXT,
+                MENU_BUTTON_RESET_TEXT,
+                MENU_BUTTON_QUIT_TEXT
         };
 
         Color[] buttonColors = {
@@ -69,14 +70,14 @@ public class MenuUIManager {
         setupButtons(uiTable, buttonLabels, buttonColors);
     }
     private Label createMenuTitle() {
-        Label menuTitle = new Label(TITLE_TEXT, uiSkin);
+        Label menuTitle = new Label(MENU_TITLE_TEXT, uiSkin);
         menuTitle.setColor(TITLE_COLOR);
         menuTitle.setFontScale(FONT_MENU_SIZE);
         return menuTitle;
     }
     private TextButton createButton(String text, Color color) {
         TextButton button = new TextButton(text, uiSkin);
-        if (text.equals(BUTTON_PLAY_TEXT)) {
+        if (text.equals(MENU_BUTTON_PLAY_TEXT)) {
             TextButton.TextButtonStyle arcadeStyle = uiSkin.get("arcade", TextButton.TextButtonStyle.class);
             button.setStyle(arcadeStyle);
         }
@@ -117,20 +118,20 @@ public class MenuUIManager {
         public void clicked(InputEvent event, float x, float y) {
             // Perform different actions based on the button clicked
             switch (buttonLabel) {
-                case BUTTON_PLAY_TEXT:
+                case MENU_BUTTON_PLAY_TEXT:
                     // Handle play button click
                     subGame.setScreen(subGame.gamePlayScreen());
                     if(subGame.gamePlayScreen().isPaused()) {
                         subGame.gamePlayScreen().resume();
                     }
                     break;
-                case BUTTON_OPTION_TEXT:
-                    // Handle option button click
+                case MENU_BUTTON_OPTION_TEXT:
+                    subGame.setScreen(subGame.getOptions());
                     break;
-                case BUTTON_RESET_TEXT:
+                case MENU_BUTTON_RESET_TEXT:
                     // Handle reset button click
                     break;
-                case BUTTON_QUIT_TEXT:
+                case MENU_BUTTON_QUIT_TEXT:
                     Gdx.app.exit();
                     break;
                 default:

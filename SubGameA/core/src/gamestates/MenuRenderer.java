@@ -1,6 +1,6 @@
 package gamestates;
 
-import UI.MenuUIManager;
+import UI.MenuStageManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,17 +11,17 @@ import utilities.Constants.UIConstants;
 
 public class MenuRenderer implements Screen {
     private Stage uiStage;
-    private MenuUIManager menuStage;
+    private MenuStageManager menuStage;
     private SubGame subGame;
 
     public MenuRenderer(SubGame subGame) {
         this.subGame = subGame;
-        this.menuStage = new MenuUIManager(subGame);
+        this.menuStage = new MenuStageManager(subGame);
+        uiStage = menuStage.build();
     }
 
     @Override
     public void show() {
-        uiStage = menuStage.build();
         Gdx.input.setInputProcessor(uiStage);
     }
 
@@ -31,7 +31,6 @@ public class MenuRenderer implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         uiStage.act(delta);
         uiStage.draw();
-
     }
 
     @Override
@@ -63,7 +62,7 @@ public class MenuRenderer implements Screen {
         uiStage.getViewport().update(width, height, true);
     }
 
-    public MenuUIManager getMenuStage(){
+    public MenuStageManager getMenuStage(){
         return menuStage;
     }
 

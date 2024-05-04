@@ -68,10 +68,10 @@ public class EnemyBuilder {
         return this;
     }
 
-    public EnemyBuilder withCurrentHealth(float currentHealth) {
-        this.currentHealth = currentHealth;
-        return this;
-    }
+//    public EnemyBuilder withCurrentHealth(float currentHealth) {
+//        this.currentHealth = currentHealth;
+//        return this;
+//    }
 
     public EnemyBuilder withMaxHealth(float maxHealth) {
         this.maxHealth = maxHealth;
@@ -99,7 +99,7 @@ public class EnemyBuilder {
     }
 
     public Enemy build() {
-        Enemy enemy = new Enemy(gamePlayScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, subGame);
+        Enemy enemy = new Enemy(gamePlayScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, subGame);
         enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
         enemy.setFadeDelay(new Timing(7));
         return enemy;

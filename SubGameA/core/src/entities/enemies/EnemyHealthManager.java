@@ -2,12 +2,13 @@ package entities.enemies;
 
 public class EnemyHealthManager {
     private float enemyHealth = 100f;
-    private float maxHealth = 100f;
+    private float maxHealth;
 
     private Enemy enemy;
 
     public EnemyHealthManager(Enemy enemy) {
         this.enemy = enemy;
+
     }
 
     public float getMaxHealth() {

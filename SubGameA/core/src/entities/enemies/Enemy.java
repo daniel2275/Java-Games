@@ -49,7 +49,7 @@ public class Enemy {
     private AnimatedActor enemyActor;
     ChargeDeployer chargeDeployer;
 
-    public Enemy(GamePlayScreen gamePlayScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+    public Enemy(GamePlayScreen gamePlayScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro,  float maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
         this.name = name;
         this.flipX = flipX;
         this.delay = delay;
@@ -59,8 +59,7 @@ public class Enemy {
         this.enemySpeed = speed;
         this.speed = speed;
         this.aggro = aggro;
-        this.currentHealth = currentHealth;
-        this.maxHealth = maxHealth;
+        this.currentHealth = maxHealth;
         this.enemyPoints = enemyPoints;
         this.soundManager = SoundManager.getInstance(subGame);
 
@@ -69,6 +68,7 @@ public class Enemy {
 
         this.gamePlayScreen = gamePlayScreen;
         this.enemyHealthManager = new EnemyHealthManager(this);
+
 
         this.enemyAnimationManager = new EnemyAnimationManager(this, spriteAtlas);
 
@@ -79,8 +79,8 @@ public class Enemy {
         gamePlayScreen.getGmStage().addActor(enemyActor);
     }
 
-    public Enemy(GamePlayScreen gamePlayScreen,String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float currentHealth, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
-        this(gamePlayScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, currentHealth, maxHealth, enemyPoints, enemyWidth, enemyHeight,  subGame);
+    public Enemy(GamePlayScreen gamePlayScreen,String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+        this(gamePlayScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, maxHealth, enemyPoints, enemyWidth, enemyHeight,  subGame);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;

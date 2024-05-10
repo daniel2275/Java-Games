@@ -2,7 +2,7 @@ package entities.enemies;
 
 
 import com.mygdx.sub.SubGame;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 import utilities.HelpMethods;
 import utilities.Timing;
 
@@ -23,10 +23,10 @@ public class EnemyBuilder {
     private int enemyHeight = 32;
     private SubGame subGame;
 
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
 
-    public EnemyBuilder(GamePlayScreen gamePlayScreen) {
-        this.gamePlayScreen = gamePlayScreen;
+    public EnemyBuilder(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
     }
 
     public EnemyBuilder withName(String name){
@@ -99,7 +99,7 @@ public class EnemyBuilder {
     }
 
     public Enemy build() {
-        Enemy enemy = new Enemy(gamePlayScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, subGame);
+        Enemy enemy = new Enemy(gameScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, subGame);
         enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
         enemy.setFadeDelay(new Timing(7));
         return enemy;

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 
 public class DrawAsset {
     private TextureRegion currentFrame;
@@ -28,10 +28,10 @@ public class DrawAsset {
     private float transformedX = 0;
     private float transformedY = 0;
     private float reloadSpeed;
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
 
-    public DrawAsset(GamePlayScreen gamePlayScreen, TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float maxHealth, float currentHealth, float reload, Color color) {
-        this.gamePlayScreen = gamePlayScreen;
+    public DrawAsset(GameScreen gameScreen, TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float maxHealth, float currentHealth, float reload, Color color) {
+        this.gameScreen = gameScreen;
         this.currentFrame = currentFrame;
         this.hitbox = hitbox;
         this.width = hitbox.width;
@@ -46,8 +46,8 @@ public class DrawAsset {
         this.color = color;
     }
 
-    public DrawAsset(GamePlayScreen gamePlayScreen, TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float maxHealth, float currentHealth, float reload, Color color, float width, float height, float scaleX , float scaleY, float angle) {
-        this(gamePlayScreen, currentFrame,hitbox,xOffset,yOffset,flipX,flipY, maxHealth, currentHealth,reload,color);
+    public DrawAsset(GameScreen gameScreen, TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float maxHealth, float currentHealth, float reload, Color color, float width, float height, float scaleX , float scaleY, float angle) {
+        this(gameScreen, currentFrame,hitbox,xOffset,yOffset,flipX,flipY, maxHealth, currentHealth,reload,color);
         this.width = width;
         this.height = height;
         this.scaleX = scaleX;
@@ -55,8 +55,8 @@ public class DrawAsset {
         this.angle= angle;
     }
 
-    public DrawAsset(GamePlayScreen gamePlayScreen, TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float maxHealth, float currentHealth, float reload, Color color, float reloadSpeed) {
-        this(gamePlayScreen, currentFrame,hitbox,xOffset,yOffset,flipX,flipY, maxHealth,currentHealth, reload, color);
+    public DrawAsset(GameScreen gameScreen, TextureRegion currentFrame, Rectangle hitbox, float xOffset, float yOffset, int flipX, int flipY, float maxHealth, float currentHealth, float reload, Color color, float reloadSpeed) {
+        this(gameScreen, currentFrame,hitbox,xOffset,yOffset,flipX,flipY, maxHealth,currentHealth, reload, color);
         this.reloadSpeed = reloadSpeed;
     }
 

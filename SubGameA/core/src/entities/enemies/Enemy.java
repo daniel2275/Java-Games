@@ -2,12 +2,11 @@ package entities.enemies;
 
 import Components.AnimatedActor;
 import Components.HitNumberActor;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.sub.SubGame;
 import entities.player.Player;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 import objects.depthChage.ChargeDeployer;
 import utilities.Constants;
 import utilities.HelpMethods;
@@ -34,22 +33,20 @@ public class Enemy {
     private float xOffset = enemyWidth;
     private boolean aggro;
     private float stateTime;
-    private TextureRegion currentFrame;
     private boolean sub;
     private Timing fadeDelay;
     private HelpMethods.FadingAnimation fadingAnimation;
     private boolean quit;
     private boolean delayComplete;
     private SoundManager soundManager;
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
     private EnemyAnimationManager enemyAnimationManager;
-    private EnemyHealthManager enemyHealthManager;
     private float spawnPosX;
     private float spawnPosY;
     private AnimatedActor enemyActor;
     ChargeDeployer chargeDeployer;
 
-    public Enemy(GamePlayScreen gamePlayScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro,  float maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro, float maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
         this.name = name;
         this.flipX = flipX;
         this.delay = delay;
@@ -66,9 +63,7 @@ public class Enemy {
         this.spawnPosX = spawnPosX;
         this.spawnPosY = WORLD_HEIGHT - Constants.Game.SKY_SIZE - enemyHeight / 3f;
 
-        this.gamePlayScreen = gamePlayScreen;
-        this.enemyHealthManager = new EnemyHealthManager(this);
-
+        this.gameScreen = gameScreen;
 
         this.enemyAnimationManager = new EnemyAnimationManager(this, spriteAtlas);
 
@@ -76,11 +71,11 @@ public class Enemy {
 
         initializeEnemyActor();
 
-        gamePlayScreen.getGmStage().addActor(enemyActor);
+        gameScreen.getGmStage().addActor(enemyActor);
     }
 
-    public Enemy(GamePlayScreen gamePlayScreen,String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
-        this(gamePlayScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, maxHealth, enemyPoints, enemyWidth, enemyHeight,  subGame);
+    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+        this(gameScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, maxHealth, enemyPoints, enemyWidth, enemyHeight,  subGame);
         this.sub = sub;
         this.direction = "";
         this.flipY = 1;
@@ -97,7 +92,7 @@ public class Enemy {
                 enemyAnimationManager.getHitAnimations(),
                 enemyAnimationManager.getSunkAnimations(),
                 -1,
-                enemyHealthManager.getMaxHealth(),
+                currentHealth,
                 enemyWidth,
                 enemyHeight,
                 spawnPosX,
@@ -240,8 +235,8 @@ public class Enemy {
             // display hit values for enemies
             HitNumberActor hitNumberActor = new HitNumberActor(enemyActor.getX() + actor.getWidth(), enemyActor.getY(), (int) damage);
             enemyActor.setHit(true,damage);
-            if (gamePlayScreen != null) {
-                gamePlayScreen.getGameStage().getStage().addActor(hitNumberActor);
+            if (gameScreen != null) {
+                gameScreen.getGameStage().getStage().addActor(hitNumberActor);
             }
             return true;
         }

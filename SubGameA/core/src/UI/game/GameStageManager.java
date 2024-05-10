@@ -1,4 +1,4 @@
-package UI;
+package UI.game;
 
 import Components.CustomActor;
 import Components.ParallaxLayer;

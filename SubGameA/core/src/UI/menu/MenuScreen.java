@@ -1,6 +1,5 @@
-package gamestates;
+package UI.menu;
 
-import UI.MenuStageManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,12 +8,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.sub.SubGame;
 import utilities.Constants.UIConstants;
 
-public class MenuRenderer implements Screen {
+public class MenuScreen implements Screen {
     private Stage uiStage;
     private MenuStageManager menuStage;
     private SubGame subGame;
 
-    public MenuRenderer(SubGame subGame) {
+    public MenuScreen(SubGame subGame) {
         this.subGame = subGame;
         this.menuStage = new MenuStageManager(subGame);
         uiStage = menuStage.build();

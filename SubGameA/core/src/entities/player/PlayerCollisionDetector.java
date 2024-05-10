@@ -1,28 +1,28 @@
 package entities.player;
 
 import Components.HitNumberActor;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 import gamestates.Gamestate;
 import objects.depthChage.DepthCharge;
 import objects.torpedo.Torpedo;
 
 public class PlayerCollisionDetector {
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
     //private Rectangle hitbox;
     private boolean sunk;
     private PlayerHealthManager playerHealthManager;
     private Player player;
 
-    PlayerCollisionDetector(GamePlayScreen gamePlayScreen, Player player, PlayerHealthManager playerHealthManager) {
+    PlayerCollisionDetector(GameScreen gameScreen, Player player, PlayerHealthManager playerHealthManager) {
         this.playerHealthManager = playerHealthManager;
         this.player = player;
-        this.gamePlayScreen = gamePlayScreen;
+        this.gameScreen = gameScreen;
        // this.hitbox = player.getHitbox();
     }
 
     private float collisionDamage = 5f;
     public void checkCollision() {
-        if (gamePlayScreen.checkCollision(player.getPlayerActor(), collisionDamage)) {
+        if (gameScreen.checkCollision(player.getPlayerActor(), collisionDamage)) {
             if (player.getPlayerActor().getCurrentHealth() > 0) {
                 player.getPlayerActor().setHit(true,collisionDamage);
             } else {
@@ -37,7 +37,7 @@ public class PlayerCollisionDetector {
         player.getPlayerActor().setHit(true,torpedo.getTorpedoDamage());
         // display hit values
         HitNumberActor hitNumberActor = new HitNumberActor(player.getPlayerActor().getX() , player.getPlayerActor().getY(), torpedo.getTorpedoDamage());
-        gamePlayScreen.getGameStage().getStage().addActor(hitNumberActor);
+        gameScreen.getGameStage().getStage().addActor(hitNumberActor);
 
         if (player.getPlayerActor().getCurrentHealth() <= 0) {
             System.out.println("Game Over Torpedoed");
@@ -51,7 +51,7 @@ public class PlayerCollisionDetector {
         player.getPlayerActor().setHit(true, depthCharge.getDpcDamage());
         // display hit values
         HitNumberActor hitNumberActor = new HitNumberActor(player.getPlayerActor().getX()  , player.getPlayerActor().getX(), (int) depthCharge.getDpcDamage());
-        gamePlayScreen.getGameStage().getStage().addActor(hitNumberActor);
+        gameScreen.getGameStage().getStage().addActor(hitNumberActor);
 
         if (playerHealthManager.getPlayerHealth() <= 0) {
             playerHealthManager.setPlayerHealth(0);

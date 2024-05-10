@@ -1,18 +1,18 @@
 package levels;
 
 import entities.enemies.Enemy;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 
 import java.util.List;
 
 public class LevelManager {
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
     private Level level;
     private boolean currentRun;
 
-    public LevelManager(GamePlayScreen gamePlayScreen) {
-        level = new Level(gamePlayScreen.getEnemyManager(), gamePlayScreen);
-        this.gamePlayScreen = gamePlayScreen;
+    public LevelManager(GameScreen gameScreen) {
+        level = new Level(gameScreen.getEnemyManager(), gameScreen);
+        this.gameScreen = gameScreen;
     }
 
     public void update() {
@@ -20,7 +20,7 @@ public class LevelManager {
             level.setCurrentScreen(level.getCurrentScreen() + 1);
             level.levelSelector();
             currentRun = true;
-        } else if (gamePlayScreen.getEnemyManager().getListOfEnemies().isEmpty()) {
+        } else if (gameScreen.getEnemyManager().getListOfEnemies().isEmpty()) {
             level.setCurrentScreen(level.getCurrentScreen() + 1);
             level.setTotalLevels(level.getTotalLevels() + 1);
             level.levelSelector();
@@ -39,9 +39,9 @@ public class LevelManager {
         level.setCurrentHealth(100);
         level.setMaxHealth(100);
         // remove all enemies from the enemy manager
-        List<Enemy> enemies = gamePlayScreen.getEnemyManager().getListOfEnemies();
+        List<Enemy> enemies = gameScreen.getEnemyManager().getListOfEnemies();
         for (Enemy enemy : enemies) {
-            gamePlayScreen.getEnemyManager().reset();
+            gameScreen.getEnemyManager().reset();
         }
     }
 }

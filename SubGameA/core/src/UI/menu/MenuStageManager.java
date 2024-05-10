@@ -1,4 +1,4 @@
-package UI;
+package UI.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -20,12 +20,10 @@ public class MenuStageManager {
     private Stage uiStage;
     private Table uiTable;
     private Skin uiSkin;
-    private String selectedOption;
     private SubGame subGame;
     private Screen GameScreen;
 
     public MenuStageManager(SubGame subGame){
-        this.selectedOption = "Menu";
         uiStage = new Stage(new ScreenViewport());
         this.subGame = subGame;
     }
@@ -48,8 +46,8 @@ public class MenuStageManager {
     }
 
     private void createUIElements() {
-        uiTable.setFillParent(true); // Makes the table take the whole stage
-        uiStage.addActor(uiTable);
+//        uiTable.setFillParent(true); // Makes the table take the whole stage
+//        uiStage.addActor(uiTable);
 
         Label menuTitle = createMenuTitle();
         uiTable.add(menuTitle).padBottom(BUTTON_PADDING).row();
@@ -129,6 +127,7 @@ public class MenuStageManager {
                     subGame.setScreen(subGame.getOptions());
                     break;
                 case MENU_BUTTON_RESET_TEXT:
+                    subGame.getUpgradeStore().resetUpgrades();
                     // Handle reset button click
                     break;
                 case MENU_BUTTON_QUIT_TEXT:

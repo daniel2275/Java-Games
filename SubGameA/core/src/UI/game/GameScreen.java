@@ -1,7 +1,6 @@
-package gamestates;
+package UI.game;
 
 import Components.*;
-import UI.GameStageManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,6 +15,7 @@ import com.mygdx.sub.SubGame;
 import entities.enemies.Enemy;
 import entities.enemies.EnemyManager;
 import entities.player.Player;
+import UI.upgrades.UpgradeStore;
 import levels.LevelManager;
 import objects.ObjectManager;
 
@@ -25,7 +25,7 @@ import static utilities.Constants.Game.WORLD_HEIGHT;
 import static utilities.Constants.Game.WORLD_WIDTH;
 
 
-public class GamePlayScreen implements Screen {
+public class GameScreen implements Screen {
     private Player player;
     private ObjectManager objectManager;
     private EnemyManager enemyManager;
@@ -42,7 +42,7 @@ public class GamePlayScreen implements Screen {
     private boolean paused = false;
     //private ShapeRenderer shapeRenderer;
 
-    public GamePlayScreen(float delta, SubGame subGame) {
+    public GameScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
         this.gameStageManager = new GameStageManager(subGame);
 

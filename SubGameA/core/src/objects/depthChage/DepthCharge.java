@@ -4,7 +4,7 @@ import Components.AnimatedActor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 
 public class DepthCharge {
 
@@ -21,18 +21,18 @@ public class DepthCharge {
 //    private Animation<TextureRegion> dpcExplodeAnimation;
 
     private boolean explode;
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
     private DepthChargeAnimationManager animationManager;
     private AnimatedActor depthChargeActor;
 
-    public DepthCharge(GamePlayScreen gamePlayScreen, float x, float y) {
+    public DepthCharge(GameScreen gameScreen, float x, float y) {
         animationManager = new DepthChargeAnimationManager(new Texture("dephtcharge-atlas.png"));
         //loadAnimations("dephtcharge-atlas.png");
-        this.gamePlayScreen = gamePlayScreen;
+        this.gameScreen = gameScreen;
         //hitbox = HelpMethods.initHitBox(x, y, DPC_WIDTH, DPC_HEIGHT);
         initializeDepthCharge(x,y);
 
-        gamePlayScreen.getGmStage().addActor(depthChargeActor);
+        gameScreen.getGmStage().addActor(depthChargeActor);
     }
 
     private void initializeDepthCharge(float x, float y) {

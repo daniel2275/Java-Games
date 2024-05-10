@@ -4,7 +4,7 @@ package levels;
 import entities.enemies.Enemy;
 import entities.enemies.EnemyBuilder;
 import entities.enemies.EnemyManager;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 
 import static utilities.Constants.Game.WORLD_WIDTH;
 
@@ -19,11 +19,11 @@ public class Level {
     private float currentHealth = 100f;
 
     private float maxHealth = currentHealth;
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
 
-    public Level(EnemyManager enemyManager, GamePlayScreen gamePlayScreen) {
+    public Level(EnemyManager enemyManager, GameScreen gameScreen) {
         this.enemyManager = enemyManager;
-        this.gamePlayScreen = gamePlayScreen;
+        this.gameScreen = gameScreen;
     }
 
     public void levelSelector() {
@@ -54,7 +54,7 @@ public class Level {
     }
 
     private void level3() {
-        Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
+        Enemy enemy1 = new EnemyBuilder(gameScreen)
                 .withName("enemy1")
                 .withSpawnPosX(-125)
                 .withSpriteAtlas("cv6-atlas.png")
@@ -71,7 +71,7 @@ public class Level {
 
 
     private void level4() {
-        Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
+        Enemy enemy1 = new EnemyBuilder(gameScreen)
                 .withName("enemy1")
                 .withSpawnPosX(-65)
                 .withFlipX(-1)
@@ -87,7 +87,7 @@ public class Level {
     }
 
     private void level2() {
-        Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
+        Enemy enemy1 = new EnemyBuilder(gameScreen)
                 .withName("enemy1")
                 .withSpawnPosX(-65)
                 .withFlipX(-1)
@@ -99,7 +99,7 @@ public class Level {
                 .withEnemyHeight(32)
                 .build();
 
-        Enemy enemy2 = new EnemyBuilder(gamePlayScreen)
+        Enemy enemy2 = new EnemyBuilder(gameScreen)
                 .withName("enemy2")
                 .withDelay(5)
                 .withSpawnPosX((int) WORLD_WIDTH + 64)
@@ -112,7 +112,7 @@ public class Level {
                 .withEnemyHeight(32)
                 .build();
 
-        Enemy enemy3 = new EnemyBuilder(gamePlayScreen)
+        Enemy enemy3 = new EnemyBuilder(gameScreen)
                 .withName("enemy3")
                 .withDelay(15)
                 .withSpawnPosX((int) WORLD_WIDTH + 65)
@@ -127,7 +127,7 @@ public class Level {
                 .withEnemyHeight(32)
                 .build();
 
-        Enemy enemy4 = new EnemyBuilder(gamePlayScreen)
+        Enemy enemy4 = new EnemyBuilder(gameScreen)
                 .withName("enemy4")
                 .withDelay(24)
                 .withSpawnPosX(-65)
@@ -186,7 +186,7 @@ public class Level {
 //                .withEnemyHeight(32)
 //                .build();
 //
-        Enemy enemy4 = new EnemyBuilder(gamePlayScreen)
+        Enemy enemy4 = new EnemyBuilder(gameScreen)
                 .withName("enemy4")
                 .withDelay(0)
                 .withSpawnPosX((int) WORLD_WIDTH + 64)

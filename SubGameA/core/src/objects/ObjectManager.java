@@ -3,7 +3,7 @@ package objects;
 import Components.Pausable;
 import com.badlogic.gdx.math.Intersector;
 import entities.enemies.Enemy;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 import objects.depthChage.DepthCharge;
 import objects.torpedo.Torpedo;
 import utilities.Constants;
@@ -18,7 +18,7 @@ import static utilities.Constants.Game.WORLD_HEIGHT;
 import static utilities.Constants.Game.WORLD_WIDTH;
 
 public class ObjectManager implements Pausable {
-    private final GamePlayScreen gamePlayScreen;
+    private final GameScreen gameScreen;
     private final ArrayList<Torpedo> torpedoes;
     private ArrayList<DepthCharge> depthCharges;
 
@@ -26,12 +26,12 @@ public class ObjectManager implements Pausable {
 
     private SoundManager soundManager;
 
-    public ObjectManager(GamePlayScreen gamePlayScreen) {
+    public ObjectManager(GameScreen gameScreen) {
         torpedoes = new ArrayList<>();
         depthCharges = new ArrayList<>();
-        this.gamePlayScreen = gamePlayScreen;
-        this.soundManager = SoundManager.getInstance(gamePlayScreen.getSubGame());
-        torpedoLoading = new Timing(gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
+        this.gameScreen = gameScreen;
+        this.soundManager = SoundManager.getInstance(gameScreen.getSubGame());
+        torpedoLoading = new Timing(gameScreen.getPlayer().getPlayerActor().getReloadSpeed());
     }
 
     public void reset() {
@@ -46,10 +46,10 @@ public class ObjectManager implements Pausable {
             torpedoLoading.start();
 
             // Get the center coordinates of the PlayerActor's hitbox
-            float playerX = gamePlayScreen.getPlayer().getHitbox().getX();
-            float playerY = gamePlayScreen.getPlayer().getHitbox().getY();
-            float playerWidth = gamePlayScreen.getPlayer().getHitbox().getWidth();
-            float playerHeight = gamePlayScreen.getPlayer().getHitbox().getHeight();
+            float playerX = gameScreen.getPlayer().getHitbox().getX();
+            float playerY = gameScreen.getPlayer().getHitbox().getY();
+            float playerWidth = gameScreen.getPlayer().getHitbox().getWidth();
+            float playerHeight = gameScreen.getPlayer().getHitbox().getHeight();
 
             // Calculate the center coordinates
             float playerCenterX = playerX + (playerWidth / 2);
@@ -57,10 +57,10 @@ public class ObjectManager implements Pausable {
 
 
             // update timing with reloadSpeed updates
-            torpedoLoading.setDuration(gamePlayScreen.getPlayer().getPlayerActor().getReloadSpeed());
+            torpedoLoading.setDuration(gameScreen.getPlayer().getPlayerActor().getReloadSpeed());
 
             // Create and add the torpedo using the center coordinates
-            torpedoes.add(new Torpedo(gamePlayScreen, playerCenterX, playerCenterY));
+            torpedoes.add(new Torpedo(gameScreen, playerCenterX, playerCenterY));
 
 
             soundManager.playLaunchTorpedoRnd();
@@ -70,10 +70,10 @@ public class ObjectManager implements Pausable {
 
     public void dropCharge(Enemy enemy) {
         if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying() && !enemy.isSub()) {
-            depthCharges.add(new DepthCharge(gamePlayScreen,enemy.getEnemyActor().getX(), enemy.getEnemyActor().getY()));
+            depthCharges.add(new DepthCharge(gameScreen,enemy.getEnemyActor().getX(), enemy.getEnemyActor().getY()));
         } else if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
             if (checkBounds(enemy)) {
-                torpedoes.add(new Torpedo(gamePlayScreen, enemy.getEnemyActor().getX() + (enemy.getEnemyWidth()/2f), enemy.getEnemyActor().getY()  + (enemy.getEnemyHeight()/2f), true, gamePlayScreen.getPlayer().getPlayerActor().getX(), gamePlayScreen.getPlayer().getPlayerActor().getY()));
+                torpedoes.add(new Torpedo(gameScreen, enemy.getEnemyActor().getX() + (enemy.getEnemyWidth()/2f), enemy.getEnemyActor().getY()  + (enemy.getEnemyHeight()/2f), true, gameScreen.getPlayer().getPlayerActor().getX(), gameScreen.getPlayer().getPlayerActor().getY()));
             }
         }
     }
@@ -88,8 +88,8 @@ public class ObjectManager implements Pausable {
             Torpedo torpedo = torpedoIterator.next();
             if (!checkProjectileLimit(torpedoIterator, torpedo)) {
                 if (torpedo.isEnemy()) {
-                    if (Intersector.overlaps(gamePlayScreen.getPlayer().getPlayerActor().getBoundingRectangle(), torpedo.getTorpedoActor().getBoundingRectangle())) {
-                        gamePlayScreen.getPlayer().getPlayerCollisionDetector().doHit(torpedo);
+                    if (Intersector.overlaps(gameScreen.getPlayer().getPlayerActor().getBoundingRectangle(), torpedo.getTorpedoActor().getBoundingRectangle())) {
+                        gameScreen.getPlayer().getPlayerCollisionDetector().doHit(torpedo);
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
@@ -97,7 +97,7 @@ public class ObjectManager implements Pausable {
                         torpedoIterator.remove();
                     }
                 } else {
-                    if (gamePlayScreen.checkCollision(torpedo.getTorpedoActor(), torpedo.getTorpedoDamage())) {
+                    if (gameScreen.checkCollision(torpedo.getTorpedoActor(), torpedo.getTorpedoDamage())) {
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();
@@ -115,8 +115,8 @@ public class ObjectManager implements Pausable {
         while (depthChargeIterator.hasNext()) {
             DepthCharge depthCharge = depthChargeIterator.next();
             if (!checkDpcLimit(depthChargeIterator, depthCharge)) {
-                if (Intersector.overlaps(gamePlayScreen.getPlayer().getPlayerActor().getBoundingRectangle(), depthCharge.getDepthChargeActor().getBoundingRectangle())) {
-                        gamePlayScreen.getPlayer().getPlayerCollisionDetector().doHit(depthCharge);
+                if (Intersector.overlaps(gameScreen.getPlayer().getPlayerActor().getBoundingRectangle(), depthCharge.getDepthChargeActor().getBoundingRectangle())) {
+                        gameScreen.getPlayer().getPlayerCollisionDetector().doHit(depthCharge);
                         depthCharge.setExplode(true);
                         soundManager.playDepthChargeHit();
                         depthCharge.getDepthChargeActor().setCurrentHealth(0);
@@ -130,7 +130,7 @@ public class ObjectManager implements Pausable {
     // sets up an iterator with the list of torpedoes, call to check boundaries and manages explosion/removal
     public void render() {
         if (!pause) {
-            gamePlayScreen.getPlayer().setReload(torpedoLoading.getTimeRemaining());
+            gameScreen.getPlayer().setReload(torpedoLoading.getTimeRemaining());
             torpedoLoading.pause(false);
             torpedoLoading.update();
 
@@ -149,7 +149,7 @@ public class ObjectManager implements Pausable {
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
         if (torpedo.getTorpedoActor().getY() >= WORLD_HEIGHT - Constants.Game.SKY_SIZE - Torpedo.TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
-                gamePlayScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
+                gameScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
                 torpedoIterator.remove();
                 return true;
             }

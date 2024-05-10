@@ -1,7 +1,7 @@
 package entities.enemies;
 
 import entities.player.Player;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 import objects.ObjectManager;
 
 import java.util.ArrayList;
@@ -12,11 +12,11 @@ import static com.mygdx.sub.SubGame.pause;
 public class EnemyManager {
 
     private ArrayList<Enemy> listOfEnemies = new ArrayList<>();
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
 
 
-    public EnemyManager(GamePlayScreen gamePlayScreen) {
-        this.gamePlayScreen = gamePlayScreen;
+    public EnemyManager(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
     }
 
     public void reset() {

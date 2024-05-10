@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 
 import static com.mygdx.sub.SubGame.pause;
 import static java.lang.Math.atan2;
@@ -34,21 +34,21 @@ public class Torpedo {
     private boolean calculateVector = false;
     private float velocityX;
     private float velocityY;
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
 
     private TorpedoAnimationManager animationManager;
 
     private AnimatedActor torpedoActor;
 
-    public Torpedo(GamePlayScreen gamePlayScreen, float x, float y) {
+    public Torpedo(GameScreen gameScreen, float x, float y) {
         animationManager = new TorpedoAnimationManager(new Texture("torpedo-atlas.png"));
         //loadAnimations("torpedo-atlas.png");
-        this.gamePlayScreen = gamePlayScreen;
+        this.gameScreen = gameScreen;
         //hitbox = HelpMethods.initHitBox(x, y, TORPEDO_WIDTH, TORPEDO_HEIGHT);
 
         initializeTorpedo(x,y);
 
-        gamePlayScreen.getGmStage().addActor(torpedoActor);
+        gameScreen.getGmStage().addActor(torpedoActor);
     }
 
     public void initializeTorpedo(float x,float y) {
@@ -63,14 +63,14 @@ public class Torpedo {
     }
 
     // Constructor for Enemy torpedo
-    public Torpedo(GamePlayScreen gamePlayScreen, float x, float y, boolean enemy) {
-       this(gamePlayScreen,x,y);
+    public Torpedo(GameScreen gameScreen, float x, float y, boolean enemy) {
+       this(gameScreen,x,y);
        this.enemy = enemy;
     }
 
     // Constructor for Player torpedo
-    public Torpedo(GamePlayScreen gamePlayScreen, float x, float y, boolean enemy, float targetX, float targetY) {
-        this(gamePlayScreen,x,y,enemy);
+    public Torpedo(GameScreen gameScreen, float x, float y, boolean enemy, float targetX, float targetY) {
+        this(gameScreen,x,y,enemy);
         this.targetX = targetX;
         this.targetY = targetY;
     }
@@ -114,7 +114,7 @@ public class Torpedo {
         } else {
             float x = Gdx.input.getX();
             float y = Gdx.input.getY();
-            Vector3 worldCoordinates = gamePlayScreen.getCamera().unproject(new Vector3(x, y, 0));
+            Vector3 worldCoordinates = gameScreen.getCamera().unproject(new Vector3(x, y, 0));
             targetShot(worldCoordinates.x - TORPEDO_WIDTH , worldCoordinates.y - TORPEDO_HEIGHT);
         }
 

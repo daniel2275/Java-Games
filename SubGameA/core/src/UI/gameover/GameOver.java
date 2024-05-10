@@ -1,4 +1,4 @@
-package gamestates;
+package UI.gameover;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.sub.SubGame;
+import gamestates.Gamestate;
 
 
 public class GameOver implements Screen {

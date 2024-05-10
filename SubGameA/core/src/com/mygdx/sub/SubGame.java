@@ -1,8 +1,12 @@
 package com.mygdx.sub;
 
+import UI.game.GameScreen;
+import UI.gameover.GameOver;
+import UI.menu.MenuScreen;
+import UI.options.Options;
+import UI.upgrades.UpgradeStore;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import gamestates.*;
 
 import static utilities.Constants.Game.WORLD_HEIGHT;
 import static utilities.Constants.Game.WORLD_WIDTH;
@@ -10,10 +14,10 @@ import static utilities.Constants.Game.WORLD_WIDTH;
 public class SubGame extends Game {
 
 	public static boolean pause = false;
-	private MenuRenderer menuRenderer;
+	private MenuScreen menuScreen;
 
 	private Options options;
-	private GamePlayScreen gamePlayScreen;
+	private GameScreen gameScreen;
 	private GameOver gameOver;
 	private UpgradeStore upgradeStore;
 
@@ -35,31 +39,31 @@ public class SubGame extends Game {
 // Set the screen resolution
 		Gdx.graphics.setWindowedMode((int) screenWidth, (int) screenHeight);
 
-		menuRenderer = new MenuRenderer(this);
+		menuScreen = new MenuScreen(this);
 
 
 		options = new Options(this);
-		gamePlayScreen = new GamePlayScreen(Gdx.graphics.getDeltaTime(), this);
-		upgradeStore = new UpgradeStore(gamePlayScreen);
+		gameScreen = new GameScreen(Gdx.graphics.getDeltaTime(), this);
+		upgradeStore = new UpgradeStore(gameScreen);
 		gameOver = new GameOver(this);
-		setScreen(menuRenderer);
+		setScreen(menuScreen);
 	}
 
 	@Override
 	public void dispose() {
-		menuRenderer.getMenuStage().dispose();
+		menuScreen.getMenuStage().dispose();
 	}
 
 	public Options getOptions() {
 		return options;
 	}
 
-	public GamePlayScreen gamePlayScreen() {
-		return gamePlayScreen;
+	public GameScreen gamePlayScreen() {
+		return gameScreen;
 	}
 
-	public MenuRenderer getMenuRenderer() {
-		return menuRenderer;
+	public MenuScreen getMenuRenderer() {
+		return menuScreen;
 	}
 
 	public UpgradeStore getUpgradeStore() {

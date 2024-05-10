@@ -3,7 +3,7 @@ package utilities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 
 
 public class HelpMethods {
@@ -38,8 +38,8 @@ public class HelpMethods {
             return alpha;
         }
 
-        public Color color(GamePlayScreen gamePlayScreen) {
-            Color color = gamePlayScreen.getBatch().getColor();
+        public Color color(GameScreen gameScreen) {
+            Color color = gameScreen.getBatch().getColor();
             color.a = getAlpha(); // Set alpha value of color
             return color;
         }

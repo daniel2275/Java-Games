@@ -2,7 +2,7 @@ package entities.player;
 
 import Components.AnimatedActor;
 import com.badlogic.gdx.math.Rectangle;
-import gamestates.GamePlayScreen;
+import UI.game.GameScreen;
 
 import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
 import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
@@ -18,16 +18,16 @@ public class Player {
     private PlayerHealthManager playerHealthManager;
     private PlayerMovement playerMovement;
     private AnimatedActor playerActor;
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
 
-    public Player(GamePlayScreen gamePlayScreen, float delta) {
+    public Player(GameScreen gameScreen, float delta) {
         stateTime = delta;
         this.playerAnimationManager = new PlayerAnimationManager("Uboat-atlas.png");
         this.playerHealthManager = new PlayerHealthManager(this);
         this.playerMovement = new PlayerMovement(this);
-        this.gamePlayScreen = gamePlayScreen;
+        this.gameScreen = gameScreen;
         initializePlayerActor();
-        this.playerCollisionDetector = new PlayerCollisionDetector(gamePlayScreen, this, playerHealthManager);
+        this.playerCollisionDetector = new PlayerCollisionDetector(gameScreen, this, playerHealthManager);
     }
 
     private void initializePlayerActor() {

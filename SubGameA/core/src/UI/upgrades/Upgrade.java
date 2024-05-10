@@ -1,4 +1,4 @@
-package gamestates;
+package UI.upgrades;
 
 import java.io.Serializable;
 

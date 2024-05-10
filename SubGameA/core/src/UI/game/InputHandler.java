@@ -1,23 +1,21 @@
-package Components;
+package UI.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
-import gamestates.GamePlayScreen;
-import gamestates.Gamestate;
 
 public class InputHandler implements InputProcessor {
-    private GamePlayScreen gamePlayScreen;
+    private GameScreen gameScreen;
     private boolean pause = false;
     private Vector2 playerPosition;
     private boolean isTouching;
     private Vector2 clickPosition;
 
-    public InputHandler(GamePlayScreen gamePlayScreen) {
+    public InputHandler(GameScreen gameScreen) {
 
-        this.gamePlayScreen = gamePlayScreen;
-        this.playerPosition = (gamePlayScreen.getPlayer().getPlayerActor().getPosition());
+        this.gameScreen = gameScreen;
+        this.playerPosition = (gameScreen.getPlayer().getPlayerActor().getPosition());
     }
 
     @Override
@@ -29,10 +27,10 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         // Handle touch up events here (e.g., double tap for additional actions)
-        gamePlayScreen.getPlayer().setLeft(false);
-        gamePlayScreen.getPlayer().setRight(false);
-        gamePlayScreen.getPlayer().setDown(false);
-        gamePlayScreen.getPlayer().setUp(false);
+        gameScreen.getPlayer().setLeft(false);
+        gameScreen.getPlayer().setRight(false);
+        gameScreen.getPlayer().setDown(false);
+        gameScreen.getPlayer().setUp(false);
         isTouching = false;
         System.out.println("reset");
         return true;
@@ -63,49 +61,42 @@ public class InputHandler implements InputProcessor {
         // Handle keyboard events here (e.g., movement controls)
         switch ( keycode ) {
             case Input.Keys.A:
-                gamePlayScreen.getPlayer().setLeft(true);
+                gameScreen.getPlayer().setLeft(true);
                 break;
             case Input.Keys.D:
-                gamePlayScreen.getPlayer().setRight(true);
+                gameScreen.getPlayer().setRight(true);
                 break;
             case Input.Keys.S:
-                gamePlayScreen.getPlayer().setDown(true);
+                gameScreen.getPlayer().setDown(true);
                 break;
             case Input.Keys.W:
-                gamePlayScreen.getPlayer().setUp(true);
+                gameScreen.getPlayer().setUp(true);
                 break;
             case Input.Keys.SPACE:
-                gamePlayScreen.getObjectManager().fireProjectile();
+                gameScreen.getObjectManager().fireProjectile();
                 break;
             case Input.Keys.P: {
                 System.out.println("PAUSED");
                 pause = !pause;
                 if (pause) {
-                    gamePlayScreen.pause();
+                    gameScreen.pause();
                 } else {
-                    gamePlayScreen.resume();
+                    gameScreen.resume();
                 }
             }
             break;
             case Input.Keys.O: {
-                if (Gamestate.state.equals(Gamestate.STORE)) {
-                    pause = false;
-                    gamePlayScreen.getEnemyManager().resume();
-                    Gamestate.state = Gamestate.PLAYING;
-                } else if (Gamestate.state.equals(Gamestate.PLAYING)) {
-                    pause = true;
-                    gamePlayScreen.getEnemyManager().pause();
-                    Gamestate.state = Gamestate.STORE;
-                }
+                gameScreen.pause();
+                gameScreen.getSubGame().setScreen(gameScreen.getSubGame().getUpgradeStore());
             }
             break;
             case Input.Keys.R: {
-                gamePlayScreen.reset();
+                gameScreen.reset();
             }
             break;
             case Input.Keys.ESCAPE: {
-                gamePlayScreen.pause();
-                gamePlayScreen.getSubGame().setScreen(gamePlayScreen.getSubGame().getMenuRenderer());
+                gameScreen.pause();
+                gameScreen.getSubGame().setScreen(gameScreen.getSubGame().getMenuRenderer());
             }
         }
         return false;
@@ -116,16 +107,16 @@ public class InputHandler implements InputProcessor {
         // Handle key up events here (e.g., stop movement)
         switch ( keycode ) {
             case Input.Keys.A:
-                gamePlayScreen.getPlayer().setLeft(false);
+                gameScreen.getPlayer().setLeft(false);
                 break;
             case Input.Keys.D:
-                gamePlayScreen.getPlayer().setRight(false);
+                gameScreen.getPlayer().setRight(false);
                 break;
             case Input.Keys.S:
-                gamePlayScreen.getPlayer().setDown(false);
+                gameScreen.getPlayer().setDown(false);
                 break;
             case Input.Keys.W:
-                gamePlayScreen.getPlayer().setUp(false);
+                gameScreen.getPlayer().setUp(false);
                 break;
         }
         return false;

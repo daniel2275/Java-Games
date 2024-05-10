@@ -1,4 +1,4 @@
-package UI;
+package UI.options;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -41,6 +41,7 @@ public class OptionsStageManager {
         loadSkin();
         createOpElements();
         opTable.setFillParent(true); // Makes the table take the whole stage
+        // opTable.top().center();
         opStage.addActor(opTable);
         return opStage;
     }
@@ -53,14 +54,61 @@ public class OptionsStageManager {
         }
     }
 
+//    private void createOpElements() {
+//        opTable.setFillParent(true);
+//        opStage.addActor(opTable);
+//
+//        Label optionsTitle = new Label(OPTIONS_TITLE_TEXT, opSkin);
+//        opTable.add(optionsTitle).padBottom(BUTTON_PADDING).row();
+//
+//        Label optionsVolume = new Label(OPTIONS_BUTTON_VOLUME_TEXT, opSkin);
+//
+//        float minValue = 0.0f;
+//        float maxValue = 1.0f;
+//        float stepSize = 0.01f;
+//        Slider.SliderStyle sliderStyle = opSkin.get(SLIDER_TYPE, Slider.SliderStyle.class);
+//        slider = new Slider(minValue, maxValue, stepSize, false, sliderStyle);
+//        slider.setBounds(WORLD_WIDTH / 2 - 265, WORLD_HEIGHT * 0.78f, 250, 40);
+//
+//        TextButton quit = new TextButton("Back", opSkin, "default");
+//        quit.setPosition(WORLD_WIDTH - 150f, WORLD_HEIGHT * 0.1f);
+//
+//        opStage.addActor(optionsTitle);
+//        opStage.addActor(optionsVolume);
+//        opStage.addActor(slider);
+//        opStage.addActor(quit);
+//
+//        slider.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                if (volume != slider.getValue()) {
+//                    volume = slider.getValue();
+//                    audioDevice.setVolume(volume);
+//                    randomSound();
+//                }
+//            }
+//        });
+//
+//        quit.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                subGame.setScreen(subGame.getMenuRenderer());
+//            }
+//        });
+//
+//
+//    }
+
     private void createOpElements() {
-        opTable.setFillParent(true);
-        opStage.addActor(opTable);
 
-        Label optionsTitle = new Label(OPTIONS_TITLE_TEXT, opSkin);
-        opTable.add(optionsTitle).padBottom(BUTTON_PADDING).row();
+        // Positioning optionsTitle label at the top of the screen
+        Label optionsTitle = createTitle();
+        //optionsTitle.setFontScale(2);
+        opTable.add(optionsTitle).padBottom(BUTTON_PADDING).row(); //.top().center().colspan(2).row();
 
+        // Creating optionsVolume label and positioning it beside the slider
         Label optionsVolume = new Label(OPTIONS_BUTTON_VOLUME_TEXT, opSkin);
+        opTable.add(optionsVolume).colspan(1).row(); // Adjust the padding as needed
 
         float minValue = 0.0f;
         float maxValue = 1.0f;
@@ -68,14 +116,14 @@ public class OptionsStageManager {
         Slider.SliderStyle sliderStyle = opSkin.get(SLIDER_TYPE, Slider.SliderStyle.class);
         slider = new Slider(minValue, maxValue, stepSize, false, sliderStyle);
         slider.setBounds(WORLD_WIDTH / 2 - 265, WORLD_HEIGHT * 0.78f, 250, 40);
+        opTable.add(slider).width(250f).height(40f).row(); // Add the slider to the table
 
         TextButton quit = new TextButton("Back", opSkin, "default");
-        quit.setPosition(WORLD_WIDTH - 150f, WORLD_HEIGHT * 0.1f);
+        opTable.add(quit).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
+        //quit.setPosition(WORLD_WIDTH - 150f, WORLD_HEIGHT * 0.1f);
+        opTable.add(optionsVolume).padRight(WORLD_WIDTH - 150f);
 
-        opStage.addActor(optionsTitle);
-        opStage.addActor(optionsVolume);
-        opStage.addActor(slider);
-        opStage.addActor(quit);
+        //opStage.addActor(quit);
 
         slider.addListener(new ChangeListener() {
             @Override
@@ -94,8 +142,13 @@ public class OptionsStageManager {
                 subGame.setScreen(subGame.getMenuRenderer());
             }
         });
+    }
 
-
+    private Label createTitle() {
+        Label menuTitle = new Label(OPTIONS_TITLE_TEXT, opSkin);
+        menuTitle.setColor(TITLE_COLOR);
+        menuTitle.setFontScale(FONT_MENU_SIZE);
+        return menuTitle;
     }
 
 

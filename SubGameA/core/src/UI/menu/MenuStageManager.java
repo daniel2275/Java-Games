@@ -118,16 +118,17 @@ public class MenuStageManager {
             switch (buttonLabel) {
                 case MENU_BUTTON_PLAY_TEXT:
                     // Handle play button click
-                    subGame.setScreen(subGame.gamePlayScreen());
-                    if(subGame.gamePlayScreen().isPaused()) {
-                        subGame.gamePlayScreen().resume();
+                    subGame.setScreen(subGame.gameScreen());
+                    if(subGame.gameScreen().isPaused()) {
+                        subGame.gameScreen().resume();
                     }
                     break;
                 case MENU_BUTTON_OPTION_TEXT:
                     subGame.setScreen(subGame.getOptions());
                     break;
                 case MENU_BUTTON_RESET_TEXT:
-                    subGame.getUpgradeStore().resetUpgrades();
+                    subGame.gameScreen().reset();
+                    //subGame.getUpgradeStore().setDefaults();
                     // Handle reset button click
                     break;
                 case MENU_BUTTON_QUIT_TEXT:

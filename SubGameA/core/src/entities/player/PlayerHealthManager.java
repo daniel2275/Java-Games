@@ -2,23 +2,23 @@ package entities.player;
 
 public class PlayerHealthManager {
 
-    private float maxHealth = 100f;
-    private float playerHealth = 100f;
+    private int maxHealth = 100;
+    private int playerHealth = 100;
     private Player player;
 
     public PlayerHealthManager(Player player){
         this.player = player;
     }
 
-    public float getMaxHealth() {
+    public int getMaxHealth() {
         return maxHealth;
     }
 
-    public float getPlayerHealth() {
+    public int getPlayerHealth() {
         return playerHealth;
     }
 
-    public void setPlayerHealth(float playerHealth) {
+    public void setPlayerHealth(int playerHealth) {
         this.playerHealth = playerHealth;
         player.getPlayerActor().setCurrentHealth(playerHealth);
     }

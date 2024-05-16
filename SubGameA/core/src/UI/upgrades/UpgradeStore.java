@@ -2,27 +2,17 @@ package UI.upgrades;
 
 import UI.game.GameScreen;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Json;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import gamestates.Gamestate;
-
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UpgradeStore implements Screen {
-    private Map<String, Upgrade> upgrades;
+//    private Map<String, Upgrade> saveGame;
 
     private GameScreen gameScreen;
     private UpgradeStageManager upgradeStageManager;
 
-    private Upgrade upgradeSpeed;
-    private Upgrade upgradeFireRate;
+    private UpgradeManager upgradeManager;
 
     private Stage upStage;
 
@@ -31,10 +21,13 @@ public class UpgradeStore implements Screen {
     public UpgradeStore(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         this.playerScore = gameScreen.getPlayer().getPlayerScore();
-        loadDefaults();
+        upgradeManager = new UpgradeManager();
+
+        //this.saveGame = UpgradeDeserialization.loadUpgrades(Gdx.app.getPreferences("my_prefs"));
         loadInit();
         this.upgradeStageManager = new UpgradeStageManager(gameScreen, this);
-        upStage =  upgradeStageManager.build();
+
+        upStage = upgradeStageManager.build();
     }
 
     @Override
@@ -45,7 +38,6 @@ public class UpgradeStore implements Screen {
     @Override
     public void render(float delta) {
         upgradeStageManager.getScoreLbl().setText("Score: " + gameScreen.getPlayer().getPlayerScore());
-        //Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         upStage.act(delta);
         upStage.draw();
@@ -89,142 +81,82 @@ public class UpgradeStore implements Screen {
     }
 
     public void loadInit() {
-        Preferences prefs = Gdx.app.getPreferences("my_prefs");
+        boolean loadSuccessful = upgradeManager.loadFromPrefs();
 
-        String jsonStringDefault = prefs.getString("upgrades", null);
-        if (jsonStringDefault != null) {
-            Map<String, Upgrade> upgrades = new Gson().fromJson(jsonStringDefault, new TypeToken<Map<String, Upgrade>>(){}.getType());
-        } else {
-            // Handle the case where upgrades are not set yet
-            upgrades = new HashMap<>();
+        if (!loadSuccessful) {
+            setDefaults();
         }
-
-        float playerScoreInit = prefs.getFloat("playerScore", 0);
+        // Get SaveGame values
+        int playerScoreInit = upgradeManager.getSaveGame("SaveGame").getPlayerScore();
         gameScreen.getPlayer().setPlayerScore(playerScoreInit);
 
-        float playerHealthInit = prefs.getFloat("playerHealth", 100); // Default health if not set
+        int playerHealthInit = upgradeManager.getSaveGame("SaveGame").getPlayerHealth();
         gameScreen.getPlayer().setPlayerHealth(playerHealthInit);
 
-        int levelInit = prefs.getInteger("level", 1); // Default level if not set
+        int levelInit = upgradeManager.getSaveGame("SaveGame").getLevel();
         gameScreen.getLevelManager().getLevel().setTotalLevels(levelInit);
 
-        float reloadSpeed = prefs.getFloat("reloadSpeed", 1.0f); // Default reload speed if not set
+        float volume = upgradeManager.getSaveGame("SaveGame").getVolume();
+        gameScreen.getSubGame().getOptions().setVolume(volume);
+
+        // Get Upgraded values
+        float reloadSpeed = upgradeManager.getUpgrade("FireRate").getActualValue();
         gameScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
 
-        float playerSpeed = prefs.getFloat("playerSpeed", 1.0f); // Default player speed if not set
+        float playerSpeed = upgradeManager.getUpgrade("Speed").getActualValue();
         gameScreen.getPlayer().setPlayerSpeed(playerSpeed);
 
-        float volume = prefs.getFloat("volume", 0.5f); // Default volume if not set
-        gameScreen.getSubGame().getOptions().setVolume(volume);
     }
 
 
-
     public void load() {
-        Preferences prefs = Gdx.app.getPreferences("my_prefs");
 
-        String jsonStringDefault = prefs.getString("upgrades", null);
-        Gson gson = new Gson();
-        Type type = new TypeToken<HashMap<String, Upgrade>>(){}.getType();
-        HashMap<String, Upgrade> upgrades = gson.fromJson(jsonStringDefault, type);
+        //loadInit(); // Load initial settings first
 
-
-        float reloadSpeed = prefs.getFloat("reloadSpeed");
+        // Load specific game settings
+        float reloadSpeed = upgradeManager.getUpgrade("FireRate").getActualValue();
         gameScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
 
-        float playerSpeed = prefs.getFloat("playerSpeed");
+        float playerSpeed = upgradeManager.getUpgrade("Speed").getActualValue();
         gameScreen.getPlayer().setPlayerSpeed(playerSpeed);
 
-        float volume = prefs.getFloat("volume");
+        float volume = upgradeManager.getSaveGame("SaveGame").getVolume();
         gameScreen.getSubGame().getOptions().setVolume(volume);
     }
 
 
     public void saveGame() {
-        Preferences prefs = Gdx.app.getPreferences("my_prefs");
-        String jsonString = new Json().toJson(upgrades);
-        prefs.putString("upgrades", jsonString);
-
-        prefs.putFloat("playerScore", gameScreen.getPlayer().getPlayerScore());
-        prefs.putFloat("playerHealth", gameScreen.getPlayer().getPlayerHealth());
-
+        // Update player score, health, level, reload speed, player speed, and volume
+        int playerScore = gameScreen.getPlayer().getPlayerScore();
+        int playerHealth = gameScreen.getPlayer().getPlayerHealth();
         int level = gameScreen.getLevelManager().getLevel().getTotalLevels();
-        System.out.println(Gamestate.state + " " + level);
-        prefs.putInteger("level", level);
+        float volume = gameScreen.getSubGame().getOptions().getVolume();
 
-        prefs.putFloat("reloadSpeed", gameScreen.getPlayer().getPlayerActor().getReloadSpeed());
-        prefs.putFloat("playerSpeed", gameScreen.getPlayer().getPlayerSpeed());
+        // Create values for saveGame
+        upgradeManager.addSaveGame("SaveGame", playerScore, playerHealth, level, volume);
 
-        prefs.putFloat("volume", gameScreen.getSubGame().getOptions().getVolume());
+        //UpgradeSerialization save;
+        upgradeManager.saveToPrefs();
 
-        prefs.flush();
     }
 
-    public void loadDefaults() {
-        upgradeSpeed = new Upgrade("Speed", 10f, 2f, 0f, 60f, 40, 0);
-        upgradeFireRate = new Upgrade("FireRate", 10f, 2f, 3f, 0f, 40, 0);
-        int playerScore = 1000;
-        float playerHealth = 100f;
 
-        int totalLevels = 0;
+    public void setDefaults() {
+        // Set default values for upgrades
+        upgradeManager.resetUpgrades();
+        upgradeManager.addUpgrade("Speed", 10, 10f, 60f, 10f, 40, 0);
+        upgradeManager.addUpgrade("FireRate", 10, 3f, 1f, 3f, 40, 0);
 
-        float reloadSpeed = 3f;
-        float playerSpeed = 10f;
+        // Set default values for player score, health, total levels, reload speed, player speed
+        upgradeManager.addSaveGame("SaveGame", 1000000000, 100, 0, 0.5f);
 
-        upgrades = new HashMap<>();
-        upgrades.put("Speed",upgradeSpeed);
-        upgrades.put("FireRate",upgradeFireRate);
+        upgradeManager.saveToPrefs();
 
-        Preferences prefs = Gdx.app.getPreferences("my_prefs");
-        String jsonString = new Json().toJson(upgrades);
-        prefs.putString("default_upgrades", jsonString);
-        prefs.putInteger("default_playerScore", playerScore);
-        prefs.putFloat("default_playerHealth", playerHealth);
-        prefs.putInteger("default_level", totalLevels);
-
-        prefs.putFloat("default_reloadSpeed", reloadSpeed);
-        prefs.putFloat("default_playerSpeed", playerSpeed);
-
-//        prefs.putFloat("volume", 1.0f);
-
-        prefs.flush();
+        //upgradeStageManager.resetUpgrades();
     }
 
-    public void resetUpgrades() {
-        Preferences prefs = Gdx.app.getPreferences("my_prefs");
-
-        String jsonStringDefault = prefs.getString("default_upgrades", null);
-
-        Gson gson = new Gson();
-        Type type = new TypeToken<HashMap<String, Upgrade>>(){}.getType();
-        HashMap<String, Upgrade> upgrades = gson.fromJson(jsonStringDefault, type);
-
-        int playerScoreInit = prefs.getInteger("default_playerScore");
-        gameScreen.getPlayer().setPlayerScore(playerScoreInit);
-
-        float playerHealthInit = prefs.getFloat("default_playerHealth");
-        gameScreen.getPlayer().setPlayerHealth(playerHealthInit);
-
-        int levelInit = prefs.getInteger("default_level");
-        gameScreen.getLevelManager().getLevel().setTotalLevels(levelInit);
-
-        float reloadSpeed = prefs.getFloat("default_reloadSpeed");
-        gameScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
-
-        float playerSpeed = prefs.getFloat("default_playerSpeed");
-        gameScreen.getPlayer().setPlayerSpeed(playerSpeed);
-
-        float volume = prefs.getFloat("volume");
-        gameScreen.getSubGame().getOptions().setVolume(volume);
-
-        saveGame();
-
-        upgradeStageManager.resetUpgrades();
+    public UpgradeManager getUpgradeManager() {
+        return upgradeManager;
     }
-
-    public Map<String, Upgrade> getUpgrades() {
-        return upgrades;
-    }
-
 
 }

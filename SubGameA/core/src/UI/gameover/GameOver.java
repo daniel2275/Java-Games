@@ -33,7 +33,7 @@ public class GameOver implements Screen {
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
                 Gamestate.state = Gamestate.MENU;
-                game.gamePlayScreen().reset();
+                game.gameScreen().reset();
 
                 System.out.println("HEEEEEEEEEE EEEEEEEEEEEEE");
 //                dispose();

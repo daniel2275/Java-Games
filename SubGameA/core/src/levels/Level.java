@@ -16,9 +16,9 @@ public class Level {
     private int totalLevels = 0;
     private EnemyManager enemyManager;
 
-    private float currentHealth = 100f;
+    private int currentHealth = 100;
 
-    private float maxHealth = currentHealth;
+    private int maxHealth = currentHealth;
     private GameScreen gameScreen;
 
     public Level(EnemyManager enemyManager, GameScreen gameScreen) {
@@ -256,7 +256,7 @@ public class Level {
         return currentHealth;
     }
 
-    public void setCurrentHealth(float currentHealth) {
+    public void setCurrentHealth(int currentHealth) {
         this.currentHealth = currentHealth;
     }
 
@@ -264,7 +264,7 @@ public class Level {
         return maxHealth;
     }
 
-    public void setMaxHealth(float maxHealth) {
+    public void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
     }
 }

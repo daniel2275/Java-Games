@@ -95,7 +95,7 @@ public class DepthCharge {
 //        return hitbox;
 //    }
 
-    public float getDpcDamage() {
+    public int getDpcDamage() {
         return dpcDamage;
     }
 

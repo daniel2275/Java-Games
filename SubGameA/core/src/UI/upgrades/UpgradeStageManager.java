@@ -60,7 +60,7 @@ public class UpgradeStageManager {
         TextButton playerFireRateDownBtn = new TextButton("Sub FireRate -", upSkin);
 
         playerSpeedDisplay = new ProgressBar(2, 100, 1, false, upSkin);
-        int percent = 0;
+        float percent = 0;
         playerSpeedDisplay.setValue(percent);
 
 
@@ -85,10 +85,9 @@ public class UpgradeStageManager {
             public void clicked(InputEvent event, float x, float y) {
                 pause = false;
                 gameScreen.resume();
-                gameScreen.getSubGame().setScreen(gameScreen.getSubGame().gamePlayScreen());
+                gameScreen.getSubGame().setScreen(gameScreen.getSubGame().gameScreen());
             }
         });
-
 
 
         upStage.addListener(new InputListener() {
@@ -97,21 +96,26 @@ public class UpgradeStageManager {
                 if (keycode == Input.Keys.ESCAPE) {
                     pause = false;
                     gameScreen.resume();
-                    gameScreen.getSubGame().setScreen(gameScreen.getSubGame().gamePlayScreen());
+                    gameScreen.getSubGame().setScreen(gameScreen.getSubGame().gameScreen());
                 }
                 return super.keyDown(event, keycode);
             }
         });
 
-        if (upgradeStore.getUpgrades().get("Speed") != null) {
-            percent = (upgradeStore.getUpgrades().get("Speed").getLevel() * 100) / upgradeStore.getUpgrades().get("Speed").getUpgTicks();
+        if (upgradeStore.getUpgradeManager().getUpgrade("Speed") != null) {
+
+            percent = ((float) (upgradeStore.getUpgradeManager().getUpgrade("Speed").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("Speed").getTicks());
+            if (upgradeStore.getUpgradeManager().getUpgrade("Speed").getUpgradeLevel()  == upgradeStore.getUpgradeManager().getUpgrade("Speed").getTicks()) {
+                speedCost.setText("MAX");
+            }
             playerSpeedDisplay.setValue(percent);
 
-            percent = (upgradeStore.getUpgrades().get("FireRate").getLevel() * 100) / upgradeStore.getUpgrades().get("FireRate").getUpgTicks();
+            percent = ((float) (upgradeStore.getUpgradeManager().getUpgrade("FireRate").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("FireRate").getTicks());
+
             playerFireRateDisplay.setValue(percent);
 
-            speedCost.setText(" " + upgradeStore.getUpgrades().get("Speed").getCost());
-            fireRateCost.setText(" " + upgradeStore.getUpgrades().get("FireRate").getCost());
+            speedCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("Speed").getCost());
+            fireRateCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("FireRate").getCost());
         }
 
         Table upTable = new Table();
@@ -128,8 +132,8 @@ public class UpgradeStageManager {
         Stack stackSpeed = new Stack();
         stackSpeed.add(playerSpeedDisplay);
         stackSpeed.add(speedCost);
-        speedCost.setAlignment(0,0);
-        upTable.add(stackSpeed).size(115,28);
+        speedCost.setAlignment(0, 0);
+        upTable.add(stackSpeed).size(115, 28);
         upTable.add(playerSpeedDownBtn).size(115, 28);
 
         // Player Fire Rate Controls
@@ -141,14 +145,14 @@ public class UpgradeStageManager {
         Stack stackFireRate = new Stack();
         stackFireRate.add(playerFireRateDisplay);
         stackFireRate.add(fireRateCost);
-        fireRateCost.setAlignment(0,0);
-        upTable.add(stackFireRate).size(115,28);
+        fireRateCost.setAlignment(0, 0);
+        upTable.add(stackFireRate).size(115, 28);
         upTable.add(playerFireRateDownBtn).size(115, 28);
 
         // Exit Button
         exitBtn.setColor(BUTTON_QUIT_COLOR);
         upTable.row().padTop(50);
-        upTable.add(exitBtn).size(345,50).colspan(3).pad(10);
+        upTable.add(exitBtn).size(345, 50).colspan(3).pad(10);
 
         upStage.addActor(upTable);
 
@@ -165,47 +169,59 @@ public class UpgradeStageManager {
     }
 
     private void labelBehavior(String property, int behavior, Label value, ProgressBar outputLbl) {
-        upgradeStore.load();
-        System.out.println("property " + property + " " + " behavior " + behavior + " value " + value);
-        float costIncrements = upgradeStore.getUpgrades().get(property).getCostIncrements();
-        float minUpg = upgradeStore.getUpgrades().get(property).getMinUpg();
-        float maxUpg = upgradeStore.getUpgrades().get(property).getMaxUpg();
-        float upgTicks = upgradeStore.getUpgrades().get(property).getUpgTicks();
-        float speed = getProperty(property);
-        float upgAmount = -((maxUpg - minUpg) / upgTicks) * behavior;
-        int level = upgradeStore.getUpgrades().get(property).getLevel();
-        float playerScore = gameScreen.getPlayer().getPlayerScore();
-        float baseCost;
+        UpgradeManager upgradeManager = upgradeStore.getUpgradeManager();
+        Upgrade upgrade = upgradeManager.getUpgrade(property);
+
+        int cost = upgrade.getCost();
+        float minUpg = upgrade.getMinUpgrade();
+        float maxUpg = upgrade.getMaxUpgrade();
+        int upgTicks = upgrade.getTicks();
+        float upgradeItem = getProperty(property);
+        float upgAmount = (minUpg > maxUpg) ? ((minUpg - maxUpg) / upgTicks) * behavior : -((maxUpg - minUpg) / upgTicks) * behavior;
+
+        System.out.println("Upgrade amount: " + upgAmount);
+
+        int level = upgrade.getUpgradeLevel();
+        int playerScore = upgradeManager.getSaveGame("SaveGame").getPlayerScore();
+        int baseCost;
+
         if (behavior == 1) {
-            baseCost = (upgradeStore.getUpgrades().get(property).getCost() - costIncrements) * behavior;
+            baseCost = (cost - cost / 2) * behavior;
             level--;
-        } else {
-            baseCost = (upgradeStore.getUpgrades().get(property).getCost()) * behavior;
+        } else if (behavior == -1) {
+            baseCost = cost * behavior;
             level++;
+        } else {
+            // Handle invalid behavior
+            throw new IllegalArgumentException("Invalid behavior: " + behavior);
         }
-        if ((playerScore + baseCost >= 0) && (playerScore + baseCost <= upgradeStore.getPlayerScore()) && (level >= 0) && (level <= upgTicks)) {
-            if (Math.abs(speed - maxUpg) > 0) {
-                if (behavior == -1) {
-                    playerScore += baseCost;
-                    upgradeStore.getUpgrades().get(property).upgrade();
-                } else {
-                    playerScore += baseCost;
-                    upgradeStore.getUpgrades().get(property).downgrade();
-                }
-                float newSpeed = speed + upgAmount;
-                setProperty(property, newSpeed);
 
-                scoreLbl.setText("(Score:)" + gameScreen.getPlayer().getPlayerScore());
-                float percent = (upgradeStore.getUpgrades().get(property).getLevel() * 100) / upgTicks;
-                outputLbl.setValue(percent);
-                baseCost = upgradeStore.getUpgrades().get(property).getCost();
-                value.setText(" " + baseCost);
-                gameScreen.getPlayer().setPlayerScore(playerScore);
-
-                upgradeStore.saveGame();
+        if ((playerScore + baseCost >= 0) && (level >= 0) && (level <= upgTicks)) {
+            if (behavior == -1) {
+                upgradeManager.buyUpgrade(property);
+            } else {
+                upgradeManager.sellUpgrade(property);
             }
+
+            playerScore += baseCost;
+
+            // Set values on game parameters
+            float newUpgradeItem = upgradeItem + upgAmount;
+            setProperty(property, newUpgradeItem);
+            System.out.println("Upgrade item: " + newUpgradeItem);
+
+            float percent = (float) (level * 100) / upgTicks;
+            outputLbl.setValue(percent);
+
+            baseCost = upgrade.getCost();
+            value.setText(" " + baseCost);
+            gameScreen.getPlayer().setPlayerScore(playerScore);
+
+            upgradeStore.saveGame();
         }
     }
+
+
 
     public float getProperty(String property) {
         switch ( property ) {
@@ -223,10 +239,12 @@ public class UpgradeStageManager {
         switch ( property ) {
             case "Speed": {
                 gameScreen.getPlayer().setPlayerSpeed(speed);
+                upgradeStore.getUpgradeManager().getUpgrade("Speed").setActualValue(speed);
                 break;
             }
             case "FireRate": {
                 gameScreen.getPlayer().getPlayerActor().setReloadSpeed(speed);
+                upgradeStore.getUpgradeManager().getUpgrade("FireRate").setActualValue(speed);
                 break;
             }
         }
@@ -242,16 +260,12 @@ public class UpgradeStageManager {
     }
 
     public void resetUpgrades() {
-        int percent;
-
-        percent = (upgradeStore.getUpgrades().get("Speed").getLevel() * 100) / upgradeStore.getUpgrades().get("Speed").getUpgTicks();
+        int percent = 0;
         playerSpeedDisplay.setValue(percent);
-
-        percent = (upgradeStore.getUpgrades().get("FireRate").getLevel() * 100) / upgradeStore.getUpgrades().get("FireRate").getUpgTicks();
         playerFireRateDisplay.setValue(percent);
 
-        speedCost.setText(" " + upgradeStore.getUpgrades().get("Speed").getCost());
-        fireRateCost.setText(" " + upgradeStore.getUpgrades().get("FireRate").getCost());
+        speedCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("Speed").getCost());
+        fireRateCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("FireRate").getCost());
     }
 }
 

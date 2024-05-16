@@ -15,8 +15,8 @@ public class EnemyBuilder {
     private String spriteAtlas = "";
     private float speed = 0f;
     private boolean aggro = false;
-    private float currentHealth = 0f;
-    private float maxHealth = 0f;
+    private int currentHealth = 0;
+    private int maxHealth = 0;
     private boolean sub = false;
     private int enemyPoints = 10;
     private int enemyWidth = 64;
@@ -73,7 +73,7 @@ public class EnemyBuilder {
 //        return this;
 //    }
 
-    public EnemyBuilder withMaxHealth(float maxHealth) {
+    public EnemyBuilder withMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
         return this;
     }

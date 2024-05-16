@@ -178,7 +178,7 @@ public class GameScreen implements Screen {
         objectManager.reset();
         levelManager.reset();
         player.reset();
-        upgrades.resetUpgrades();
+        upgrades.setDefaults();
     }
 
     public EnemyManager getEnemyManager() {

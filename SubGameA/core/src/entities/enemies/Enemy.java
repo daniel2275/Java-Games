@@ -20,9 +20,9 @@ import static utilities.Constants.Game.WORLD_WIDTH;
 public class Enemy {
     private int enemyWidth;
     private int enemyHeight;
-    private float currentHealth;
-    private float maxHealth;
-    private float enemyPoints = 10;
+    private int currentHealth;
+    private int maxHealth;
+    private int enemyPoints = 10;
     private float enemySpeed, speed;
     private String name;
     private boolean dying = false;
@@ -46,7 +46,7 @@ public class Enemy {
     private AnimatedActor enemyActor;
     ChargeDeployer chargeDeployer;
 
-    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro, float maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro, int maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
         this.name = name;
         this.flipX = flipX;
         this.delay = delay;
@@ -74,7 +74,7 @@ public class Enemy {
         gameScreen.getGmStage().addActor(enemyActor);
     }
 
-    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, float maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, int maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
         this(gameScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, maxHealth, enemyPoints, enemyWidth, enemyHeight,  subGame);
         this.sub = sub;
         this.direction = "";
@@ -266,7 +266,7 @@ public class Enemy {
         this.flipY = flipY;
     }
 
-    public float getEnemyPoints() {
+    public int getEnemyPoints() {
         return enemyPoints;
     }
 

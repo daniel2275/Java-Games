@@ -58,7 +58,7 @@ public class SubGame extends Game {
 		return options;
 	}
 
-	public GameScreen gamePlayScreen() {
+	public GameScreen gameScreen() {
 		return gameScreen;
 	}
 

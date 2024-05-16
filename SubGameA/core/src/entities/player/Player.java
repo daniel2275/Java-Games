@@ -8,7 +8,7 @@ import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
 import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
 
 public class Player {
-    private float playerScore = 1000;
+    private int playerScore = 1000;
     private float stateTime;
     private boolean left, right, up, down, sunk = true;
     private float reload = 0;
@@ -54,7 +54,7 @@ public class Player {
     }
 
     public void reset() {
-        playerHealthManager.setPlayerHealth(100f);
+        playerHealthManager.setPlayerHealth(100);
         playerCollisionDetector.setCollisionDamage(5f);
         playerMovement.setPlayerSpeed(0.2f);
         playerScore = 1000;
@@ -105,11 +105,11 @@ public class Player {
         return down;
     }
 
-    public float getPlayerScore() {
+    public int getPlayerScore() {
         return playerScore;
     }
 
-    public void setPlayerScore(float playerScore) {
+    public void setPlayerScore(int playerScore) {
         this.playerScore = playerScore;
     }
 
@@ -134,11 +134,11 @@ public class Player {
         return this.xOffset;
     }
 
-    public void setPlayerHealth(float playerHealthInit) {
+    public void setPlayerHealth(int playerHealthInit) {
         playerHealthManager.setPlayerHealth(playerHealthInit);
     }
 
-    public float getPlayerHealth() {
+    public int getPlayerHealth() {
         return playerHealthManager.getPlayerHealth();
     }
 

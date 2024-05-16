@@ -81,7 +81,7 @@ class UpgradeManager implements Serializable {
     public void sellUpgrade(String name) {
         Upgrade upgrade = upgrades.get(name);
         if (upgrade != null && upgrade.getUpgradeLevel() > 0) {
-            int newCost = upgrade.getCost() / 2;
+            int newCost = upgrade.getCost() - 100 ;
             if (newCost > 0) {
                 upgrade.setCost(newCost);
             }

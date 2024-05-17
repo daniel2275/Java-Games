@@ -169,56 +169,114 @@ public class UpgradeStageManager {
         });
     }
 
+//    private void labelBehavior(String property, int behavior, Label value, ProgressBar outputLbl) {
+//        UpgradeManager upgradeManager = upgradeStore.getUpgradeManager();
+//        Upgrade upgrade = upgradeManager.getUpgrade(property);
+//
+//        float minUpg = upgrade.getMinUpgrade();
+//        float maxUpg = upgrade.getMaxUpgrade();
+//        int upgTicks = upgrade.getTicks();
+//        float upgradeItem = getProperty(property);
+//        float upgAmount = (minUpg > maxUpg) ? ((minUpg - maxUpg) / upgTicks) * behavior : -((maxUpg - minUpg) / upgTicks) * behavior;
+//
+//        int level = upgrade.getUpgradeLevel();
+//        int playerScore = upgradeManager.getSaveGame("SaveGame").getPlayerScore();
+//        int baseCost = upgrade.getCost() * behavior ;
+//
+//        if ((playerScore + baseCost >= 0) && ((level - behavior) <= upgTicks) && ((level - behavior) >= 0)) {
+//            if (behavior == -1) {
+//                upgradeManager.buyUpgrade(property);
+//                level++;
+//            } else {
+//                upgradeManager.sellUpgrade(property);
+//                baseCost =upgrade.getCost();
+//                level--;
+//            }
+//
+//            playerScore += baseCost;
+//
+//            // Set values on game parameters
+//            float newUpgradeItem = upgradeItem + upgAmount;
+//            setProperty(property, newUpgradeItem);
+//
+//            float percent = (float) (level * 100) / upgTicks;
+//            outputLbl.setValue(percent);
+//
+//            if (level==upgTicks){
+//                value.setText("MAX");
+//            } else {
+//                value.setText(" " + baseCost);
+//            }
+//
+//            gameScreen.getPlayer().setPlayerScore(playerScore);
+//
+//            upgradeStore.saveGame();
+//        }
+//    }
+
     private void labelBehavior(String property, int behavior, Label value, ProgressBar outputLbl) {
         UpgradeManager upgradeManager = upgradeStore.getUpgradeManager();
         Upgrade upgrade = upgradeManager.getUpgrade(property);
 
+        float minUpgrade = upgrade.getMinUpgrade();
+        float maxUpgrade = upgrade.getMaxUpgrade();
+        int upgradeTicks = upgrade.getTicks();
+        float currentProperty = getProperty(property);
+        float upgradeAmount = calculateUpgradeAmount(minUpgrade, maxUpgrade, upgradeTicks, behavior);
 
-        float minUpg = upgrade.getMinUpgrade();
-        float maxUpg = upgrade.getMaxUpgrade();
-        int upgTicks = upgrade.getTicks();
-        float upgradeItem = getProperty(property);
-        float upgAmount = (minUpg > maxUpg) ? ((minUpg - maxUpg) / upgTicks) * behavior : -((maxUpg - minUpg) / upgTicks) * behavior;
-
-        System.out.println("Upgrade amount: " + upgAmount);
-
-        int level = upgrade.getUpgradeLevel();
+        int currentLevel = upgrade.getUpgradeLevel();
         int playerScore = upgradeManager.getSaveGame("SaveGame").getPlayerScore();
-        int baseCost = upgrade.getCost();;
-        int cost;
+        int baseCost = upgrade.getCost() * behavior;
 
-
-        if ((playerScore + baseCost >= 0) && (level >= 0) && (level <= upgTicks)) {
+        if (isValidUpgrade(playerScore, baseCost, currentLevel, upgradeTicks, behavior)) {
             if (behavior == -1) {
-                upgradeManager.buyUpgrade(property);
-                cost = upgrade.getCost();
-                baseCost = cost * behavior;
-                level++;
+                processUpgradePurchase(upgradeManager, property);
+                currentLevel++;
             } else {
-                upgradeManager.sellUpgrade(property);
-                cost = upgrade.getCost();
-                baseCost = (cost - 100) * behavior;
-                level--;
+                processUpgradeSale(upgradeManager, property);
+                baseCost = upgrade.getCost(); // Refresh cost for selling
+                currentLevel--;
             }
 
             playerScore += baseCost;
 
-            // Set values on game parameters
-            float newUpgradeItem = upgradeItem + upgAmount;
-            setProperty(property, newUpgradeItem);
-            System.out.println("Upgrade item: " + newUpgradeItem);
+            // Update game parameters
+            float newPropertyValue = currentProperty + upgradeAmount;
+            setProperty(property, newPropertyValue);
 
-            float percent = (float) (level * 100) / upgTicks;
-            outputLbl.setValue(percent);
+            float progressPercent = (float) (currentLevel * 100) / upgradeTicks;
+            outputLbl.setValue(progressPercent);
 
-            baseCost = upgrade.getCost();
-            value.setText(" " + baseCost);
+            if (currentLevel == upgradeTicks) {
+                value.setText("MAX");
+            } else {
+                value.setText(" " + Math.abs(baseCost));
+            }
+
             gameScreen.getPlayer().setPlayerScore(playerScore);
-
             upgradeStore.saveGame();
         }
     }
 
+    private float calculateUpgradeAmount(float minUpgrade, float maxUpgrade, int upgradeTicks, int behavior) {
+        if (minUpgrade > maxUpgrade) {
+            return ((minUpgrade - maxUpgrade) / upgradeTicks) * behavior;
+        } else {
+            return -((maxUpgrade - minUpgrade) / upgradeTicks) * behavior;
+        }
+    }
+
+    private boolean isValidUpgrade(int playerScore, int baseCost, int currentLevel, int upgradeTicks, int behavior) {
+        return (playerScore + baseCost >= 0) && ((currentLevel - behavior) <= upgradeTicks) && ((currentLevel - behavior) >= 0);
+    }
+
+    private void processUpgradePurchase(UpgradeManager upgradeManager, String property) {
+        upgradeManager.buyUpgrade(property);
+    }
+
+    private void processUpgradeSale(UpgradeManager upgradeManager, String property) {
+        upgradeManager.sellUpgrade(property);
+    }
 
 
 public float getProperty(String property) {

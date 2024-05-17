@@ -72,7 +72,7 @@ class UpgradeManager implements Serializable {
                 upgrade.setCost(newCost);
             }
             upgrade.setUpgradeLevel(upgrade.getUpgradeLevel() + 1);
-            System.out.println("Bought upgrade: " + name + " for " + upgrade.getCost());
+            System.out.println("Bought upgrade: " + name + " for " + (upgrade.getCost()-100));
         } else {
             System.out.println("Upgrade " + name + " is already at maximum level.");
         }
@@ -86,7 +86,7 @@ class UpgradeManager implements Serializable {
                 upgrade.setCost(newCost);
             }
             upgrade.setUpgradeLevel(upgrade.getUpgradeLevel() - 1);
-            System.out.println("Sold upgrade: " + name + " for " + upgrade.getCost());
+            System.out.println("Sold upgrade: " + name + " for " + (upgrade.getCost()+100));
         } else {
             System.out.println("No upgrade " + name + " to sell.");
         }

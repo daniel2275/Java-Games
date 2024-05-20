@@ -1,9 +1,6 @@
 package levels;
 
-import entities.enemies.Enemy;
 import UI.game.GameScreen;
-
-import java.util.List;
 
 public class LevelManager {
     private GameScreen gameScreen;
@@ -39,9 +36,9 @@ public class LevelManager {
         level.setCurrentHealth(100);
         level.setMaxHealth(100);
         // remove all enemies from the enemy manager
-        List<Enemy> enemies = gameScreen.getEnemyManager().getListOfEnemies();
-        for (Enemy enemy : enemies) {
-            gameScreen.getEnemyManager().reset();
-        }
+//        List<Enemy> enemies = gameScreen.getEnemyManager().getListOfEnemies();
+//        for (Enemy enemy : enemies) {
+//            gameScreen.getEnemyManager().reset();
+//        }
     }
 }

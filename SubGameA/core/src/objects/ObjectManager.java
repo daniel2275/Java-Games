@@ -36,6 +36,7 @@ public class ObjectManager implements Pausable {
 
     public void reset() {
         // Reset any other variables or objects that need to be reset to their default values.
+        dispose();
         torpedoes.clear();
         depthCharges.clear();
         torpedoLoading.reset();
@@ -149,7 +150,7 @@ public class ObjectManager implements Pausable {
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
         if (torpedo.getTorpedoActor().getY() >= WORLD_HEIGHT - Constants.Game.SKY_SIZE - Torpedo.TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
-                gameScreen.getGmStage().getActors().removeValue(torpedo.getTorpedoActor(),false);
+                torpedo.getTorpedoActor().remove();
                 torpedoIterator.remove();
                 return true;
             }
@@ -183,17 +184,21 @@ public class ObjectManager implements Pausable {
         return ((enemyTorpedo.getTorpedoActor().getX() > 0 && enemyTorpedo.getTorpedoActor().getX() < WORLD_WIDTH) && (enemyTorpedo.getTorpedoActor().getY() > 0 && enemyTorpedo.getTorpedoActor().getY() < WORLD_HEIGHT - Constants.Game.SKY_SIZE ));
     }
 
-    public void exit () {
-        for (Torpedo torpedo : torpedoes) {
-            torpedo.exit();
-        }
+    public void dispose() {
         for (DepthCharge depthCharge : depthCharges) {
-            depthCharge.exit();
+            depthCharge.getDepthChargeActor().remove();
+        }
+        for (Torpedo torpedo : torpedoes) {
+            torpedo.getTorpedoActor().remove();
         }
     }
+
 
     @Override
     public void setPaused(boolean paused) {
         this.torpedoLoading.pause(paused);
     }
+
+
+
 }

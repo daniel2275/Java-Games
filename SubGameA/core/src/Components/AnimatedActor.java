@@ -22,7 +22,7 @@ public class AnimatedActor extends Actor implements  Pausable {
     private Animation<TextureRegion> idleAnimation, moveAnimation, upAnimation, downAnimation, hitAnimation, sunkAnimation, currentAnimation, tempAnimation;
     private TextureRegion healthBarTextureRegion;
     private float stateTime, previousX, previousY, reload, reloadSpeed, maxHealth, currentHealth, speed = moveSpeed, deltaTime = 0;
-    private boolean isHit, sunk, loops, killed;
+    private boolean isHit, sunk, loops;
     private String direction;
     private boolean paused = false;
 
@@ -82,6 +82,9 @@ public class AnimatedActor extends Actor implements  Pausable {
 
     @Override
     public void act(float delta) {
+        if (currentAnimation==null)
+            return;
+
         if (!paused) {
             super.act(delta);
 
@@ -92,10 +95,8 @@ public class AnimatedActor extends Actor implements  Pausable {
             deltaTime = delta;
             stateTime += delta;
 
-
             // If sunk, gradually fade out the actor
             if (currentHealth == 0 && !isSunk()) {
-
                 stateTime = 0;
                 // Make the label "?fade out" and move down
                 if (!(name.equals("torpedo") || name.equals("depthCharge"))) {
@@ -144,6 +145,8 @@ public class AnimatedActor extends Actor implements  Pausable {
     }
 
     private void updateAnimation() {
+        if (tempAnimation==null)
+            return;
         if (Objects.equals(direction, "R") && !name.equals("torpedo")) {
             currentAnimation = LoadSave.invertHorizontal(tempAnimation);
         } else {
@@ -154,6 +157,9 @@ public class AnimatedActor extends Actor implements  Pausable {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
+
+        if (currentAnimation==null)
+            return;
 
         // If sunk, gradually fade out the actor
         if (currentHealth == 0 && !(name.equals("torpedo") || name.equals("depthCharge")) ) {
@@ -306,10 +312,6 @@ public class AnimatedActor extends Actor implements  Pausable {
         setY(getY() + movementVector.y * speed * deltaTime);
     }
 
-    public boolean killed() {
-        return killed;
-    }
-
     public float getAngle() {
         return angle;
     }
@@ -325,5 +327,44 @@ public class AnimatedActor extends Actor implements  Pausable {
     @Override
     public void setPaused(boolean paused) {
         this.paused = paused;
+    }
+
+    @Override
+    public boolean remove(){
+        dispose();
+        return super.remove();
+    }
+
+
+    public void dispose() {
+        System.out.println("DISPOSED :" +  this.name);
+        if (this.name == "Player")
+            return;
+        if (idleAnimation != null) disposeAnimation(idleAnimation);
+        if (moveAnimation != null) disposeAnimation(moveAnimation);
+        if (upAnimation != null) disposeAnimation(upAnimation);
+        if (downAnimation != null) disposeAnimation(downAnimation);
+        if (hitAnimation != null) disposeAnimation(hitAnimation);
+        if (sunkAnimation != null) disposeAnimation(sunkAnimation);
+
+        idleAnimation = null;
+        moveAnimation = null;
+        upAnimation = null;
+        downAnimation = null;
+        hitAnimation = null;
+        sunkAnimation = null;
+
+        if (healthBarTextureRegion != null && healthBarTextureRegion.getTexture() != null) {
+            healthBarTextureRegion.getTexture().dispose();
+            healthBarTextureRegion = null;
+        }
+    }
+
+    private void disposeAnimation(Animation<TextureRegion> animation) {
+        for (TextureRegion frame : animation.getKeyFrames()) {
+            if (frame.getTexture() != null) {
+                frame.getTexture().dispose();
+            }
+        }
     }
 }

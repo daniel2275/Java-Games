@@ -177,8 +177,10 @@ public class GameScreen implements Screen {
         System.out.println("Playing reset");
         objectManager.reset();
         levelManager.reset();
+        enemyManager.reset();
         player.reset();
         upgrades.setDefaults();
+        upgrades.loadInit();
     }
 
     public EnemyManager getEnemyManager() {

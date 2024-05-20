@@ -247,6 +247,8 @@ public class UpgradeStageManager {
             float progressPercent = (float) (currentLevel * 100) / upgradeTicks;
             outputLbl.setValue(progressPercent);
 
+            baseCost = upgrade.getCost();
+
             if (currentLevel == upgradeTicks) {
                 value.setText("MAX");
             } else {

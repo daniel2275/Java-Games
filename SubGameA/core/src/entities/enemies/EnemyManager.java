@@ -21,11 +21,8 @@ public class EnemyManager {
 
     public void reset() {
         // clear the list of enemies
-        Iterator<Enemy> enemyIterator = listOfEnemies.iterator();
-        while (enemyIterator.hasNext()) {
-            Enemy enemy = enemyIterator.next();
-            enemy.setQuit(true);
-        }
+        dispose();
+        listOfEnemies.clear();
     }
 
     public void update(Player player, ObjectManager objectManager) {
@@ -39,6 +36,7 @@ public class EnemyManager {
                 enemyIterator.remove();
             } else if (enemy.isQuit()) {
                 enemy.setQuit(false);
+                //enemy.getEnemyActor().dispose();
                 enemyIterator.remove();
             } else {
                 enemy.update(player);
@@ -96,11 +94,18 @@ public class EnemyManager {
 //        listOfEnemies.forEach(Enemy::resume);
     }
 
-    public void exit() {
-        listOfEnemies.forEach(enemyA -> {
-            enemyA.exit();
-        });
+//    public void exit() {
+//        listOfEnemies.forEach(enemyA -> {
+//            enemyA.exit();
+//        });
+//    }
+
+    public void dispose(){
+        for (Enemy enemy : listOfEnemies) {
+            enemy.getEnemyActor().remove();
+        }
     }
+
 
     public void toFront() {
         listOfEnemies.forEach(enemyA -> {

@@ -41,7 +41,6 @@ public class SubGame extends Game {
 
 		menuScreen = new MenuScreen(this);
 
-
 		options = new Options(this);
 		gameScreen = new GameScreen(Gdx.graphics.getDeltaTime(), this);
 		upgradeStore = new UpgradeStore(gameScreen);

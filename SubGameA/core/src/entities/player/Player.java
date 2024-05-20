@@ -49,20 +49,22 @@ public class Player {
     }
 
     public void update() {
-            playerMovement.checkDirection();
-            playerCollisionDetector.checkCollision();
+          playerMovement.checkDirection();
+          playerCollisionDetector.checkCollision();
     }
 
     public void reset() {
-        playerHealthManager.setPlayerHealth(100);
-        playerCollisionDetector.setCollisionDamage(5f);
-        playerMovement.setPlayerSpeed(0.2f);
-        playerScore = 1000;
-        stateTime = 0;
-        sunk = false;
-        reload = 0;
-       // reloadSpeed = 3f;
-        xOffset = 0;
+        playerActor.remove();
+//        playerHealthManager.setPlayerHealth(100);
+//        playerCollisionDetector.setCollisionDamage(5f);
+//        playerMovement.setPlayerSpeed(0.2f);
+//        playerScore = 1000;
+//        stateTime = 0;
+//        sunk = false;
+//        reload = 0;
+//        xOffset = 0;
+        initializePlayerActor();
+        gameScreen.getGmStage().addActor(playerActor);
     }
 
     public Rectangle getHitbox() {

@@ -1,14 +1,11 @@
 package objects.torpedo;
 
 import Components.AnimatedActor;
+import UI.game.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import UI.game.GameScreen;
 
 import static com.mygdx.sub.SubGame.pause;
 import static java.lang.Math.atan2;
@@ -19,13 +16,8 @@ public class Torpedo {
     public static final int TORPEDO_WIDTH = 16 ;
     public static final int TORPEDO_HEIGHT = 5 ;
     private int torpedoDamage = 50;
-    private String direction;
-    private Rectangle hitbox;
     private boolean enemy = false;
     private float stateTime;
-    private final TextureRegion[][] torpedoSprites =  new TextureRegion[4][8];;
-    private Animation<TextureRegion> torpedoUpAnimation;
-    private Animation<TextureRegion> torpedoExplode;
     private boolean explode = false;
     private float targetX;
     private float targetY;
@@ -42,12 +34,8 @@ public class Torpedo {
 
     public Torpedo(GameScreen gameScreen, float x, float y) {
         animationManager = new TorpedoAnimationManager(new Texture("torpedo-atlas.png"));
-        //loadAnimations("torpedo-atlas.png");
         this.gameScreen = gameScreen;
-        //hitbox = HelpMethods.initHitBox(x, y, TORPEDO_WIDTH, TORPEDO_HEIGHT);
-
         initializeTorpedo(x,y);
-
         gameScreen.getGmStage().addActor(torpedoActor);
     }
 
@@ -75,10 +63,6 @@ public class Torpedo {
         this.targetY = targetY;
     }
 
-//    public void update() {
-//        render();
-//    }
-
     // Torpedo screen coordinates
     public void updatePos() {
         if (!pause) {
@@ -86,27 +70,6 @@ public class Torpedo {
         }
         getShotCoordinates();
     }
-
-
-//    public void render() {
-//        TextureRegion currentFrame;
-//
-//        if (!pause) {
-//            stateTime += Gdx.graphics.getDeltaTime();
-//            updatePos();
-//        }
-//
-//        if (this.explode) {
-//        //    torpedoActor.isSunk(true);
-//            currentFrame = animationManager.getTorpedoExplodeAnimation().getKeyFrame(stateTime, false);
-//        } else {
-//            currentFrame = animationManager.getTorpedoUpAnimation().getKeyFrame(stateTime, true);
-//        }
-//
-//       // DrawAsset drawTorpedo = new DrawAsset(gamePlayScreen, currentFrame, hitbox, 0, 0, 1, 1, -1, -1, -1, Color.WHITE, TORPEDO_WIDTH, TORPEDO_HEIGHT, 1f, 1f, angle);
-//  //      drawTorpedo.draw();
-//
-//    }
 
     private void getShotCoordinates() {
         if (enemy) {
@@ -192,13 +155,6 @@ public class Torpedo {
 
     public float getAngle() {
         return angle;
-    }
-    public void exit() {
-        for (int i= 0; i <= 1; i++) {
-            for (int j= 0; j <= 7; j++) {
-                torpedoSprites[i][j].getTexture().dispose();
-            }
-        }
     }
 
     public AnimatedActor getTorpedoActor() {

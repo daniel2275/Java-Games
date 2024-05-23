@@ -12,12 +12,9 @@ import static utilities.Constants.Game.WORLD_WIDTH;
 public class Level {
 
     private int currentScreen;
-
     private int totalLevels = 0;
     private EnemyManager enemyManager;
-
     private int currentHealth = 100;
-
     private int maxHealth = currentHealth;
     private GameScreen gameScreen;
 
@@ -27,50 +24,30 @@ public class Level {
     }
 
     public void levelSelector() {
-        maxHealth += totalLevels * (1 + totalLevels) / 2f;
+        maxHealth += 10;
         currentHealth = maxHealth;
 
-        switch ( currentScreen ) {
-            case 1: {
+        switch ( LevelType.values()[currentScreen - 1] ) {
+            case LEVEL1:
                 level1();
                 break;
-            }
-            case 2: {
+            case LEVEL2:
                 level2();
                 break;
-            }
-            case 3: {
+            case LEVEL3:
                 level3();
                 break;
-            }
-            case 4: {
+            case LEVEL4:
                 level4();
                 break;
-            }
-            default: {
+            default:
                 currentScreen = 0;
-            }
         }
     }
 
-    private void level3() {
-        Enemy enemy1 = new EnemyBuilder(gameScreen)
-                .withName("enemy1")
-                .withSpawnPosX(-125)
-                .withSpriteAtlas("cv6-atlas.png")
-                .withSpeed(13f)
-                .withAggro(true)
-                .withMaxHealth(currentHealth * 3)
-                .withEnemyPoints(200)
-                .withEnemyWidth(128)
-                .withEnemyHeight(32)
-                .build();
-
-        enemyManager.addEnemy(enemy1);
-    }
 
 
-    private void level4() {
+    private void level1() {
         Enemy enemy1 = new EnemyBuilder(gameScreen)
                 .withName("enemy1")
                 .withSpawnPosX(-65)
@@ -120,7 +97,7 @@ public class Level {
                 .withSpriteAtlas("enemy-sub1.png")
                 .withSpeed(13f)
                 .withAggro(true)
-                .withMaxHealth(maxHealth)
+                .withMaxHealth(currentHealth)
                 .withSub(true)
                 .withEnemyPoints(10)
                 .withEnemyWidth(64)
@@ -135,7 +112,7 @@ public class Level {
                 .withSpriteAtlas("enemy-sub1.png")
                 .withSpeed(13f)
                 .withAggro(true)
-                .withMaxHealth(maxHealth)
+                .withMaxHealth(currentHealth)
                 .withSub(true)
                 .withEnemyPoints(10)
                 .withEnemyWidth(64)
@@ -148,8 +125,21 @@ public class Level {
         enemyManager.addEnemy(enemy4);
     }
 
-    private void level1() {
-//        Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
+    private void level3() {
+        Enemy enemy1 = new EnemyBuilder(gameScreen)
+                .withName("enemy1")
+                .withSpawnPosX(-65)
+                .withFlipX(-1)
+                .withSpriteAtlas("tanker-atlas.png")
+                .withSpeed(10f)
+                .withMaxHealth(currentHealth)
+                .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
+                .build();
+
+
+        //        Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
 //                .withSpawnPosX(-65)
 //                .withFlipX(-1)
 //                .withSpriteAtlas("tanker-atlas.png")
@@ -236,6 +226,23 @@ public class Level {
 //        enemyManager.addEnemy(enemy6);
     }
 
+    private void level4() {
+        Enemy enemy1 = new EnemyBuilder(gameScreen)
+                .withName("enemy1")
+                .withSpawnPosX(-125)
+                .withSpriteAtlas("cv6-atlas.png")
+                .withSpeed(13f)
+                .withAggro(true)
+                .withMaxHealth(currentHealth * 3)
+                .withEnemyPoints(50)
+                .withEnemyWidth(128)
+                .withEnemyHeight(32)
+                .build();
+
+        enemyManager.addEnemy(enemy1);
+    }
+
+
     public void setCurrentScreen(int currentScreen) {
         this.currentScreen = currentScreen;
     }
@@ -266,5 +273,13 @@ public class Level {
 
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
+    }
+
+    private enum LevelType {
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        LEVEL4,
+        LOOP
     }
 }

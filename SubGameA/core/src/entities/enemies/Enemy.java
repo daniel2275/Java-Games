@@ -286,6 +286,7 @@ public class Enemy {
         return enemyHeight;
     }
 
+
     public boolean delay() {
         float delaySeconds = delay;
         if (!delayComplete) {
@@ -330,6 +331,10 @@ public class Enemy {
 
     public AnimatedActor getEnemyActor() {
         return enemyActor;
+    }
+
+    public float getEnemySpeed() {
+        return enemySpeed;
     }
 
 }

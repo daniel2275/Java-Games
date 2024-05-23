@@ -25,10 +25,12 @@ public class GameStageManager {
     private CustomActor skyLine;
     private Sprite pauseSprite;
     private SubGame subGame;
+private GameScreen gameScreen;
 
-    public GameStageManager(SubGame subGame){
+    public GameStageManager(GameScreen gameScreen){
             gmStage = new Stage(new FitViewport(WORLD_WIDTH,WORLD_HEIGHT));
-            this.subGame = subGame;
+            //this.subGame = subGame;
+        this.gameScreen = gameScreen;
     }
         public Stage build() {
             loadSkin();
@@ -47,8 +49,9 @@ public class GameStageManager {
         private void createUIElements() {
             //set up UI display
             //background images
+
             skyLine = new CustomActor(new Texture(Gdx.files.internal("skyline.png")), 0 , WORLD_HEIGHT - SKY_SIZE  + 15);
-            underSea = new CustomActor(new Texture(Gdx.files.internal("sea1.png")),  0,- SKY_SIZE + 45 );
+            underSea = new CustomActor(new Texture(Gdx.files.internal("sea1.png")),  0,- SKY_SIZE + 45);
 
             scoreLabel = new Label("Enemies remaining:", gameSkin);
             scoreLabel1 = new Label("Score:", gameSkin);

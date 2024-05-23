@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import entities.enemies.EnemyManager;
 
 import static utilities.Constants.Game.WORLD_WIDTH;
 
@@ -11,8 +12,10 @@ public class CustomActor extends Actor implements Pausable {
     private Sprite sprite;
     private float playerX;
     private boolean paused = false;
+    private EnemyManager enemyManager;
 
     public CustomActor(Texture texture, float x, float y) {
+        this.enemyManager = enemyManager;
         sprite = new Sprite(texture);
 
         // Set initial position
@@ -49,10 +52,12 @@ public class CustomActor extends Actor implements Pausable {
             newX = 100 - playerX;
         } else if (playerX >= stageWidth - 100) {
             newX = -100 + (stageWidth - playerX);
+
         }
 
         return newX;
     }
+
 
     public void setPlayerX(float playerX) {
         this.playerX = playerX;

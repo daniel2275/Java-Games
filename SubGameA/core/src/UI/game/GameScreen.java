@@ -44,11 +44,11 @@ public class GameScreen implements Screen {
 
     public GameScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
-        this.gameStageManager = new GameStageManager(subGame);
+        this.gameStageManager = new GameStageManager(this);
 
         initClasses();
-        stateTime = delta;
 
+        stateTime = delta;
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
 
@@ -219,11 +219,6 @@ public class GameScreen implements Screen {
         gameStageManager.getStage().getViewport().update(width, height, true);
     }
 
-//    public ShapeRenderer getShapeRenderer()
-//    {
-//        return shapeRenderer;
-//    }
-
     @Override
     public void dispose() {
         gameStageManager.dispose();
@@ -240,5 +235,7 @@ public class GameScreen implements Screen {
     public boolean isPaused() {
         return paused;
     }
+
+
 }
 

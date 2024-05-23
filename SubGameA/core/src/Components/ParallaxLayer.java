@@ -30,9 +30,7 @@ public class ParallaxLayer extends Actor implements  Pausable{
             setPosition(getX() - speed * delta, getY());
             // Reset position if it moves out of the screen
             if (getX() + getWidth() <= 0) {
-                moveBy(previousX + totalWidth, getY());
-                //setPosition(previousX + totalWidth, getY());
-
+                moveBy(previousX + totalWidth, 0);
             }
         }
     }

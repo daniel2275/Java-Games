@@ -68,13 +68,21 @@ public class ObjectManager implements Pausable {
          }
     }
 
-
     public void dropCharge(Enemy enemy) {
-        if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying() && !enemy.isSub()) {
-            depthCharges.add(new DepthCharge(gameScreen,enemy.getEnemyActor().getX(), enemy.getEnemyActor().getY()));
-        } else if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying() && enemy.isSub()) {
-            if (checkBounds(enemy)) {
-                torpedoes.add(new Torpedo(gameScreen, enemy.getEnemyActor().getX() + (enemy.getEnemyWidth()/2f), enemy.getEnemyActor().getY()  + (enemy.getEnemyHeight()/2f), true, gameScreen.getPlayer().getPlayerActor().getX(), gameScreen.getPlayer().getPlayerActor().getY()));
+        if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying()) {
+            float enemyX = enemy.getEnemyActor().getX();
+            float enemyY = enemy.getEnemyActor().getY();
+
+            if (enemy.isSub()) {
+                if (checkBounds(enemy)) {
+                    float targetX = gameScreen.getPlayer().getPlayerActor().getX();
+                    float targetY = gameScreen.getPlayer().getPlayerActor().getY();
+                    float torpedoX = enemyX + (enemy.getEnemyWidth() / 2f);
+                    float torpedoY = enemyY + (enemy.getEnemyHeight() / 2f);
+                    torpedoes.add(new Torpedo(gameScreen, torpedoX, torpedoY, true, targetX, targetY));
+                }
+            } else {
+                depthCharges.add(new DepthCharge(gameScreen, enemyX, enemyY));
             }
         }
     }

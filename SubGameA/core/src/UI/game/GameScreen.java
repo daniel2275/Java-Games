@@ -32,7 +32,7 @@ public class GameScreen implements Screen {
     private LevelManager levelManager;
     private float stateTime;
     private SubGame subGame;
-    private UpgradeStore upgrades;
+    private UpgradeStore upgradeStore;
     private GameStageManager gameStageManager;
     private Stage gmStage;
     private InputHandler inputHandler;
@@ -70,7 +70,7 @@ public class GameScreen implements Screen {
         objectManager = new ObjectManager(this);
         enemyManager = new EnemyManager(this);
         levelManager = new LevelManager(this);
-        upgrades = new UpgradeStore(this);
+        upgradeStore = new UpgradeStore(this);
 
         //player.getPlayerActor().setPosition(player.getPlayerMovement().getSPAWN_X(),player.getPlayerMovement().getSPAWN_Y());
     }
@@ -89,7 +89,7 @@ public class GameScreen implements Screen {
             gameStageManager.getScoreLabel3().setText("Health:" + (int) (getPlayer().getPlayerActor().getCurrentHealth()));
 
 
-            upgrades.setPlayerScore(getPlayer().getPlayerScore());
+            upgradeStore.setPlayerScore(getPlayer().getPlayerScore());
 
             //adjust background image
             gameStageManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
@@ -174,13 +174,13 @@ public class GameScreen implements Screen {
     }
 
     public void reset() {
-        System.out.println("Playing reset");
         objectManager.reset();
         levelManager.reset();
         enemyManager.reset();
         player.reset();
-        upgrades.setDefaults();
-        upgrades.loadInit();
+        upgradeStore.setDefaults();
+        upgradeStore.getUpgradeStageManager().resetUpgrades();
+
     }
 
     public EnemyManager getEnemyManager() {
@@ -236,6 +236,8 @@ public class GameScreen implements Screen {
         return paused;
     }
 
-
+    public UpgradeStore getUpgradeStore() {
+        return upgradeStore;
+    }
 }
 

@@ -4,7 +4,6 @@ import UI.game.GameScreen;
 import UI.gameover.GameOver;
 import UI.menu.MenuScreen;
 import UI.options.Options;
-import UI.upgrades.UpgradeStore;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
@@ -19,7 +18,6 @@ public class SubGame extends Game {
 	private Options options;
 	private GameScreen gameScreen;
 	private GameOver gameOver;
-	private UpgradeStore upgradeStore;
 
 
 	@Override
@@ -43,7 +41,6 @@ public class SubGame extends Game {
 
 		options = new Options(this);
 		gameScreen = new GameScreen(Gdx.graphics.getDeltaTime(), this);
-		upgradeStore = new UpgradeStore(gameScreen);
 		gameOver = new GameOver(this);
 		setScreen(menuScreen);
 	}
@@ -65,7 +62,5 @@ public class SubGame extends Game {
 		return menuScreen;
 	}
 
-	public UpgradeStore getUpgradeStore() {
-		return upgradeStore;
-	}
+
 }

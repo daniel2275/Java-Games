@@ -39,6 +39,45 @@ class UpgradeManager implements Serializable {
         return saveGame.get(name);
     }
 
+    public void updateSaveGame(String name, int newPlayerScore, int newPlayerHealth, int newLevel, float newVolume) {
+        // Retrieve the SaveGame object from the map
+        SaveGame saveGame = this.saveGame.get(name);
+
+        // Check if the SaveGame object exists
+        if (saveGame != null) {
+            // Update the SaveGame fields with new values
+            saveGame.setPlayerScore(newPlayerScore);
+            saveGame.setPlayerHealth(newPlayerHealth);
+            saveGame.setLevel(newLevel);
+            saveGame.setVolume(newVolume);
+
+            // Put the updated SaveGame object back into the map
+            this.saveGame.put(name, saveGame);
+        } else {
+            System.out.println("SaveGame with the name " + name + " does not exist.");
+        }
+    }
+
+    public void addOrUpdateSaveGame(String name, int playerScore, int playerHealth, int level, float volume) {
+        // Check if the SaveGame object exists
+        SaveGame saveGame = this.saveGame.get(name);
+
+        if (saveGame != null) {
+            // Update the SaveGame fields with new values
+            saveGame.setPlayerScore(playerScore);
+            saveGame.setPlayerHealth(playerHealth);
+            saveGame.setLevel(level);
+            saveGame.setVolume(volume);
+        } else {
+            // Create a new SaveGame object and put it into the map
+            saveGame = new SaveGame(playerScore, playerHealth, level, volume);
+            this.saveGame.put(name, saveGame);
+        }
+
+
+    }
+
+
     // Upgrades
     public Map<String, Upgrade> getUpgrades() {
         return upgrades;
@@ -56,13 +95,48 @@ class UpgradeManager implements Serializable {
         upgrades.put(name, new Upgrade(cost, minUpgrade ,maxUpgrade, actualValue, ticks, upgradeLevel));
     }
 
-    public void resetUpgrades() {
-        for (Upgrade upgrade : upgrades.values()) {
-            upgrade.setUpgradeLevel(0);
-            upgrade.setCost(10);
+    public void updateUpgrade(String name, int newCost, float newMinUpgrade, float newMaxUpgrade, float newActualValue, int newTicks, int newUpgradeLevel) {
+        // Retrieve the Upgrade object from the map
+        Upgrade upgrade = this.upgrades.get(name);
+
+        // Check if the Upgrade object exists
+        if (upgrade != null) {
+            // Update the Upgrade fields with new values
+            upgrade.setCost(newCost);
+            upgrade.setMinUpgrade(newMinUpgrade);
+            upgrade.setMaxUpgrade(newMaxUpgrade);
+            upgrade.setActualValue(newActualValue);
+            upgrade.setTicks(newTicks);
+            upgrade.setUpgradeLevel(newUpgradeLevel);
+
+            // Put the updated Upgrade object back into the map
+            this.upgrades.put(name, upgrade);
+        } else {
+            System.out.println("Upgrade with the name " + name + " does not exist.");
         }
-        System.out.println("All upgrades have been reset.");
     }
+
+    public void addOrUpdateUpgrade(String name, int cost, float minUpgrade, float maxUpgrade, float actualValue, int ticks, int upgradeLevel) {
+        // Check if the Upgrade object exists
+        Upgrade upgrade = this.upgrades.get(name);
+
+        if (upgrade != null) {
+            // Update the Upgrade fields with new values
+            upgrade.setCost(cost);
+            upgrade.setMinUpgrade(minUpgrade);
+            upgrade.setMaxUpgrade(maxUpgrade);
+            upgrade.setActualValue(actualValue);
+            upgrade.setTicks(ticks);
+            upgrade.setUpgradeLevel(upgradeLevel);
+        } else {
+            // Create a new Upgrade object and put it into the map
+            upgrade = new Upgrade(cost, minUpgrade, maxUpgrade, actualValue, ticks, upgradeLevel);
+            this.upgrades.put(name, upgrade);
+        }
+    }
+
+
+
 
     public void buyUpgrade(String name) {
         Upgrade upgrade = upgrades.get(name);
@@ -97,6 +171,7 @@ class UpgradeManager implements Serializable {
         Preferences prefs = Gdx.app.getPreferences("upgrades");
         Gson gson = new Gson();
         String json = gson.toJson(this);
+        System.out.println(json);
         prefs.putString("UpgradeManager", json);
         prefs.flush();
     }
@@ -112,6 +187,8 @@ class UpgradeManager implements Serializable {
         if (upgradeManagerData != null) {
             this.saveGame = upgradeManagerData.getSavedValues();
             this.upgrades = upgradeManagerData.getUpgrades();
+
+
             return true;
         } else {
             System.out.println("Failed to load data from LibGDX Preferences.");
@@ -119,7 +196,6 @@ class UpgradeManager implements Serializable {
         }
 
     }
-
 }
 
 
@@ -150,6 +226,22 @@ class SaveGame {
 
     public float getVolume() {
         return volume;
+    }
+
+    public void setPlayerScore(int playerScore) {
+        this.playerScore = playerScore;
+    }
+
+    public void setPlayerHealth(int playerHealth) {
+        this.playerHealth = playerHealth;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void setVolume(float volume) {
+        this.volume = volume;
     }
 }
 
@@ -218,6 +310,5 @@ class Upgrade {
     public void setUpgradeLevel(int upgradeLevel) {
         this.upgradeLevel = upgradeLevel;
     }
-
 
 }

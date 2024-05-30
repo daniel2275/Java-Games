@@ -26,6 +26,8 @@ public class UpgradeStageManager {
     private Label scoreLbl;
     private ProgressBar playerSpeedDisplay;
     private ProgressBar playerFireRateDisplay;
+    private float percentSpeed;
+    private float percentFireRate;
     private Label speedCost;
     private Label fireRateCost;
 
@@ -60,12 +62,12 @@ public class UpgradeStageManager {
         TextButton playerFireRateDownBtn = new TextButton("Sub FireRate -", upSkin);
 
         playerSpeedDisplay = new ProgressBar(2, 100, 1, false, upSkin);
-        float percent = 0;
-        playerSpeedDisplay.setValue(percent);
+        percentSpeed = 0;
+        playerSpeedDisplay.setValue(percentSpeed);
 
 
         playerFireRateDisplay = new ProgressBar(2, 100, 1, false, upSkin);
-        int percentFireRate = 0;
+        percentFireRate = 0;
         playerFireRateDisplay.setValue(percentFireRate);
 
 
@@ -104,15 +106,15 @@ public class UpgradeStageManager {
 
         if (upgradeStore.getUpgradeManager().getUpgrade("Speed") != null) {
 
-            percent = ((float) (upgradeStore.getUpgradeManager().getUpgrade("Speed").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("Speed").getTicks());
+            percentSpeed = ((float) (upgradeStore.getUpgradeManager().getUpgrade("Speed").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("Speed").getTicks());
             if (upgradeStore.getUpgradeManager().getUpgrade("Speed").getUpgradeLevel() == upgradeStore.getUpgradeManager().getUpgrade("Speed").getTicks()) {
                 speedCost.setText("MAX");
             }
-            playerSpeedDisplay.setValue(percent);
+            playerSpeedDisplay.setValue(percentSpeed);
 
-            percent = ((float) (upgradeStore.getUpgradeManager().getUpgrade("FireRate").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("FireRate").getTicks());
+            percentSpeed = ((float) (upgradeStore.getUpgradeManager().getUpgrade("FireRate").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("FireRate").getTicks());
 
-            playerFireRateDisplay.setValue(percent);
+            playerFireRateDisplay.setValue(percentSpeed);
 
             speedCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("Speed").getCost());
             fireRateCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("FireRate").getCost());
@@ -281,49 +283,54 @@ public class UpgradeStageManager {
     }
 
 
-public float getProperty(String property) {
-    switch ( property ) {
-        case "Speed": {
-            return gameScreen.getPlayer().getPlayerSpeed();
+    public float getProperty(String property) {
+        switch ( property ) {
+            case "Speed": {
+                return gameScreen.getPlayer().getPlayerSpeed();
+            }
+            case "FireRate": {
+                return gameScreen.getPlayer().getPlayerActor().getReloadSpeed();
+            }
         }
-        case "FireRate": {
-            return gameScreen.getPlayer().getPlayerActor().getReloadSpeed();
+        return 0;
+    }
+
+    public void setProperty(String property, float speed) {
+        switch ( property ) {
+            case "Speed": {
+                gameScreen.getPlayer().setPlayerSpeed(speed);
+                upgradeStore.getUpgradeManager().getUpgrade("Speed").setActualValue(speed);
+                break;
+            }
+            case "FireRate": {
+                gameScreen.getPlayer().getPlayerActor().setReloadSpeed(speed);
+                upgradeStore.getUpgradeManager().getUpgrade("FireRate").setActualValue(speed);
+                break;
+            }
         }
     }
-    return 0;
-}
 
-public void setProperty(String property, float speed) {
-    switch ( property ) {
-        case "Speed": {
-            gameScreen.getPlayer().setPlayerSpeed(speed);
-            upgradeStore.getUpgradeManager().getUpgrade("Speed").setActualValue(speed);
-            break;
-        }
-        case "FireRate": {
-            gameScreen.getPlayer().getPlayerActor().setReloadSpeed(speed);
-            upgradeStore.getUpgradeManager().getUpgrade("FireRate").setActualValue(speed);
-            break;
-        }
+    private void loadSkin() {
+        // create a skin object
+        upSkin = new Skin(Gdx.files.internal(SKIN_FILE_PATH));
     }
-}
 
-private void loadSkin() {
-    // create a skin object
-    upSkin = new Skin(Gdx.files.internal(SKIN_FILE_PATH));
-}
+    public Label getScoreLbl() {
+        return scoreLbl;
+    }
 
-public Label getScoreLbl() {
-    return scoreLbl;
-}
+    public void resetUpgrades() {
+        percentSpeed = 0;
+        percentFireRate = 0;
+        playerSpeedDisplay.setValue(percentSpeed);
+        playerFireRateDisplay.setValue(percentFireRate);
 
-public void resetUpgrades() {
-    int percent = 0;
-    playerSpeedDisplay.setValue(percent);
-    playerFireRateDisplay.setValue(percent);
+        speedCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("Speed").getCost());
+        fireRateCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("FireRate").getCost());
 
-    speedCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("Speed").getCost());
-    fireRateCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("FireRate").getCost());
-}
+    }
+
+
+
 }
 

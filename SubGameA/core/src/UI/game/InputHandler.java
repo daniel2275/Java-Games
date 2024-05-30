@@ -87,7 +87,8 @@ public class InputHandler implements InputProcessor {
             break;
             case Input.Keys.O: {
                 gameScreen.pause();
-                gameScreen.getSubGame().setScreen(gameScreen.getSubGame().getUpgradeStore());
+                gameScreen.getUpgradeStore().saveGame();
+                gameScreen.getSubGame().setScreen(gameScreen.getUpgradeStore());
             }
             break;
             case Input.Keys.R: {
@@ -137,6 +138,7 @@ public class InputHandler implements InputProcessor {
         clickPosition = new Vector2(x,y);
         return clickPosition;
     }
+
 }
 
 

@@ -24,7 +24,7 @@ public class Level {
     }
 
     public void levelSelector() {
-        maxHealth += 10;
+        maxHealth += 50;
         currentHealth = maxHealth;
 
         switch ( LevelType.values()[currentScreen - 1] ) {
@@ -80,6 +80,26 @@ public class Level {
                 .withName("enemy2")
                 .withDelay(5)
                 .withSpawnPosX((int) WORLD_WIDTH + 64)
+                .withSpriteAtlas("tanker-atlas.png")
+                .withSpeed(10f)
+                .withMaxHealth(currentHealth)
+                .withEnemyPoints(10)
+                .withEnemyWidth(64)
+                .withEnemyHeight(32)
+                .build();
+
+
+        enemyManager.addEnemy(enemy1);
+        enemyManager.addEnemy(enemy2);
+
+    }
+
+    private void level3() {
+
+        Enemy enemy2 = new EnemyBuilder(gameScreen)
+                .withName("enemy2")
+                .withDelay(5)
+                .withSpawnPosX((int) WORLD_WIDTH + 64)
                 .withSpriteAtlas("destroyer-atlas.png")
                 .withSpeed(15f)
                 .withAggro(true)
@@ -119,13 +139,7 @@ public class Level {
                 .withEnemyHeight(32)
                 .build();
 
-        enemyManager.addEnemy(enemy1);
-        enemyManager.addEnemy(enemy2);
-        enemyManager.addEnemy(enemy3);
-        enemyManager.addEnemy(enemy4);
-    }
 
-    private void level3() {
         Enemy enemy1 = new EnemyBuilder(gameScreen)
                 .withName("enemy1")
                 .withSpawnPosX(-65)
@@ -139,18 +153,6 @@ public class Level {
                 .build();
 
 
-        //        Enemy enemy1 = new EnemyBuilder(gamePlayScreen)
-//                .withSpawnPosX(-65)
-//                .withFlipX(-1)
-//                .withSpriteAtlas("tanker-atlas.png")
-//                .withSpeed(10f)
-//                .withCurrentHealth(maxHealth)
-//                .withMaxHealth(currentHealth)
-//                .withEnemyPoints(10)
-//                .withEnemyWidth(64)
-//                .withEnemyHeight(32)
-//                .build();
-//
 //        Enemy enemy2 = new EnemyBuilder(gamePlayScreen)
 //                .withDelay(3)
 //                .withSpawnPosX((int) WORLD_WIDTH + 65)
@@ -176,18 +178,18 @@ public class Level {
 //                .withEnemyHeight(32)
 //                .build();
 //
-        Enemy enemy4 = new EnemyBuilder(gameScreen)
-                .withName("enemy4")
-                .withDelay(0)
-                .withSpawnPosX((int) WORLD_WIDTH + 64)
-                .withSpriteAtlas("destroyer-atlas.png")
-                .withSpeed(15f)
-                .withAggro(true)
-                .withMaxHealth(maxHealth)
-                .withEnemyPoints(10)
-                .withEnemyWidth(64)
-                .withEnemyHeight(32)
-                .build();
+//        Enemy enemy4 = new EnemyBuilder(gameScreen)
+//                .withName("enemy4")
+//                .withDelay(0)
+//                .withSpawnPosX((int) WORLD_WIDTH + 64)
+//                .withSpriteAtlas("destroyer-atlas.png")
+//                .withSpeed(15f)
+//                .withAggro(true)
+//                .withMaxHealth(maxHealth)
+//                .withEnemyPoints(10)
+//                .withEnemyWidth(64)
+//                .withEnemyHeight(32)
+//                .build();
 //
 //        Enemy enemy5 = new EnemyBuilder(gamePlayScreen)
 //                .withDelay(10)
@@ -218,7 +220,7 @@ public class Level {
 //                .withEnemyHeight(32)
 //                .build();
 
-//        enemyManager.addEnemy(enemy1);
+        enemyManager.addEnemy(enemy1);
 //        enemyManager.addEnemy(enemy2);
 //        enemyManager.addEnemy(enemy3);
         enemyManager.addEnemy(enemy4);

@@ -54,22 +54,18 @@ public class UpgradeStore implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
-
     }
 
     public void setPlayerScore(float playerScore) {
@@ -87,6 +83,7 @@ public class UpgradeStore implements Screen {
             setDefaults();
         }
         // Get SaveGame values
+
         int playerScoreInit = upgradeManager.getSaveGame("SaveGame").getPlayerScore();
         gameScreen.getPlayer().setPlayerScore(playerScoreInit);
 
@@ -105,7 +102,6 @@ public class UpgradeStore implements Screen {
 
         float playerSpeed = upgradeManager.getUpgrade("Speed").getActualValue();
         gameScreen.getPlayer().setPlayerSpeed(playerSpeed);
-
     }
 
 
@@ -143,20 +139,43 @@ public class UpgradeStore implements Screen {
 
     public void setDefaults() {
         // Set default values for upgrades
-        upgradeManager.resetUpgrades();
-        upgradeManager.addUpgrade("Speed", 10, 10f, 60f, 10f, 40, 0);
-        upgradeManager.addUpgrade("FireRate", 10, 3f, 1f, 3f, 40, 0);
+        upgradeManager.addOrUpdateUpgrade("Speed", 10, 10f, 60f, 10f, 40, 0);
+        upgradeManager.addOrUpdateUpgrade("FireRate", 10, 3f, 1f, 3f, 40, 0);
 
-        // Set default values for player score, health, total levels, reload speed, player speed
-        upgradeManager.addSaveGame("SaveGame", 1000000000, 100, 0, 0.5f);
-
+       // Set default values for player score, health, total levels, reload speed, player speed
+        upgradeManager.addOrUpdateSaveGame("SaveGame", 0, 100, 1, 0.5f);
         upgradeManager.saveToPrefs();
 
-        //upgradeStageManager.resetUpgrades();
-    }
+        int playerScoreInit = upgradeManager.getSaveGame("SaveGame").getPlayerScore();
+        gameScreen.getPlayer().setPlayerScore(playerScoreInit);
+
+
+        int playerHealthInit = upgradeManager.getSaveGame("SaveGame").getPlayerHealth();
+        gameScreen.getPlayer().setPlayerHealth(playerHealthInit);
+
+        int levelInit = upgradeManager.getSaveGame("SaveGame").getLevel();
+        gameScreen.getLevelManager().getLevel().setTotalLevels(levelInit);
+
+
+        float volume = upgradeManager.getSaveGame("SaveGame").getVolume();
+        gameScreen.getSubGame().getOptions().setVolume(volume);
+
+        // upgrades
+        float reloadSpeed = upgradeManager.getUpgrade("FireRate").getActualValue();
+        gameScreen.getPlayer().getPlayerActor().setReloadSpeed(reloadSpeed);
+
+        float playerSpeed = upgradeManager.getUpgrade("Speed").getActualValue();
+        gameScreen.getPlayer().setPlayerSpeed(playerSpeed);
+
+
+
+     }
 
     public UpgradeManager getUpgradeManager() {
         return upgradeManager;
     }
 
+    public UpgradeStageManager getUpgradeStageManager() {
+        return upgradeStageManager;
+    }
 }

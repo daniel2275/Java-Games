@@ -28,6 +28,10 @@ public class LevelManager {
         return level;
     }
 
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
     public void reset() {
         currentRun = false;
         // reset the current level to the first level

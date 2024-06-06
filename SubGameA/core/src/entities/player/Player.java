@@ -1,8 +1,8 @@
 package entities.player;
 
 import Components.AnimatedActor;
-import com.badlogic.gdx.math.Rectangle;
 import UI.game.GameScreen;
+import com.badlogic.gdx.math.Rectangle;
 
 import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
 import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
@@ -68,7 +68,7 @@ public class Player {
     }
 
     public Rectangle getHitbox() {
-        return playerActor.getBoundingRectangle();
+        return playerActor.getBounding();
     }
 
 //    public void setFlipX(int flipX) {

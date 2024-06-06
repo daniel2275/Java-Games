@@ -146,9 +146,9 @@ public class Enemy {
     private void handleHorizontalMovement(Player player, boolean movingRight) {
         if (Math.abs(player.getPlayerActor().getX() - enemyActor.getX()) > 5 || !sub) {
             if (movingRight) {
-                enemyActor.moveRight(enemySpeed);
+                enemyActor.moveRight(enemyActor.getMoveSpeed());
             } else {
-                enemyActor.moveLeft(enemySpeed);
+                enemyActor.moveLeft(enemyActor.getMoveSpeed());
             }
         }
         xOffset = movingRight ? enemyWidth : 0;
@@ -165,16 +165,15 @@ public class Enemy {
     private void handleSubMovement(Player player) {
         float playerY = player.getPlayerActor().getY();
         float enemyY = enemyActor.getY();
-
         if (enemyY > playerY) {
-            enemyActor.moveDown(enemySpeed); // Move down
+            enemyActor.moveDown(enemyActor.getMoveSpeed()); // Move down
             if (direction.isEmpty() || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
                 direction = "down";
             } else if (Math.abs(enemyY - playerY) > 100) {
                 direction += "&down";
             }
         } else if (enemyY < player.getHitbox().getY()) {
-            enemyActor.moveUp(enemySpeed); // Move up
+            enemyActor.moveUp(enemyActor.getMoveSpeed()); // Move up
             if (direction.isEmpty() || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
                 direction = "up";
             } else if (Math.abs(enemyY - playerY) > 100) {
@@ -200,9 +199,9 @@ public class Enemy {
         if (playerInRange || sub) {
             // Stop near player if submarine and player is close
             if (sub && playerDistX < 80 && playerDistY < 60) {
-                enemySpeed = 0;
+                enemyActor.setMoveSpeed(0);
             } else {
-                enemySpeed = speed;
+                enemyActor.setMoveSpeed(enemyActor.getMoveSpeed());
             }
 
             // Patrol behavior if player is within range, or it's a submarine
@@ -331,10 +330,6 @@ public class Enemy {
 
     public AnimatedActor getEnemyActor() {
         return enemyActor;
-    }
-
-    public float getEnemySpeed() {
-        return enemySpeed;
     }
 
 }

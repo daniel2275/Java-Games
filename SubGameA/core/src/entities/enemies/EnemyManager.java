@@ -1,7 +1,7 @@
 package entities.enemies;
 
-import entities.player.Player;
 import UI.game.GameScreen;
+import entities.player.Player;
 import objects.ObjectManager;
 
 import java.util.ArrayList;
@@ -63,7 +63,8 @@ public class EnemyManager {
                     continue;
                 }
 
-                enemyB.setFlipY(enemyA.getEnemyActor().getBoundingRectangle().overlaps(enemyB.getEnemyActor().getBoundingRectangle()) ? -1 : 1);
+                enemyB.setFlipY(enemyA.getEnemyActor().getBounding().overlaps(enemyB.getEnemyActor().getBounding()) ? -1 : 1);
+                //enemyB.setFlipY(Intersector.overlapConvexPolygons(enemyA.getEnemyActor().getBounding(), enemyB.getEnemyActor().getBounding()) ? -1 : 1);
             }
         }
     }

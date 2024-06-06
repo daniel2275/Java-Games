@@ -97,7 +97,8 @@ public class ObjectManager implements Pausable {
             Torpedo torpedo = torpedoIterator.next();
             if (!checkProjectileLimit(torpedoIterator, torpedo)) {
                 if (torpedo.isEnemy()) {
-                    if (Intersector.overlaps(gameScreen.getPlayer().getPlayerActor().getBoundingRectangle(), torpedo.getTorpedoActor().getBoundingRectangle())) {
+                    if (gameScreen.getPlayer().getPlayerActor().collidesWith(torpedo.getTorpedoActor())) {
+//                    if (Intersector.overlaps(gameScreen.getPlayer().getPlayerActor().getBoundingRectangle(), torpedo.getTorpedoActor().getBoundingRectangle())) {
                         gameScreen.getPlayer().getPlayerCollisionDetector().doHit(torpedo);
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
@@ -124,7 +125,8 @@ public class ObjectManager implements Pausable {
         while (depthChargeIterator.hasNext()) {
             DepthCharge depthCharge = depthChargeIterator.next();
             if (!checkDpcLimit(depthChargeIterator, depthCharge)) {
-                if (Intersector.overlaps(gameScreen.getPlayer().getPlayerActor().getBoundingRectangle(), depthCharge.getDepthChargeActor().getBoundingRectangle())) {
+             //   if (Intersector.overlapConvexPolygons(gameScreen.getPlayer().getPlayerActor().getBounding(), depthCharge.getDepthChargeActor().getBounding())) {
+                if (Intersector.overlaps(gameScreen.getPlayer().getPlayerActor().getBounding(), depthCharge.getDepthChargeActor().getBounding())) {
                         gameScreen.getPlayer().getPlayerCollisionDetector().doHit(depthCharge);
                         depthCharge.setExplode(true);
                         soundManager.playDepthChargeHit();
@@ -157,7 +159,7 @@ public class ObjectManager implements Pausable {
 
     // Check projectile reached the skyline and remove it from the iterator for de-spawn
     public boolean checkProjectileLimit(Iterator<Torpedo> torpedoIterator, Torpedo torpedo) {
-        if (torpedo.getTorpedoActor().getY() >= WORLD_HEIGHT - Constants.Game.SKY_SIZE - Torpedo.TORPEDO_HEIGHT || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
+        if (torpedo.getTorpedoActor().getY() >= WORLD_HEIGHT - Constants.Game.SKY_SIZE - (Torpedo.TORPEDO_HEIGHT - 3) || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
                 torpedo.getTorpedoActor().remove();
                 torpedoIterator.remove();
                 return true;

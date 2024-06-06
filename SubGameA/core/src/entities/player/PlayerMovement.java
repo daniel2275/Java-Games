@@ -55,8 +55,7 @@ public class PlayerMovement {
         // Calculate direction vector
         Vector2 direction = new Vector2(clickPosition.x - playerPosition.x, clickPosition.y - playerPosition.y).nor();
 
-//        System.out.println("PLayer: x:" + playerPosition.x + " y:" + playerPosition.y);
-//        System.out.println("Angle: " + direction.angleDeg());
+
 
         // Determine closest primary direction (up, left, down, right)
         if (Math.abs(direction.angleDeg()) < 45) {

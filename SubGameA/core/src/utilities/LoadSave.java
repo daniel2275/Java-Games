@@ -11,14 +11,14 @@ public class LoadSave {
     public static void loadBinary() {
 
         Pixmap pixmap = new Pixmap(Gdx.files.internal("lvls/level1.png"));
-        System.out.println("Image size:" + pixmap.getWidth() + "px x  " + pixmap.getHeight() + "px");
+
         int color = pixmap.getPixel(0, 0);
-        System.out.println(color);
+
         int red = color >>> 24;
         int green = (color & 0xFF0000) >>> 16;
         int blue = (color & 0xFF00) >>> 8;
         int alpha = color & 0xFF;
-        System.out.println("R" + red + " G" + green + " B" + blue + " A" + alpha);
+
     }
 
 

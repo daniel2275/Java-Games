@@ -73,8 +73,6 @@ class UpgradeManager implements Serializable {
             saveGame = new SaveGame(playerScore, playerHealth, level, volume);
             this.saveGame.put(name, saveGame);
         }
-
-
     }
 
 
@@ -95,26 +93,26 @@ class UpgradeManager implements Serializable {
         upgrades.put(name, new Upgrade(cost, minUpgrade ,maxUpgrade, actualValue, ticks, upgradeLevel));
     }
 
-    public void updateUpgrade(String name, int newCost, float newMinUpgrade, float newMaxUpgrade, float newActualValue, int newTicks, int newUpgradeLevel) {
-        // Retrieve the Upgrade object from the map
-        Upgrade upgrade = this.upgrades.get(name);
-
-        // Check if the Upgrade object exists
-        if (upgrade != null) {
-            // Update the Upgrade fields with new values
-            upgrade.setCost(newCost);
-            upgrade.setMinUpgrade(newMinUpgrade);
-            upgrade.setMaxUpgrade(newMaxUpgrade);
-            upgrade.setActualValue(newActualValue);
-            upgrade.setTicks(newTicks);
-            upgrade.setUpgradeLevel(newUpgradeLevel);
-
-            // Put the updated Upgrade object back into the map
-            this.upgrades.put(name, upgrade);
-        } else {
-            System.out.println("Upgrade with the name " + name + " does not exist.");
-        }
-    }
+//    public void updateUpgrade(String name, int newCost, float newMinUpgrade, float newMaxUpgrade, float newActualValue, int newTicks, int newUpgradeLevel) {
+//        // Retrieve the Upgrade object from the map
+//        Upgrade upgrade = this.upgrades.get(name);
+//
+//        // Check if the Upgrade object exists
+//        if (upgrade != null) {
+//            // Update the Upgrade fields with new values
+//            upgrade.setCost(newCost);
+//            upgrade.setMinUpgrade(newMinUpgrade);
+//            upgrade.setMaxUpgrade(newMaxUpgrade);
+//            upgrade.setActualValue(newActualValue);
+//            upgrade.setTicks(newTicks);
+//            upgrade.setUpgradeLevel(newUpgradeLevel);
+//
+//            // Put the updated Upgrade object back into the map
+//            this.upgrades.put(name, upgrade);
+//        } else {
+//            System.out.println("Upgrade with the name " + name + " does not exist.");
+//        }
+//    }
 
     public void addOrUpdateUpgrade(String name, int cost, float minUpgrade, float maxUpgrade, float actualValue, int ticks, int upgradeLevel) {
         // Check if the Upgrade object exists

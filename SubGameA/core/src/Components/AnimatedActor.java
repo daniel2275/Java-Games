@@ -6,27 +6,30 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import utilities.LoadSave;
 
 import java.util.Objects;
 
-public class AnimatedActor extends Actor implements  Pausable {
+public class AnimatedActor extends Actor implements Pausable {
     private static final float FADE_DURATION = 6f;
     private float moveSpeed = 10.5f;
 
     private String name;
     private Animation<TextureRegion> idleAnimation, moveAnimation, upAnimation, downAnimation, hitAnimation, sunkAnimation, currentAnimation, tempAnimation;
     private TextureRegion healthBarTextureRegion;
-    private float stateTime, previousX, previousY, reload, reloadSpeed, maxHealth, currentHealth, speed = moveSpeed, deltaTime = 0;
+    private float stateTime, previousX, previousY, reload, reloadSpeed, maxHealth, currentHealth, deltaTime = 0;
     private boolean isHit, sunk, loops;
     private String direction;
     private boolean paused = false;
 
     private float angle;
+    private ShapeRenderer shapeRenderer;
 
     public AnimatedActor(String name,
                          Animation<TextureRegion> idleAnimation,
@@ -75,14 +78,15 @@ public class AnimatedActor extends Actor implements  Pausable {
         tempAnimation = idleAnimation;
         currentAnimation = idleAnimation;
 
-        // In your constructor or initialization method
+        shapeRenderer = new ShapeRenderer();
+
         healthBarTextureRegion = new TextureRegion(new Texture("health_bar.png"));
         healthBarTextureRegion.setRegionWidth((int) frameWidth);
     }
 
     @Override
     public void act(float delta) {
-        if (currentAnimation==null)
+        if (currentAnimation == null)
             return;
 
         if (!paused) {
@@ -132,9 +136,9 @@ public class AnimatedActor extends Actor implements  Pausable {
         }
 
         if (getY() > previousY) {
-            tempAnimation = upAnimation; // Override only if needed
+            tempAnimation = upAnimation;
         } else if (getY() < previousY) {
-            tempAnimation = downAnimation; // Override only if needed
+            tempAnimation = downAnimation;
         }
 
         if (isHit) {
@@ -145,10 +149,10 @@ public class AnimatedActor extends Actor implements  Pausable {
     }
 
     private void updateAnimation() {
-        if (tempAnimation==null)
+        if (tempAnimation == null)
             return;
         if (Objects.equals(direction, "R") && !name.equals("torpedo")) {
-            currentAnimation = LoadSave.invertHorizontal(tempAnimation);
+            currentAnimation = invertHorizontal(tempAnimation);
         } else {
             currentAnimation = tempAnimation;
         }
@@ -158,11 +162,11 @@ public class AnimatedActor extends Actor implements  Pausable {
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        if (currentAnimation==null)
+        if (currentAnimation == null)
             return;
 
         // If sunk, gradually fade out the actor
-        if (currentHealth == 0 && !(name.equals("torpedo") || name.equals("depthCharge")) ) {
+        if (currentHealth == 0 && !(name.equals("torpedo") || name.equals("depthCharge"))) {
             float alpha = Math.max(0, 1 - (stateTime / FADE_DURATION));
             batch.setColor(1, 1, 1, alpha);
         }
@@ -170,7 +174,7 @@ public class AnimatedActor extends Actor implements  Pausable {
         // Define looping animation
         loops = (tempAnimation == idleAnimation || tempAnimation == moveAnimation);
 
-        batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY(), 0, 0, getWidth(), getHeight(), 1f, 1f, angle);
+        batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), 1f, 1f, angle);
 
         if (!name.equals("torpedo") && !name.equals("depthCharge")) {
             drawHealthBar(batch);
@@ -178,12 +182,25 @@ public class AnimatedActor extends Actor implements  Pausable {
         }
 
         isHit = false;
+
+        // Draw bounding rectangle for debugging
+        batch.end();
+
+        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.RED);
+
+        Rectangle boundingRectangle = getBounding();
+        shapeRenderer.rect(boundingRectangle.x, boundingRectangle.y, boundingRectangle.width, boundingRectangle.height);
+
+        shapeRenderer.end();
+        batch.begin();
     }
 
     // Method to check collision with another actor
     public boolean collidesWith(AnimatedActor otherActor) {
-        Rectangle myRect = getBoundingRectangle();
-        Rectangle otherRect = otherActor.getBoundingRectangle();
+        Rectangle myRect = getBounding();
+        Rectangle otherRect = otherActor.getBounding();
         return myRect.overlaps(otherRect);
     }
 
@@ -236,8 +253,11 @@ public class AnimatedActor extends Actor implements  Pausable {
     }
 
     public void setHit(boolean hit, float damage) {
+
         isHit = hit;
-        speed = Math.max((speed - (0.25f * speed)),0);
+        moveSpeed = Math.max((moveSpeed - (0.25f * moveSpeed)), 0);
+
+        System.out.println("move updated to:" + moveSpeed);
 
         currentHealth -= damage;
         if (currentHealth < 0) {
@@ -246,16 +266,132 @@ public class AnimatedActor extends Actor implements  Pausable {
         stateTime = 0; // Reset state time when hit animation starts
     }
 
-    public Rectangle getBoundingRectangle() {
+    public Rectangle getBounding() {
         // Get the actor's position and size
         float x = getX();
         float y = getY();
         float width = getWidth();
         float height = getHeight();
+        rotate();
 
         // Create and return the bounding rectangle
-        return new Rectangle(x, y, width, height);
+        if (Objects.equals(name, "torpedo")) {
+            return new Rectangle(x+5, y, width-10, height-1);
+        }else{
+            return new Rectangle(x, y, width, height);
+        }
     }
+
+//    public Polygon getBounding() {
+//        // Get the actor's position and size
+//        float x = getX();
+//        float y = getY();
+//        float width = getWidth();
+//        float height = getHeight();
+//        if (Objects.equals(name, "torpedo")) {
+//            System.out.println("stop");
+//        }
+//        // Create the polygon with the rectangle's vertices
+//        float[] vertices = new float[8];
+//        vertices[0] = x;
+//        vertices[1] = y;
+//        vertices[2] = x + width;
+//        vertices[3] = y;
+//        vertices[4] = x + width;
+//        vertices[5] = y + height;
+//        vertices[6] = x;
+//        vertices[7] = y + height;
+//
+//        Polygon polygon = new Polygon(vertices);
+//        rotatePolygon(polygon); // Rotate the polygon
+//
+//        //Rectangle polyRec = polygon.getBoundingRectangle();
+//        // Get the bounding rectangle of the rotated polygon
+//        return polygon;
+//    }
+
+//    private void rotatePolygon(Polygon polygon) {
+//        polygon.setOrigin(getOriginX(), getOriginY());
+//        polygon.setRotation(angle);
+//    }
+//
+//    public float getPolygonWidth(Polygon polygon) {
+//        float[] vertices = polygon.getVertices();
+//
+//        // Initialize min and max values with the first x-coordinate
+//        float minX = vertices[0];
+//        float maxX = vertices[0];
+//
+//        // Iterate through the vertices array (step by 2 since vertices array contains x and y alternately)
+//        for (int i = 0; i < vertices.length; i += 2) {
+//            float x = vertices[i];
+//            if (x < minX) {
+//                minX = x;
+//            }
+//            if (x > maxX) {
+//                maxX = x;
+//            }
+//        }
+//
+//        // The width of the polygon is the difference between maxX and minX
+//        return maxX - minX;
+//    }
+
+    public float getPolygonHeight(Polygon polygon) {
+        float[] vertices = polygon.getVertices();
+
+        // Initialize min and max values with the first y-coordinate
+        float minY = vertices[1];
+        float maxY = vertices[1];
+
+        // Iterate through the vertices array (step by 2 since vertices array contains x and y alternately)
+        for (int i = 1; i < vertices.length; i += 2) {
+            float y = vertices[i];
+            if (y < minY) {
+                minY = y;
+            }
+            if (y > maxY) {
+                maxY = y;
+            }
+        }
+
+        // The height of the polygon is the difference between maxY and minY
+        return maxY - minY;
+    }
+
+    public void rotate() {
+        float centerX = getX() + getWidth() / 2;
+        float centerY = getY() + getHeight() / 2;
+
+        setOriginX(getWidth() / 2);
+        setOriginY(getHeight() / 2);
+
+        float x = centerX - getOriginX();
+        float y = centerY - getOriginY();
+
+        Vector3 transformedPosition = new Vector3(x, y, 0);
+
+        setX(transformedPosition.x);
+        setY(transformedPosition.y);
+    }
+
+
+    private Animation<TextureRegion> invertHorizontal(Animation<TextureRegion> originalAnimation) {
+        TextureRegion[] originalFrames = originalAnimation.getKeyFrames();
+        int frameCount = originalFrames.length;
+        TextureRegion[] flippedFrames = new TextureRegion[frameCount];
+
+        // Clone the original frames and flip each one horizontally
+        for (int i = 0; i < frameCount; i++) {
+            TextureRegion originalFrame = originalFrames[i];
+            TextureRegion flippedFrame = new TextureRegion(originalFrame); // Clone the original frame
+            flippedFrame.flip(true, false); // Flip horizontally
+            flippedFrames[i] = flippedFrame;
+        }
+        // Create the inverted animation using the flipped frames
+        return new Animation<>(originalAnimation.getFrameDuration(), flippedFrames);
+    }
+
 
     public void isSunk(boolean sunk) {
         this.sunk = sunk;
@@ -308,8 +444,8 @@ public class AnimatedActor extends Actor implements  Pausable {
     public void setPosition(Vector2 movementVector) {
         // Apply the movement
         float deltaTime = Gdx.graphics.getDeltaTime();
-        setX(getX() + movementVector.x * speed * deltaTime);  // Multiply by speed and delta to adjust movement speed
-        setY(getY() + movementVector.y * speed * deltaTime);
+        setX(getX() + movementVector.x * moveSpeed * deltaTime);  // Multiply by speed and delta to adjust movement speed
+        setY(getY() + movementVector.y * moveSpeed * deltaTime);
     }
 
     public float getAngle() {
@@ -318,6 +454,10 @@ public class AnimatedActor extends Actor implements  Pausable {
 
     public void setAngle(float angle) {
         this.angle = angle;
+    }
+
+    public float getMoveSpeed() {
+        return moveSpeed;
     }
 
     public void setMoveSpeed(float moveSpeed) {
@@ -330,14 +470,14 @@ public class AnimatedActor extends Actor implements  Pausable {
     }
 
     @Override
-    public boolean remove(){
+    public boolean remove() {
         dispose();
         return super.remove();
     }
 
 
     public void dispose() {
-        System.out.println("DISPOSED :" +  this.name);
+        System.out.println("DISPOSED :" + this.name);
         if (this.name == "Player")
             return;
         if (idleAnimation != null) disposeAnimation(idleAnimation);
@@ -357,6 +497,11 @@ public class AnimatedActor extends Actor implements  Pausable {
         if (healthBarTextureRegion != null && healthBarTextureRegion.getTexture() != null) {
             healthBarTextureRegion.getTexture().dispose();
             healthBarTextureRegion = null;
+        }
+
+        if (shapeRenderer != null) {
+            shapeRenderer.dispose();
+            shapeRenderer = null;
         }
     }
 

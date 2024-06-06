@@ -106,6 +106,7 @@ public class Torpedo {
             torpedoActor.setAngle(angle);
         }
         torpedoActor.moveBy(velocityX,velocityY);
+
 //        hitbox.x += velocityX;
   //      hitbox.y += velocityY;
     }

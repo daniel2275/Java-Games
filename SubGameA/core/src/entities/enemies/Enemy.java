@@ -2,12 +2,12 @@ package entities.enemies;
 
 import Components.AnimatedActor;
 import Components.HitNumberActor;
+import UI.game.GameScreen;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.sub.SubGame;
 import entities.player.Player;
-import UI.game.GameScreen;
-import objects.depthChage.ChargeDeployer;
+import objects.BulletControl;
 import utilities.Constants;
 import utilities.HelpMethods;
 import utilities.SoundManager;
@@ -44,42 +44,50 @@ public class Enemy {
     private float spawnPosX;
     private float spawnPosY;
     private AnimatedActor enemyActor;
-    ChargeDeployer chargeDeployer;
+    private float damage = 5f;
+    BulletControl bulletControl;
 
-    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int flipX, String spriteAtlas, float speed, boolean aggro, int maxHealth, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int spawnPosY, int flipX,
+                 String spriteAtlas, float speed, boolean aggro, int maxHealth, boolean sub,
+                 int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
+
+        // Assign basic properties
         this.name = name;
-        this.flipX = flipX;
         this.delay = delay;
+        this.flipX = flipX;
         this.enemyWidth = enemyWidth;
-        this.enemyHeight = enemyHeight; // 25
+        this.enemyHeight = enemyHeight;
         this.spriteAtlas = spriteAtlas;
         this.enemySpeed = speed;
         this.speed = speed;
         this.aggro = aggro;
         this.currentHealth = maxHealth;
         this.enemyPoints = enemyPoints;
+        this.sub = sub;
+
+        // Initialize SoundManager
         this.soundManager = SoundManager.getInstance(subGame);
 
+        // Set spawn position
         this.spawnPosX = spawnPosX;
-        this.spawnPosY = WORLD_HEIGHT - Constants.Game.SKY_SIZE - enemyHeight / 3f;
+        this.spawnPosY = sub ? spawnPosY : WORLD_HEIGHT - Constants.Game.SKY_SIZE - enemyHeight / 3f;
 
+        // Initialize game screen
         this.gameScreen = gameScreen;
 
+        // Set up animation manager
         this.enemyAnimationManager = new EnemyAnimationManager(this, spriteAtlas);
 
-        this.chargeDeployer = new ChargeDeployer();
+        // Initialize charge deployer
+        this.bulletControl = new BulletControl();
 
-        initializeEnemyActor();
-
-        gameScreen.getGmStage().addActor(enemyActor);
-    }
-
-    public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int spawnPosY, int flipX, String spriteAtlas, float speed, boolean aggro, int maxHealth, boolean sub, int enemyPoints, int enemyWidth, int enemyHeight, SubGame subGame) {
-        this(gameScreen, name,delay, spawnPosX, flipX, spriteAtlas, speed, aggro, maxHealth, enemyPoints, enemyWidth, enemyHeight,  subGame);
-        this.sub = sub;
+        // Set default values for direction and flipY
         this.direction = "";
         this.flipY = 1;
-        this.spawnPosY = spawnPosY;
+
+        // Initialize enemy actor and add to game stage
+        initializeEnemyActor();
+        gameScreen.getGmStage().addActor(enemyActor);
     }
 
     private void initializeEnemyActor() {
@@ -97,9 +105,11 @@ public class Enemy {
                 enemyHeight,
                 spawnPosX,
                 spawnPosY);
+        System.out.println("Y:" + spawnPosY);
     }
 
     public void update(Player player) {
+        bulletControl.pauseDeployment(gameScreen.isPaused());
         if ((aggro) && (!dying)) {
             turnTowardsPlayer(player);
         }
@@ -199,9 +209,9 @@ public class Enemy {
         if (playerInRange || sub) {
             // Stop near player if submarine and player is close
             if (sub && playerDistX < 80 && playerDistY < 60) {
-                enemyActor.setMoveSpeed(0);
+                enemyActor.setParked(true);
             } else {
-                enemyActor.setMoveSpeed(enemyActor.getMoveSpeed());
+                enemyActor.setParked(false);
             }
 
             // Patrol behavior if player is within range, or it's a submarine
@@ -222,11 +232,11 @@ public class Enemy {
         }
     }
 
-    public boolean chargeDeployer() {
-        java.util.Random rnd = new java.util.Random();
-        int launch = rnd.nextInt(3000);
-        return launch < 10;
-    }
+//    public boolean chargeDeployer() {
+//        java.util.Random rnd = new java.util.Random();
+//        int launch = rnd.nextInt(3000);
+//        return launch < 10;
+//    }
 
     public boolean checkHit(AnimatedActor actor, float damage) {
         boolean collision = enemyActor.collidesWith(actor);
@@ -332,5 +342,16 @@ public class Enemy {
         return enemyActor;
     }
 
+    public BulletControl getChargeDeployer() {
+        return bulletControl;
+    }
+
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    public float getDamage() {
+        return damage;
+    }
 }
 

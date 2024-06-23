@@ -1,11 +1,12 @@
 package com.mygdx.sub;
 
 import UI.game.GameScreen;
-import UI.gameover.GameOver;
 import UI.menu.MenuScreen;
 import UI.options.Options;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
 
 import static utilities.Constants.Game.WORLD_HEIGHT;
 import static utilities.Constants.Game.WORLD_WIDTH;
@@ -17,7 +18,6 @@ public class SubGame extends Game {
 
 	private Options options;
 	private GameScreen gameScreen;
-	private GameOver gameOver;
 
 
 	@Override
@@ -34,15 +34,22 @@ public class SubGame extends Game {
 		float screenHeight = WORLD_HEIGHT; // set your desired screen height
 
 
-// Set the screen resolution
+		// Set the screen resolution
 		Gdx.graphics.setWindowedMode((int) screenWidth, (int) screenHeight);
 
 		menuScreen = new MenuScreen(this);
 
 		options = new Options(this);
 		gameScreen = new GameScreen(Gdx.graphics.getDeltaTime(), this);
-		gameOver = new GameOver(this);
 		setScreen(menuScreen);
+
+
+		// set up mouse cross-hair
+		Pixmap cursorTexture = new Pixmap(Gdx.files.internal("CrossHair.png"));
+		int xHotSpot = cursorTexture.getWidth() /2;
+		int yHotSpot = cursorTexture.getHeight() /2 ;
+		Cursor customCursor = Gdx.graphics.newCursor(cursorTexture, xHotSpot, yHotSpot);
+		Gdx.graphics.setCursor(customCursor);
 	}
 
 	@Override

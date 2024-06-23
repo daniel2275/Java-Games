@@ -1,29 +1,32 @@
 package UI.gameover;
 
+import UI.game.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.sub.SubGame;
 import gamestates.Gamestate;
 
 
 public class GameOver implements Screen {
-    private SubGame game;
+    private GameScreen gameScreen;
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private BitmapFont font;
     private GlyphLayout layout;
+    private Texture background;
 
-    public GameOver(SubGame game) {
-        this.game = game;
+    public GameOver(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch = new SpriteBatch();
+        background = new Texture(Gdx.files.internal("gameover.png"));
         font = new BitmapFont(Gdx.files.internal("clean-crispy/skin/font-export.fnt"), Gdx.files.internal("clean-crispy/raw/font-export.png"), false);
         layout = new GlyphLayout();
     }
@@ -33,9 +36,9 @@ public class GameOver implements Screen {
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
                 Gamestate.state = Gamestate.MENU;
-                game.gameScreen().reset();
-
-                System.out.println("HEEEEEEEEEE EEEEEEEEEEEEE");
+                gameScreen.getPlayer().setPlayerHealth(100);
+                gameScreen.reset();
+                gameScreen.getSubGame().setScreen(gameScreen.getSubGame().getMenuRenderer());
 //                dispose();
                 return true;
             }
@@ -49,6 +52,8 @@ public class GameOver implements Screen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
+        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         font.getData().setScale(2);
         layout.setText(font, "Game Over!");

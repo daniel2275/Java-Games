@@ -26,10 +26,13 @@ public class UpgradeStageManager {
     private Label scoreLbl;
     private ProgressBar playerSpeedDisplay;
     private ProgressBar playerFireRateDisplay;
+    private ProgressBar playerDamageDisplay;
     private float percentSpeed;
     private float percentFireRate;
+    private float percentDamage;
     private Label speedCost;
     private Label fireRateCost;
+    private Label damageCost;
 
     public UpgradeStageManager(GameScreen gameScreen, UpgradeStore upgradeStore) {
         upStage = new Stage(new StretchViewport(WORLD_WIDTH, WORLD_HEIGHT));
@@ -48,6 +51,7 @@ public class UpgradeStageManager {
     private void createUIElements() {
         speedCost = new Label("00", upSkin);
         fireRateCost = new Label("00", upSkin);
+        damageCost = new Label("00", upSkin);
 
         // Score label creation
         scoreLbl = new Label("(Score:)" + gameScreen.getPlayer().getPlayerScore(), upSkin);
@@ -61,14 +65,20 @@ public class UpgradeStageManager {
         TextButton playerFireRateUpBtn = new TextButton("Sub FireRate +", upSkin);
         TextButton playerFireRateDownBtn = new TextButton("Sub FireRate -", upSkin);
 
+        TextButton playerDamageUpBtn = new TextButton("Sub Damage +", upSkin);
+        TextButton playerDamageDownBtn = new TextButton("Sub Damage -", upSkin);
+
         playerSpeedDisplay = new ProgressBar(2, 100, 1, false, upSkin);
         percentSpeed = 0;
         playerSpeedDisplay.setValue(percentSpeed);
 
-
         playerFireRateDisplay = new ProgressBar(2, 100, 1, false, upSkin);
         percentFireRate = 0;
         playerFireRateDisplay.setValue(percentFireRate);
+
+        playerDamageDisplay = new ProgressBar(2, 100, 1, false, upSkin);
+        percentDamage = 0;
+        playerDamageDisplay.setValue(percentDamage);
 
 
         TextButton exitBtn = new TextButton("Continue", upSkin);
@@ -80,6 +90,10 @@ public class UpgradeStageManager {
         property = "FireRate";
         addListeners(playerFireRateUpBtn, property, -1, fireRateCost, playerFireRateDisplay);
         addListeners(playerFireRateDownBtn, property, 1, fireRateCost, playerFireRateDisplay);
+
+        property = "Damage";
+        addListeners(playerDamageUpBtn, property, -1, damageCost, playerDamageDisplay);
+        addListeners(playerDamageDownBtn, property, 1, damageCost, playerDamageDisplay);
 
 
         exitBtn.addListener(new ClickListener() {
@@ -112,12 +126,15 @@ public class UpgradeStageManager {
             }
             playerSpeedDisplay.setValue(percentSpeed);
 
-            percentSpeed = ((float) (upgradeStore.getUpgradeManager().getUpgrade("FireRate").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("FireRate").getTicks());
+            percentFireRate = ((float) (upgradeStore.getUpgradeManager().getUpgrade("FireRate").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("FireRate").getTicks());
+            playerFireRateDisplay.setValue(percentFireRate);
 
-            playerFireRateDisplay.setValue(percentSpeed);
+            percentDamage = ((float) (upgradeStore.getUpgradeManager().getUpgrade("Damage").getUpgradeLevel() * 100) / upgradeStore.getUpgradeManager().getUpgrade("Damage").getTicks());
+            playerDamageDisplay.setValue(percentDamage);
 
             speedCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("Speed").getCost());
             fireRateCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("FireRate").getCost());
+            damageCost.setText(" " + upgradeStore.getUpgradeManager().getUpgrade("Damage").getCost());
         }
 
         Table upTable = new Table();
@@ -141,7 +158,6 @@ public class UpgradeStageManager {
         // Player Fire Rate Controls
         playerFireRateDownBtn.setColor(BUTTON_OPTION_COLOR);
         playerFireRateUpBtn.setColor(BUTTON_OPTION_COLOR);
-
         upTable.row().padTop(20);
         upTable.add(playerFireRateUpBtn).size(115, 28);
         Stack stackFireRate = new Stack();
@@ -150,6 +166,19 @@ public class UpgradeStageManager {
         fireRateCost.setAlignment(0, 0);
         upTable.add(stackFireRate).size(115, 28);
         upTable.add(playerFireRateDownBtn).size(115, 28);
+
+        // Player Damage Controls
+        playerDamageDownBtn.setColor(BUTTON_OPTION_COLOR);
+        playerDamageUpBtn.setColor(BUTTON_OPTION_COLOR);
+        upTable.row().padTop(20);
+        upTable.add(playerDamageUpBtn).size(115, 28);
+        Stack stackDamage = new Stack();
+        stackDamage.add(playerDamageDisplay);
+        stackDamage.add(damageCost);
+        damageCost.setAlignment(0, 0);
+        upTable.add(stackDamage).size(115, 28);
+        upTable.add(playerDamageDownBtn).size(115, 28);
+
 
         // Exit Button
         exitBtn.setColor(BUTTON_QUIT_COLOR);
@@ -291,20 +320,28 @@ public class UpgradeStageManager {
             case "FireRate": {
                 return gameScreen.getPlayer().getPlayerActor().getReloadSpeed();
             }
+            case "Damage": {
+                return gameScreen.getPlayer().getPlayerActor().getDamage();
+            }
         }
         return 0;
     }
 
-    public void setProperty(String property, float speed) {
+    public void setProperty(String property, float value) {
         switch ( property ) {
             case "Speed": {
-                gameScreen.getPlayer().setPlayerSpeed(speed);
-                upgradeStore.getUpgradeManager().getUpgrade("Speed").setActualValue(speed);
+                gameScreen.getPlayer().setPlayerSpeed(value);
+                upgradeStore.getUpgradeManager().getUpgrade("Speed").setActualValue(value);
                 break;
             }
             case "FireRate": {
-                gameScreen.getPlayer().getPlayerActor().setReloadSpeed(speed);
-                upgradeStore.getUpgradeManager().getUpgrade("FireRate").setActualValue(speed);
+                gameScreen.getPlayer().getPlayerActor().setReloadSpeed(value);
+                upgradeStore.getUpgradeManager().getUpgrade("FireRate").setActualValue(value);
+                break;
+            }
+            case "Damage": {
+                gameScreen.getPlayer().getPlayerActor().setDamage(value);
+                upgradeStore.getUpgradeManager().getUpgrade("Damage").setActualValue(value);
                 break;
             }
         }

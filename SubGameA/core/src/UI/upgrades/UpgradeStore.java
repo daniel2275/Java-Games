@@ -102,10 +102,13 @@ public class UpgradeStore implements Screen {
 
         float playerSpeed = upgradeManager.getUpgrade("Speed").getActualValue();
         gameScreen.getPlayer().setPlayerSpeed(playerSpeed);
+
+        float playerDamage = upgradeManager.getUpgrade("Damage").getActualValue();
+        gameScreen.getPlayer().setPlayerDamage(playerDamage);
     }
 
 
-    public void load() {
+    public void gameOver() {
 
         //loadInit(); // Load initial settings first
 
@@ -133,16 +136,17 @@ public class UpgradeStore implements Screen {
 
         //UpgradeSerialization save;
         upgradeManager.saveToPrefs();
-
-    }
+   }
 
 
     public void setDefaults() {
         // Set default values for upgrades
         upgradeManager.addOrUpdateUpgrade("Speed", 10, 10f, 60f, 10f, 40, 0);
         upgradeManager.addOrUpdateUpgrade("FireRate", 10, 3f, 1f, 3f, 40, 0);
+        upgradeManager.addOrUpdateUpgrade("Damage", 10, 5f, 50f, 5f, 5, 0);
 
-       // Set default values for player score, health, total levels, reload speed, player speed
+
+        // Set default values for player score, health, total levels, reload speed, player speed
         upgradeManager.addOrUpdateSaveGame("SaveGame", 0, 100, 1, 0.5f);
         upgradeManager.saveToPrefs();
 
@@ -167,6 +171,9 @@ public class UpgradeStore implements Screen {
         float playerSpeed = upgradeManager.getUpgrade("Speed").getActualValue();
         gameScreen.getPlayer().setPlayerSpeed(playerSpeed);
 
+        float Damage = upgradeManager.getUpgrade("Damage").getActualValue();
+        gameScreen.getPlayer().setPlayerDamage(Damage);
+        gameScreen.getPlayer().getPlayerActor().setDamage(Damage);
 
 
      }

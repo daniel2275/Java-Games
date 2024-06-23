@@ -1,6 +1,5 @@
 package utilities;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
 // Handles timing and countdown
@@ -32,7 +31,7 @@ public class Timing {
     public void update() {
         if (!paused) {
             long currentTime = TimeUtils.nanoTime();
-            float elapsedSeconds = MathUtils.nanoToSec * (currentTime - startTime);
+            float elapsedSeconds = (currentTime - startTime) / 1_000_000_000.0f; // Convert nanoseconds to seconds
             timeRemaining = Math.max(0, duration - elapsedSeconds);
         }
     }

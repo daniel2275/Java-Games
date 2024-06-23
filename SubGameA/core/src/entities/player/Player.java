@@ -13,6 +13,7 @@ public class Player {
     private boolean left, right, up, down, sunk = true;
     private float reload = 0;
     private int xOffset = 0;
+    private float damage = 5;
     private PlayerAnimationManager playerAnimationManager;
     private PlayerCollisionDetector playerCollisionDetector;
     private PlayerHealthManager playerHealthManager;
@@ -27,6 +28,8 @@ public class Player {
         this.playerMovement = new PlayerMovement(this);
         this.gameScreen = gameScreen;
         initializePlayerActor();
+        playerActor.setReloadSpeed(3f); // Default reload speed
+        playerActor.setDamage(damage); // Default damage
         this.playerCollisionDetector = new PlayerCollisionDetector(gameScreen, this, playerHealthManager);
     }
 
@@ -45,7 +48,6 @@ public class Player {
                 PLAYER_HEIGHT,
                 playerMovement.getSPAWN_X(),
                 playerMovement.getSPAWN_Y());
-        playerActor.setReloadSpeed(3f);
     }
 
     public void update() {
@@ -154,6 +156,14 @@ public class Player {
 
     public AnimatedActor getPlayerActor() {
         return playerActor;
+    }
+
+    public void setPlayerDamage(float damage) {
+        this.damage = damage;
+    }
+
+    public float getDamage() {
+        return damage;
     }
 }
 

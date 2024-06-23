@@ -95,7 +95,8 @@ public static synchronized SoundManager getInstance(SubGame subGame) {
         if (randomBit) {
             playExplode();
         } else {
-            alarm();
+            playExplode();
+            //alarm();
         }
     }
 

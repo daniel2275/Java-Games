@@ -108,7 +108,7 @@ public class OptionsStageManager {
 
         // Creating optionsVolume label and positioning it beside the slider
         Label optionsVolume = new Label(OPTIONS_BUTTON_VOLUME_TEXT, opSkin);
-        opTable.add(optionsVolume).colspan(1).row(); // Adjust the padding as needed
+        opTable.add(optionsVolume).colspan(1).row();
 
         float minValue = 0.0f;
         float maxValue = 1.0f;
@@ -116,12 +116,13 @@ public class OptionsStageManager {
         Slider.SliderStyle sliderStyle = opSkin.get(SLIDER_TYPE, Slider.SliderStyle.class);
         slider = new Slider(minValue, maxValue, stepSize, false, sliderStyle);
         slider.setBounds(WORLD_WIDTH / 2 - 265, WORLD_HEIGHT * 0.78f, 250, 40);
+        opTable.add(optionsVolume).row(); // Add label Volume
         opTable.add(slider).width(250f).height(40f).row(); // Add the slider to the table
 
         TextButton quit = new TextButton("Back", opSkin, "default");
         opTable.add(quit).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         //quit.setPosition(WORLD_WIDTH - 150f, WORLD_HEIGHT * 0.1f);
-        opTable.add(optionsVolume).padRight(WORLD_WIDTH - 150f);
+
 
         //opStage.addActor(quit);
 

@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -19,6 +18,7 @@ import java.util.Objects;
 public class AnimatedActor extends Actor implements Pausable {
     private static final float FADE_DURATION = 6f;
     private float moveSpeed = 10.5f;
+    private float damage = 0;
 
     private String name;
     private Animation<TextureRegion> idleAnimation, moveAnimation, upAnimation, downAnimation, hitAnimation, sunkAnimation, currentAnimation, tempAnimation;
@@ -27,6 +27,7 @@ public class AnimatedActor extends Actor implements Pausable {
     private boolean isHit, sunk, loops;
     private String direction;
     private boolean paused = false;
+    private boolean parked = false;
 
     private float angle;
     private ShapeRenderer shapeRenderer;
@@ -225,7 +226,7 @@ public class AnimatedActor extends Actor implements Pausable {
             float reloadBarWidth = healthBarTextureRegion.getRegionWidth();
             float reloadBarForegroundWidth = reloadBarWidth - (reloadBarWidth / reloadSpeed * reload);
 
-            batch.draw(healthBarTextureRegion, getX(), getY() + getHeight() + 5, reloadBarForegroundWidth, 1);
+            batch.draw(healthBarTextureRegion, getX(), getY() + getHeight() + 5, reloadBarForegroundWidth, 2);
         }
         batch.setColor(Color.WHITE);
     }
@@ -280,83 +281,6 @@ public class AnimatedActor extends Actor implements Pausable {
         }else{
             return new Rectangle(x, y, width, height);
         }
-    }
-
-//    public Polygon getBounding() {
-//        // Get the actor's position and size
-//        float x = getX();
-//        float y = getY();
-//        float width = getWidth();
-//        float height = getHeight();
-//        if (Objects.equals(name, "torpedo")) {
-//            System.out.println("stop");
-//        }
-//        // Create the polygon with the rectangle's vertices
-//        float[] vertices = new float[8];
-//        vertices[0] = x;
-//        vertices[1] = y;
-//        vertices[2] = x + width;
-//        vertices[3] = y;
-//        vertices[4] = x + width;
-//        vertices[5] = y + height;
-//        vertices[6] = x;
-//        vertices[7] = y + height;
-//
-//        Polygon polygon = new Polygon(vertices);
-//        rotatePolygon(polygon); // Rotate the polygon
-//
-//        //Rectangle polyRec = polygon.getBoundingRectangle();
-//        // Get the bounding rectangle of the rotated polygon
-//        return polygon;
-//    }
-
-//    private void rotatePolygon(Polygon polygon) {
-//        polygon.setOrigin(getOriginX(), getOriginY());
-//        polygon.setRotation(angle);
-//    }
-//
-//    public float getPolygonWidth(Polygon polygon) {
-//        float[] vertices = polygon.getVertices();
-//
-//        // Initialize min and max values with the first x-coordinate
-//        float minX = vertices[0];
-//        float maxX = vertices[0];
-//
-//        // Iterate through the vertices array (step by 2 since vertices array contains x and y alternately)
-//        for (int i = 0; i < vertices.length; i += 2) {
-//            float x = vertices[i];
-//            if (x < minX) {
-//                minX = x;
-//            }
-//            if (x > maxX) {
-//                maxX = x;
-//            }
-//        }
-//
-//        // The width of the polygon is the difference between maxX and minX
-//        return maxX - minX;
-//    }
-
-    public float getPolygonHeight(Polygon polygon) {
-        float[] vertices = polygon.getVertices();
-
-        // Initialize min and max values with the first y-coordinate
-        float minY = vertices[1];
-        float maxY = vertices[1];
-
-        // Iterate through the vertices array (step by 2 since vertices array contains x and y alternately)
-        for (int i = 1; i < vertices.length; i += 2) {
-            float y = vertices[i];
-            if (y < minY) {
-                minY = y;
-            }
-            if (y > maxY) {
-                maxY = y;
-            }
-        }
-
-        // The height of the polygon is the difference between maxY and minY
-        return maxY - minY;
     }
 
     public void rotate() {
@@ -457,7 +381,7 @@ public class AnimatedActor extends Actor implements Pausable {
     }
 
     public float getMoveSpeed() {
-        return moveSpeed;
+        return !isParked() ? moveSpeed : 0;
     }
 
     public void setMoveSpeed(float moveSpeed) {
@@ -469,12 +393,27 @@ public class AnimatedActor extends Actor implements Pausable {
         this.paused = paused;
     }
 
+    public boolean isParked() {
+        return parked;
+    }
+
+    public void setParked(boolean parked) {
+        this.parked = parked;
+    }
+
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    public float getDamage() {
+        return damage;
+    }
+
     @Override
     public boolean remove() {
         dispose();
         return super.remove();
     }
-
 
     public void dispose() {
         System.out.println("DISPOSED :" + this.name);

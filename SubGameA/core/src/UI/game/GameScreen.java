@@ -1,6 +1,7 @@
 package UI.game;
 
 import Components.*;
+import UI.gameover.GameOver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -40,11 +41,13 @@ public class GameScreen implements Screen {
     public Viewport viewport;
     public SpriteBatch batch;
     private boolean paused = false;
+    private GameOver gameOver;
     //private ShapeRenderer shapeRenderer;
 
     public GameScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
         this.gameStageManager = new GameStageManager(this);
+        this.gameOver = new GameOver(this);
 
         initClasses();
 
@@ -178,9 +181,11 @@ public class GameScreen implements Screen {
         levelManager.reset();
         enemyManager.reset();
         player.reset();
+    }
+
+    public void resetUpgrades() {
         upgradeStore.setDefaults();
         upgradeStore.getUpgradeStageManager().resetUpgrades();
-
     }
 
     public EnemyManager getEnemyManager() {
@@ -238,6 +243,10 @@ public class GameScreen implements Screen {
 
     public UpgradeStore getUpgradeStore() {
         return upgradeStore;
+    }
+
+    public GameOver getGameOver() {
+        return gameOver;
     }
 }
 

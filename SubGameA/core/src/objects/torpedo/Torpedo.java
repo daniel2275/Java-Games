@@ -15,7 +15,7 @@ public class Torpedo {
     private int speed = 1;
     public static final int TORPEDO_WIDTH = 16 ;
     public static final int TORPEDO_HEIGHT = 5 ;
-    private int torpedoDamage = 50;
+    private float damage = 20;
     private boolean enemy = false;
     private float stateTime;
     private boolean explode = false;
@@ -32,10 +32,12 @@ public class Torpedo {
 
     private AnimatedActor torpedoActor;
 
-    public Torpedo(GameScreen gameScreen, float x, float y) {
+    public Torpedo(GameScreen gameScreen, float x, float y, float damage) {
         animationManager = new TorpedoAnimationManager(new Texture("torpedo-atlas.png"));
         this.gameScreen = gameScreen;
         initializeTorpedo(x,y);
+        this.damage = damage;
+        torpedoActor.setDamage(damage);
         gameScreen.getGmStage().addActor(torpedoActor);
     }
 
@@ -51,16 +53,17 @@ public class Torpedo {
     }
 
     // Constructor for Enemy torpedo
-    public Torpedo(GameScreen gameScreen, float x, float y, boolean enemy) {
-       this(gameScreen,x,y);
+    public Torpedo(GameScreen gameScreen, float x, float y, boolean enemy, float damage ) {
+       this(gameScreen,x,y, damage);
        this.enemy = enemy;
     }
 
     // Constructor for Player torpedo
-    public Torpedo(GameScreen gameScreen, float x, float y, boolean enemy, float targetX, float targetY) {
-        this(gameScreen,x,y,enemy);
+    public Torpedo(GameScreen gameScreen, float x, float y, boolean enemy, float targetX, float targetY,float damage) {
+        this(gameScreen,x,y,enemy, damage);
         this.targetX = targetX;
         this.targetY = targetY;
+        this.damage = damage;
     }
 
     // Torpedo screen coordinates
@@ -106,14 +109,8 @@ public class Torpedo {
             torpedoActor.setAngle(angle);
         }
         torpedoActor.moveBy(velocityX,velocityY);
-
-//        hitbox.x += velocityX;
-  //      hitbox.y += velocityY;
     }
 
-//    public Rectangle getHitbox() {
-//        return hitbox;
-//    }
 
     public void setExplode(boolean explode) {
         if(explode) {
@@ -126,12 +123,12 @@ public class Torpedo {
         return explode;
     }
 
-    public int getTorpedoDamage() {
-        return torpedoDamage;
+    public float getDamage() {
+        return damage;
     }
 
-    public void setTorpedoDamage(int torpedoDamage) {
-        this.torpedoDamage = torpedoDamage;
+    public void setDamage(float damage) {
+        this.damage = damage;
     }
 
     public int getSpeed() {

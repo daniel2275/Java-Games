@@ -61,7 +61,7 @@ public class ObjectManager implements Pausable {
             torpedoLoading.setDuration(gameScreen.getPlayer().getPlayerActor().getReloadSpeed());
 
             // Create and add the torpedo using the center coordinates
-            torpedoes.add(new Torpedo(gameScreen, playerCenterX, playerCenterY));
+            torpedoes.add(new Torpedo(gameScreen, playerCenterX, playerCenterY, gameScreen.getPlayer().getPlayerActor().getDamage()));
 
 
             soundManager.playLaunchTorpedoRnd();
@@ -69,7 +69,7 @@ public class ObjectManager implements Pausable {
     }
 
     public void dropCharge(Enemy enemy) {
-        if (enemy.chargeDeployer() && enemy.isAggro() && !enemy.isDying()) {
+        if (enemy.getChargeDeployer().deployAttack() && enemy.isAggro() && !enemy.isDying()) {
             float enemyX = enemy.getEnemyActor().getX();
             float enemyY = enemy.getEnemyActor().getY();
 
@@ -79,7 +79,7 @@ public class ObjectManager implements Pausable {
                     float targetY = gameScreen.getPlayer().getPlayerActor().getY();
                     float torpedoX = enemyX + (enemy.getEnemyWidth() / 2f);
                     float torpedoY = enemyY + (enemy.getEnemyHeight() / 2f);
-                    torpedoes.add(new Torpedo(gameScreen, torpedoX, torpedoY, true, targetX, targetY));
+                    torpedoes.add(new Torpedo(gameScreen, torpedoX, torpedoY, true, targetX, targetY, enemy.getDamage()));
                 }
             } else {
                 depthCharges.add(new DepthCharge(gameScreen, enemyX, enemyY));
@@ -107,7 +107,7 @@ public class ObjectManager implements Pausable {
                         torpedoIterator.remove();
                     }
                 } else {
-                    if (gameScreen.checkCollision(torpedo.getTorpedoActor(), torpedo.getTorpedoDamage())) {
+                    if (gameScreen.checkCollision(torpedo.getTorpedoActor(), torpedo.getTorpedoActor().getDamage())) {
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();

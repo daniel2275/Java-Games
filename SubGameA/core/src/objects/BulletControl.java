@@ -1,17 +1,17 @@
-package objects.depthChage;
+package objects;
 
 import utilities.Timing;
 
-public class ChargeDeployer {
+public class BulletControl {
     private Timing timing;
 
-    public ChargeDeployer() {
-        timing = new Timing(2); // Initialize Timing with a 2-second interval
+    public BulletControl() {
+        timing = new Timing(3); // Initialize Timing with a 2-second interval
         timing.start(); // Start the timing
     }
 
     // Method to deploy charges with a delay of at least 2 seconds
-    public boolean deployCharges() {
+    public boolean deployAttack() {
         if (!timing.isPaused()) {
             timing.update(); // Update timing
         }
@@ -19,8 +19,11 @@ public class ChargeDeployer {
         if (timing.getTimeRemaining() <= 0) {
             // If at least 2 seconds have passed, proceed with deployment
             java.util.Random rnd = new java.util.Random();
-            int launch = rnd.nextInt(3000);
-            return launch < 10;
+            int launch = rnd.nextInt(2100);
+
+            System.out.println(launch);
+            timing.start(); // Reset timing after deployment
+            return launch < 700;
         } else {
             // If less than 2 seconds have passed, prevent deployment
             return false;
@@ -32,4 +35,3 @@ public class ChargeDeployer {
         timing.pause(pause); // Pause or resume the timing
     }
 }
-

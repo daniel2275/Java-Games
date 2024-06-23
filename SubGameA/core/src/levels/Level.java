@@ -357,7 +357,19 @@ public class Level {
             @Override
             void initializeLevel(Level level) {
                 Enemy enemy1 = level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10);
+
+                Enemy enemy2 = level.createEnemy("enemy3", (int) WORLD_WIDTH + 64, 0, 0, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
+
+                Enemy enemy3 = level.createEnemy("enemy5", (int) WORLD_WIDTH + 65, 20, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10);
+
+
+
                 level.addEnemyToManager(enemy1);
+
+                level.addEnemyToManager(enemy2);
+
+                level.addEnemyToManager(enemy3);
+
             }
         },
         LEVEL2 {
@@ -376,15 +388,16 @@ public class Level {
                 Enemy enemy2 = level.createEnemy("enemy2", (int) WORLD_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
                 level.addEnemyToManager(enemy1);
                 level.addEnemyToManager(enemy2);
+
             }
         },
         LEVEL4 {
             @Override
             void initializeLevel(Level level) {
                 Enemy enemy1 = level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10);
-                Enemy enemy2 = level.createEnemy("enemy2", (int) WORLD_WIDTH + 64, 0, 2, false, "tanker2-atlas.png", 10f, false, false, 1, 10);
-                Enemy enemy3 = level.createEnemy("enemy3", (int) WORLD_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
-                Enemy enemy4 = level.createEnemy("enemy4", -65, 64, 10, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy2 = level.createEnemy("enemy2", (int) WORLD_WIDTH + 64, 0, 5, false, "tanker2-atlas.png", 10f, false, false, 1, 10);
+                Enemy enemy3 = level.createEnemy("enemy3", (int) WORLD_WIDTH + 64, 0, 15, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy4 = level.createEnemy("enemy4", -65, 64, 20, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
                 level.addEnemyToManager(enemy1);
                 level.addEnemyToManager(enemy2);
                 level.addEnemyToManager(enemy3);
@@ -395,8 +408,8 @@ public class Level {
             @Override
             void initializeLevel(Level level) {
                 Enemy enemy1 = level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10);
-                Enemy enemy2 = level.createEnemy("enemy2", (int) WORLD_WIDTH + 65, 100, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10);
-                Enemy enemy3 = level.createEnemy("enemy3", -65, 100, 14, true, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy2 = level.createEnemy("enemy2", (int) WORLD_WIDTH + 65, 30, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy3 = level.createEnemy("enemy3", -65, 40, 14, true, "enemy-sub1.png", 13f, true, true, 1, 10);
                 level.addEnemyToManager(enemy1);
                 level.addEnemyToManager(enemy2);
                 level.addEnemyToManager(enemy3);
@@ -406,10 +419,10 @@ public class Level {
             @Override
             void initializeLevel(Level level) {
                 Enemy enemy1 = level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10);
-                Enemy enemy2 = level.createEnemy("enemy2", (int) WORLD_WIDTH + 64, 0, 2, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
-                Enemy enemy3 = level.createEnemy("enemy3", -65, 60, 5, true, "enemy-sub1.png", 13f, true, true, 1, 10);
-                Enemy enemy4 = level.createEnemy("enemy4", -65, 0, 15, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
-                Enemy enemy5 = level.createEnemy("enemy5", (int) WORLD_WIDTH + 65, 20, 20, false, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy2 = level.createEnemy("enemy2", (int) WORLD_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy3 = level.createEnemy("enemy3", -65, 60, 15, true, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy4 = level.createEnemy("enemy4", -65, 0, 25, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy5 = level.createEnemy("enemy5", (int) WORLD_WIDTH + 65, 20, 30, false, "enemy-sub1.png", 13f, true, true, 1, 10);
                 level.addEnemyToManager(enemy1);
                 level.addEnemyToManager(enemy2);
                 level.addEnemyToManager(enemy3);
@@ -421,21 +434,58 @@ public class Level {
             @Override
             void initializeLevel(Level level) {
                 Enemy enemy1 = level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10);
+                Enemy enemy2 = level.createEnemy("enemy2", -65, 10, 10, true, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy3 = level.createEnemy("enemy3",(int) WORLD_WIDTH + 65 , 0,20, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy4 = level.createEnemy("enemy4", -65, 0, 30, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy5 = level.createEnemy("enemy5", (int) WORLD_WIDTH + 65, 35, 40, false, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy6 = level.createEnemy("enemy5", -65, 55, 50, true, "enemy-sub1.png", 13f, true, true, 1, 10);
                 level.addEnemyToManager(enemy1);
+                level.addEnemyToManager(enemy2);
+                level.addEnemyToManager(enemy3);
+                level.addEnemyToManager(enemy4);
+                level.addEnemyToManager(enemy5);
+                level.addEnemyToManager(enemy6);
             }
         },
         LEVEL8 {
             @Override
             void initializeLevel(Level level) {
-                Enemy enemy1 = level.createEnemy("enemy1", -125, 0, 0, false, "cv6-atlas.png", 13f, true, false, 3, 50,128,32);
+                Enemy enemy1 = level.createEnemy("enemy4", -65, 0, 3, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy2 = level.createEnemy("enemy4", -65, 0, 5, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy3 = level.createEnemy("enemy4", -65, 0, 10, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy4 = level.createEnemy("enemy4", -65, 0, 15, true, "destroyer-atlas.png", 15f, true, false, 1, 10);
+
+                Enemy enemy5 = level.createEnemy("enemy3",(int) WORLD_WIDTH + 65 , 0,3, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy6 = level.createEnemy("enemy3",(int) WORLD_WIDTH + 65 , 0,5, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy7 = level.createEnemy("enemy3",(int) WORLD_WIDTH + 65 , 0,10, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
+                Enemy enemy8 = level.createEnemy("enemy3",(int) WORLD_WIDTH + 65 , 0,15, false, "destroyer-atlas.png", 15f, true, false, 1, 10);
                 level.addEnemyToManager(enemy1);
+                level.addEnemyToManager(enemy2);
+                level.addEnemyToManager(enemy3);
+                level.addEnemyToManager(enemy4);
+                level.addEnemyToManager(enemy5);
+                level.addEnemyToManager(enemy6);
+                level.addEnemyToManager(enemy7);
+                level.addEnemyToManager(enemy8);
             }
         },
         LEVEL9 {
             @Override
             void initializeLevel(Level level) {
-                Enemy enemy1 = level.createEnemy("enemy1", -125, 0, 0, false, "cv6-atlas.png", 13f, true, false, 3, 50,128,32);
+                Enemy enemy1 = level.createEnemy("enemy2", -65, 10, 5, true, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy2 = level.createEnemy("enemy2", -65, 30, 15, true, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy3 = level.createEnemy("enemy2", -65, 50, 25, true, "enemy-sub1.png", 13f, true, true, 1, 10);
+
+
+                Enemy enemy4 = level.createEnemy("enemy5", (int) WORLD_WIDTH + 65, 10, 5, false, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy5 = level.createEnemy("enemy5", (int) WORLD_WIDTH + 65, 30, 15, false, "enemy-sub1.png", 13f, true, true, 1, 10);
+                Enemy enemy6 = level.createEnemy("enemy5", (int) WORLD_WIDTH + 65, 50, 25, false, "enemy-sub1.png", 13f, true, true, 1, 10);
                 level.addEnemyToManager(enemy1);
+                level.addEnemyToManager(enemy2);
+                level.addEnemyToManager(enemy3);
+                level.addEnemyToManager(enemy4);
+                level.addEnemyToManager(enemy5);
+                level.addEnemyToManager(enemy6);
             }
         },
         LEVEL10 {

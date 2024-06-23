@@ -93,6 +93,7 @@ public class InputHandler implements InputProcessor {
             break;
             case Input.Keys.R: {
                 gameScreen.reset();
+                gameScreen.resetUpgrades();
             }
             break;
             case Input.Keys.ESCAPE: {

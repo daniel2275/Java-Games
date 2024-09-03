@@ -1,0 +1,7 @@
+touchpad.png
+size:128,128
+repeat:none
+touchKnob
+bounds:2,2,14,14
+touchBackground
+bounds:2,18,96,96

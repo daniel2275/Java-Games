@@ -4,6 +4,7 @@ import UI.game.FontManager;
 import UI.game.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -56,7 +57,7 @@ public class UpgradeStageManager {
     public void animateButtonsOnShow() {
         final float initialDelay = 0.1f; // Fixed delay
         final float delayIncrement = 0.1f; // Fixed delay increment
-        final float animationDuration = 0.2f; // Fixed animation duration
+        final float animationDuration = 0.1f; // Fixed animation duration
 
         upTable.setVisible(true);
 
@@ -71,7 +72,6 @@ public class UpgradeStageManager {
 
                     for (Actor actor : upTable.getChildren()) {
                         if (actor instanceof TextButton || actor instanceof Slider || actor instanceof Label || actor instanceof Stack) {
-
                             // Get the button's final position as set by the table's layout
                             float finalX = actor.getX();
                             float finalY = actor.getY();
@@ -90,26 +90,10 @@ public class UpgradeStageManager {
                             actor.addAction(Actions.sequence(Actions.delay(delay), moveIn));
 
                             delay += delayIncrement;
-
-//                            // Create a SequenceAction to handle the delay and action sequence
-//                            SequenceAction sequence = new SequenceAction();
-//
-//                            // Add a delay before the action begins
-//                            sequence.addAction(Actions.delay(delay));
-//
-//                            // Set actor to visible after delay and perform the animation
-//                            sequence.addAction(Actions.run(() -> actor.setVisible(true)));
-//                            sequence.addAction(Actions.moveTo(finalX, finalY, animationDuration, Interpolation.smooth));
-//
-//                            delay += delayIncrement; // Increase delay for the next button
-//
-//                            actor.addAction(sequence);
-
                         }
                     }
 
                     // Re-enable layout and force an update after the animations
-
                     upStage.addAction(Actions.sequence(
                         Actions.delay(delay + 0.2f),
                         Actions.run(() -> {
@@ -129,6 +113,9 @@ public class UpgradeStageManager {
         fireRateCost = new Label("00", upSkin);
         damageCost = new Label("00", upSkin);
 
+        speedCost.setColor(Color.BLACK);
+        fireRateCost.setColor(Color.BLACK);
+        damageCost.setColor(Color.BLACK);
 
         // Score label creation
         scoreLbl = new Label("(Score:)" + gameScreen.getPlayer().getPlayerScore(), upSkin);

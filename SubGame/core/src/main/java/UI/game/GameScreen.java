@@ -9,12 +9,10 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import entities.enemies.Enemy;
@@ -45,8 +43,9 @@ public class GameScreen implements Screen {
     public SpriteBatch batch;
     private boolean paused = false;
     private GameOver gameOver;
-    public Image crosshairImage;
-    private Texture crosshairTexture;
+    private Actor crossHairActor;
+//    public Image crosshairImage;
+//    private Texture crosshairTexture;
 
     public GameScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
@@ -67,20 +66,13 @@ public class GameScreen implements Screen {
 
         gmStage.addActor(player.getPlayerActor());
 
-        createCrossHair();
     }
 
-
-    public void createCrossHair() {
-        crosshairTexture = new Texture("acrosshair.png");
-        crosshairImage = new Image(crosshairTexture);
-        crosshairImage.setVisible(false); // Initially hidden
-        gmStage.addActor(crosshairImage);
-    }
 
     public void updateCrosshairPosition(int screenX, int screenY) {
         Vector2 stageCoords = gmStage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        crosshairImage.setPosition(stageCoords.x - crosshairImage.getWidth() / 2, stageCoords.y - crosshairImage.getHeight() / 2);
+        crossHairActor = gameStageManager.getAndroidCrossHairActor();
+        crossHairActor.setPosition(stageCoords.x - crossHairActor.getWidth() / 2, stageCoords.y - crossHairActor.getHeight() /  2 );
     }
 
 
@@ -269,7 +261,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        crosshairTexture.dispose();
         gameStageManager.dispose();
         batch.dispose();
         inputHandler.dispose();
@@ -293,6 +284,10 @@ public class GameScreen implements Screen {
 
     public GameOver getGameOver() {
         return gameOver;
+    }
+
+    public Actor getCrossHairActor() {
+        return crossHairActor;
     }
 }
 

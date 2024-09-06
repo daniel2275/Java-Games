@@ -10,9 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import static utilities.Constants.Game.VIRTUAL_WIDTH;
+
 public class TouchpadController {
     private TextureAtlas textureAtlas;
-    private Touchpad touchpad;
+    private Touchpad leftTouchpad;
+    private Touchpad rightTouchpad;
     private int currentDirection = -1;
 
     // Directions
@@ -26,27 +29,32 @@ public class TouchpadController {
     public static final int UP_LEFT = 7;
 
     public TouchpadController(Stage stage) {
-        // Load the texture atlas (make sure you have a texture atlas file in the assets folder)
+        // Load the texture atlas
         textureAtlas = new TextureAtlas(Gdx.files.internal("touchpad.atlas"));
 
-        // Create the touchpad
-        createTouchpad(stage);
+        // Create the touchpads
+        createTouchpads(stage);
     }
 
-    private void createTouchpad(Stage stage) {
+    private void createTouchpads(Stage stage) {
         // Create Touchpad Style using the texture atlas
         TouchpadStyle touchpadStyle = new TouchpadStyle();
         touchpadStyle.background = new TextureRegionDrawable(new TextureRegion(textureAtlas.findRegion("touchBackground")));
         touchpadStyle.knob = new TextureRegionDrawable(new TextureRegion(textureAtlas.findRegion("touchKnob")));
 
-        // Create Touchpad
-        touchpad = new Touchpad(10, touchpadStyle);
-        touchpad.setBounds(15, 15, 200, 200);
+        // Create left Touchpad
+        leftTouchpad = new Touchpad(10, touchpadStyle);
+        leftTouchpad.setBounds(15, 15, 100, 100);
 
-        // Add listener to handle touchpad movement
-        touchpad.addListener(new ChangeListener() {
+        // Create right Touchpad
+        rightTouchpad = new Touchpad(10, touchpadStyle);
+        rightTouchpad.setBounds( VIRTUAL_WIDTH - 115, 15, 100, 100);
+
+        // Add listeners to handle touchpad movement
+        ChangeListener touchpadListener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                Touchpad touchpad = (Touchpad) actor;
                 float knobPercentX = touchpad.getKnobPercentX();
                 float knobPercentY = touchpad.getKnobPercentY();
 
@@ -59,9 +67,13 @@ public class TouchpadController {
                 // Map the angle to the nearest of the 8 directions
                 currentDirection = getDirectionFromAngle(angle);
             }
-        });
+        };
 
-        stage.addActor(touchpad);
+        leftTouchpad.addListener(touchpadListener);
+        rightTouchpad.addListener(touchpadListener);
+
+        stage.addActor(leftTouchpad);
+        stage.addActor(rightTouchpad);
     }
 
     private int getDirectionFromAngle(double angle) {
@@ -90,12 +102,14 @@ public class TouchpadController {
     }
 
     public boolean isTouchpadTouched() {
-        return touchpad.isTouched();
+        return leftTouchpad.isTouched() || rightTouchpad.isTouched();
     }
 
     public boolean isTouchWithinBounds(float x, float y) {
-        return touchpad.getX() <= x && x <= touchpad.getX() + touchpad.getWidth() &&
-            touchpad.getY() <= y && y <= touchpad.getY() + touchpad.getHeight();
+        return (leftTouchpad.getX() <= x && x <= leftTouchpad.getX() + leftTouchpad.getWidth() &&
+            leftTouchpad.getY() <= y && y <= leftTouchpad.getY() + leftTouchpad.getHeight()) ||
+            (rightTouchpad.getX() <= x && x <= rightTouchpad.getX() + rightTouchpad.getWidth() &&
+                rightTouchpad.getY() <= y && y <= rightTouchpad.getY() + rightTouchpad.getHeight());
     }
 
     public boolean touchDown(float x, float y, int pointer, int button) {
@@ -106,7 +120,11 @@ public class TouchpadController {
             event.setStageY(y);
             event.setPointer(pointer);
             event.setButton(button);
-            touchpad.fire(event);
+            if (leftTouchpad.isTouched()) {
+                leftTouchpad.fire(event);
+            } else if (rightTouchpad.isTouched()) {
+                rightTouchpad.fire(event);
+            }
             return true;
         }
         return false;
@@ -120,7 +138,11 @@ public class TouchpadController {
             event.setStageY(y);
             event.setPointer(pointer);
             event.setButton(button);
-            touchpad.fire(event);
+            if (leftTouchpad.isTouched()) {
+                leftTouchpad.fire(event);
+            } else if (rightTouchpad.isTouched()) {
+                rightTouchpad.fire(event);
+            }
             return true;
         }
         return false;
@@ -133,7 +155,11 @@ public class TouchpadController {
             event.setStageX(x);
             event.setStageY(y);
             event.setPointer(pointer);
-            touchpad.fire(event);
+            if (leftTouchpad.isTouched()) {
+                leftTouchpad.fire(event);
+            } else if (rightTouchpad.isTouched()) {
+                rightTouchpad.fire(event);
+            }
             return true;
         }
         return false;
@@ -143,8 +169,5 @@ public class TouchpadController {
         textureAtlas.dispose();
     }
 }
-
-
-
 
 

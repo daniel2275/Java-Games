@@ -84,14 +84,8 @@ public class UpgradeStore implements Screen {
             setDefaults();
         }
             // Get SaveGame values
-
-//            System.out.println("on loadinit enter: " + gameScreen.getPlayer().getPlayerScore());
-            //System.out.println("after SaveGame: " + upgradeManager.getSaveGame("SaveGame"));
-
             int playerScoreInit = upgradeManager.getSaveGame("SaveGame").getPlayerScore();
             gameScreen.getPlayer().setPlayerScore(playerScoreInit);
-
-            //System.out.println("on loadinit exit: " + gameScreen.getPlayer().getPlayerScore());
 
             int playerHealthInit = upgradeManager.getSaveGame("SaveGame").getPlayerHealth();
             gameScreen.getPlayer().setPlayerHealth(playerHealthInit);
@@ -151,12 +145,6 @@ public class UpgradeStore implements Screen {
         float volume = gameScreen.getSubGame().getOptions().getVolume();
         upgradeManager.addOrUpdateSaveGame("SaveGame", playerScore, playerHealth, level, volume);
 
-        //System.out.println("Initial SaveGame: " + upgradeManager.getSaveGame("SaveGame"));
-
-        // Create values for saveGame
-        //upgradeManager.addSaveGame("SaveGame", playerScore, playerHealth, level, volume);
-
-        //UpgradeSerialization save;
         upgradeManager.saveToPrefs();
    }
 

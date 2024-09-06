@@ -1,5 +1,6 @@
 package UI.game;
 
+import Components.CrossHairActor;
 import Components.CustomActor;
 import Components.ParallaxLayer;
 import com.badlogic.gdx.Gdx;
@@ -9,12 +10,10 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import io.github.daniel2275.subgame.SubGame;
@@ -38,9 +37,11 @@ public class GameStageManager {
     private Sprite pauseSprite;
     private SubGame subGame;
     private GameScreen gameScreen;
-    private Animation<TextureRegion> seaAnimation;
-    private Animation<TextureRegion> skyAnimation;
-    private TextureAtlas atlas;
+    private Table tile;
+    private Button upgradesButton;
+    private Button pauseButton;
+    private Button menuButton;
+    private Actor androidCrossHair;
 
     public GameStageManager(GameScreen gameScreen) {
         // Initialize the stage with the same viewport as GameScreen
@@ -84,33 +85,37 @@ public class GameStageManager {
     }
 
     private void createUIElements() {
-        //set up UI display
-        TextButton upgradesButton = new TextButton("Upgrades", gameSkin);
-        TextButton pauseButton = new TextButton("Pause", gameSkin);
-        TextButton menuButton = new TextButton("Menu", gameSkin);
-        upgradesButton.getLabel().setFontScale(FONT_GAME_SIZE);
-        menuButton.getLabel().setFontScale(FONT_GAME_SIZE);
-        pauseButton.getLabel().setFontScale(FONT_GAME_SIZE);
+        setupButtons();
+        setupAnimations();
+        setupBackground();
+        setupScoreboard();
+        setupParallaxLayers();
 
-        menuButton.setPosition(595,445);
-        pauseButton.setPosition(651,445);
-        upgradesButton.setPosition(712,445);
+        gmStage.addActor(underSea);
+        gmStage.addActor(skyLine);
+        gmStage.addActor(upgradesButton);
+        gmStage.addActor(pauseButton);
+        gmStage.addActor(menuButton);
+        gmStage.addActor(tile);
+        gmStage.addActor(androidCrossHair);
+        androidCrossHair.setVisible(false);
+    }
 
-        Color color = menuButton.getColor();
-        menuButton.setColor(color.r, color.g, color.b, 0.5f);
-        pauseButton.setColor(color.r, color.g, color.b, 0.5f);
-        upgradesButton.setColor(color.r, color.g, color.b, 0.5f);
+    private void setupButtons() {
+        upgradesButton = createTextButton("Upgrades", 712, 445);
+        pauseButton = createTextButton("Pause", 651, 445);
+        menuButton = createTextButton("Menu", 595, 445);
 
-        menuButton.addListener(new ClickListener(){
-           @Override
-           public void clicked(InputEvent event, float x, float y) {
-               gameScreen.getUpgradeStore().saveGame();
-               gameScreen.pause();
-               gameScreen.getSubGame().setScreen(gameScreen.getSubGame().getMenuRenderer());
-           }
+        menuButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gameScreen.getUpgradeStore().saveGame();
+                gameScreen.pause();
+                gameScreen.getSubGame().setScreen(gameScreen.getSubGame().getMenuRenderer());
+            }
         });
 
-        pauseButton.addListener(new ClickListener(){
+        pauseButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 pause = !pause;
@@ -122,7 +127,7 @@ public class GameStageManager {
             }
         });
 
-        upgradesButton.addListener(new ClickListener(){
+        upgradesButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 gameScreen.pause();
@@ -130,90 +135,89 @@ public class GameStageManager {
                 gameScreen.getSubGame().setScreen(gameScreen.getUpgradeStore());
             }
         });
+    }
 
+    private TextButton createTextButton(String text, float x, float y) {
+        TextButton button = new TextButton(text, gameSkin);
+        button.getLabel().setFontScale(FONT_GAME_SIZE);
+        button.getLabel().setColor(0f, 0f, 0f, 0.5f);
+        button.setPosition(x, y);
+        Color color = button.getColor();
+        button.setColor(color.r, color.g, color.b, 0.5f);
+        return button;
+    }
 
-        atlas = new TextureAtlas(Gdx.files.internal("seanim/seanim.atlas"));
+    private void setupAnimations() {
+        TextureAtlas seaAtlas = new TextureAtlas(Gdx.files.internal("seanim/seanim.atlas"));
+        Animation<TextureRegion> seaAnimation = createAnimation(seaAtlas, "Wateranim", 4, 0.6f);
 
+        TextureAtlas crossHairAtlas = new TextureAtlas(Gdx.files.internal("androidcrosshair/acrosshair.atlas"));
+        Animation<TextureRegion> crossHairAnimation = createAnimation(crossHairAtlas, "acrosshair", 5, 0.1f);
+
+        Texture skyBackgroundAtlas = new Texture("skyline.png");
+        Animation<TextureRegion> skyAnimation = boatAnimation(0, 1, new TextureRegion[][]{{new TextureRegion(skyBackgroundAtlas, 770, 290)}}, 0.2f);
+
+        androidCrossHair =  new CrossHairActor(crossHairAnimation);
+        skyLine = new CustomActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15);
+        underSea = new CustomActor(seaAnimation, 0, -SKY_SIZE + 45);
+    }
+
+    private Animation<TextureRegion> createAnimation(TextureAtlas atlas, String regionName, int frames, float frameDuration) {
         Array<TextureAtlas.AtlasRegion> regions = new Array<>();
-        for (int i = 1; i <= 4; i++) {
-            String regionName = "Wateranim" + i;//String.format("%04d", i);
-            TextureAtlas.AtlasRegion region = atlas.findRegion(regionName);
+        for (int i = 1; i <= frames; i++) {
+            TextureAtlas.AtlasRegion region = atlas.findRegion(regionName + i);
             if (region != null) {
                 regions.add(region);
             }
         }
+        return new Animation<>(frameDuration, regions, Animation.PlayMode.LOOP);
+    }
 
-        seaAnimation = new Animation<>(0.6f, regions, Animation.PlayMode.LOOP);
+    private void setupBackground() {
+        pauseSprite = new Sprite(new Texture(Gdx.files.internal("paused.png")));
+        pauseSprite.setPosition(Gdx.graphics.getWidth() / 2f - 100f, 500);
+        pauseSprite.setSize(200f, 80f);
+    }
 
-        TextureRegion[][] skyBackgroundSprites = new TextureRegion[1][1];
-        Texture skyBackgroundAtlas = new Texture("skyline.png");
-        skyBackgroundSprites[0][0] = new TextureRegion(skyBackgroundAtlas, 770, 290);
-
-        skyAnimation = boatAnimation(0, 1,skyBackgroundSprites, 0.2f);
-
-        skyLine = new CustomActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15);
-        underSea = new CustomActor(seaAnimation, 0, -SKY_SIZE + 45);
-
-        Table tile = new Table(gameSkin);
-        tile.setSize(224,70);
-        tile.setPosition(10,410);
-        color = tile.getColor();
+    private void setupScoreboard() {
+        tile = new Table(gameSkin);
+        tile.setSize(224, 70);
+        tile.setPosition(10, 410);
+        Color color = tile.getColor();
         tile.setColor(color.r, color.g, color.b, 0.5f);
-
         tile.setBackground("tooltip");
 
-        scoreLabel = new Label("Enemies remaining:", gameSkin);
-        scoreLabel1 = new Label("Score:", gameSkin);
-        scoreLabel2 = new Label("Level:", gameSkin);
-        scoreLabel3 = new Label("Health:", gameSkin);
-        scoreLabel.setColor(Color.BLACK);
-        scoreLabel1.setColor(Color.BLACK);
-        scoreLabel2.setColor(Color.BLACK);
-        scoreLabel3.setColor(Color.BLACK);
+        scoreLabel = createLabel("Enemies remaining:");
+        scoreLabel1 = createLabel("Score:");
+        scoreLabel2 = createLabel("Level:");
+        scoreLabel3 = createLabel("Health:");
 
         tile.add(scoreLabel).row();
         tile.add(scoreLabel1).row();
         tile.add(scoreLabel2).row();
         tile.add(scoreLabel3).row();
+    }
 
-        //background images
-        pauseSprite = new Sprite(new Texture(Gdx.files.internal("paused.png")));
-        pauseSprite.setPosition((float) Gdx.graphics.getWidth() / 2 - 100f, 500);
-        pauseSprite.setSize(200f, 80f);
+    private Label createLabel(String text) {
+        Label label = new Label(text, gameSkin);
+        label.setColor(Color.BLACK);
+        return label;
+    }
 
-        gmStage.addActor(underSea);
-        gmStage.addActor(skyLine);
-
-        Texture texture1 = new Texture(Gdx.files.internal("clouds.png"));
-        Texture texture2 = new Texture(Gdx.files.internal("clouds2.png"));
-        Texture texture3 = new Texture(Gdx.files.internal("clouds3.png"));
-        float speed1 = 8;
-        float initialX1 = 150;
-        float initialY1 = 415;
-
-        float speed2 = 11;
-        float initialX2 = 500;
-        float initialY2 = 415;
-
-        float speed3 = 15;
-        float initialX3 = 800;
-        float initialY3 = 400;
-
-        ParallaxLayer layer1 = new ParallaxLayer(texture1, speed1, initialX1, initialY1);
-        ParallaxLayer layer2 = new ParallaxLayer(texture2, speed2, initialX2, initialY2);
-        ParallaxLayer layer3 = new ParallaxLayer(texture3, speed3, initialX3, initialY3);
+    private void setupParallaxLayers() {
+        ParallaxLayer layer1 = createParallaxLayer("clouds.png", 8, 150, 415);
+        ParallaxLayer layer2 = createParallaxLayer("clouds2.png", 11, 500, 415);
+        ParallaxLayer layer3 = createParallaxLayer("clouds3.png", 15, 800, 400);
 
         gmStage.addActor(layer1);
         gmStage.addActor(layer2);
         gmStage.addActor(layer3);
-
-        gmStage.addActor(upgradesButton);
-        gmStage.addActor(pauseButton);
-        gmStage.addActor(menuButton);
-
-        gmStage.addActor(tile);
     }
 
+    private ParallaxLayer createParallaxLayer(String texturePath, float speed, float initialX, float initialY) {
+        Texture texture = new Texture(Gdx.files.internal(texturePath));
+        return new ParallaxLayer(texture, speed, initialX, initialY);
+    }
 
     public void dispose() {
         if (gameSkin != null) {
@@ -249,9 +253,12 @@ public class GameStageManager {
         return skyLine;
     }
 
-
     public CustomActor getUndersea() {
         return underSea;
+    }
+
+    public Actor getAndroidCrossHairActor() {
+        return androidCrossHair;
     }
 }
 

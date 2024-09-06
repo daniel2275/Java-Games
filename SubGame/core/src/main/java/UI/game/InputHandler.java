@@ -12,7 +12,6 @@ public class InputHandler implements InputProcessor {
     private boolean pause = false;
     private Vector2 playerPosition;
     private boolean isTouching;
-    //private Vector2 clickPosition;
     private TouchpadController touchpadController;
     private int touchpadPointer = -1;
     private int projectilePointer = -1;
@@ -42,12 +41,15 @@ public class InputHandler implements InputProcessor {
 
             // Handle projectile firing based on platform
             if (Gdx.app.getType() == com.badlogic.gdx.Application.ApplicationType.Android) {
-                gameScreen.updateCrosshairPosition(screenX, screenY);
-                gameScreen.crosshairImage.setVisible(true);
+                // Offset the y-coordinate by 200 pixels
+                int adjustedY = screenY - 200;
+                gameScreen.updateCrosshairPosition(screenX, adjustedY);
+                gameScreen.getCrossHairActor().setVisible(true);
             } else {
                 gameScreen.camera.unproject(touchWorldCoords);
                 float worldX = touchWorldCoords.x;
                 float worldY = touchWorldCoords.y;
+
                 gameScreen.getObjectManager().fireProjectile(worldX,worldY);
             }
             return true;
@@ -55,13 +57,10 @@ public class InputHandler implements InputProcessor {
         return false;
     }
 
-
-
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         // Convert screen coordinates to world coordinates
         Vector3 touchWorldCoords = new Vector3(screenX, screenY, 0);
-        //gameScreen.camera.unproject(worldCoords); // Convert to world coordinates based on camera
 
         if (pointer == touchpadPointer) {
             touchpadPointer = -1;
@@ -69,10 +68,13 @@ public class InputHandler implements InputProcessor {
         } else if (pointer == projectilePointer) {
             projectilePointer = -1;
             if (Gdx.app.getType() == com.badlogic.gdx.Application.ApplicationType.Android) {
-                gameScreen.crosshairImage.setVisible(false);
-                gameScreen.camera.unproject(touchWorldCoords);
+                gameScreen.getCrossHairActor().setVisible(false);
+                // Offset the y-coordinate by 200 pixels
+                int adjustedY = screenY - 200;
+                gameScreen.camera.unproject(touchWorldCoords.set(screenX, adjustedY, 0));
                 float worldX = touchWorldCoords.x;
                 float worldY = touchWorldCoords.y;
+
                 gameScreen.getObjectManager().fireProjectile(worldX,worldY);
             }
             return true;
@@ -88,7 +90,10 @@ public class InputHandler implements InputProcessor {
             clickPosition.set(screenX, screenY);
             //android crossHair
             if (Gdx.app.getType() == com.badlogic.gdx.Application.ApplicationType.Android) {
-                gameScreen.updateCrosshairPosition(screenX, screenY);
+                // Offset the y-coordinate by 200 pixels
+                int adjustedY = screenY - 200;
+                gameScreen.updateCrosshairPosition(screenX, adjustedY);
+                //gameScreen.updateCrosshairPosition(screenX, screenY);
             }
             return true;
         }

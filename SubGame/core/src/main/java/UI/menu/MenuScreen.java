@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.daniel2275.subgame.SubGame;
-import utilities.Constants.UIConstants;
+import utilities.Constants;
 
 public class MenuScreen implements Screen {
     private Stage uiStage;
@@ -29,8 +29,9 @@ public class MenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(UIConstants.BACKGROUND_COLOR);
+        ScreenUtils.clear(Constants.UIConstants.BACKGROUND_COLOR);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         uiStage.act(delta);
         uiStage.draw();
     }

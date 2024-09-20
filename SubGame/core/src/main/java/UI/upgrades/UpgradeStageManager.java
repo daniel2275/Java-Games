@@ -312,9 +312,6 @@ public class UpgradeStageManager {
 
             gameScreen.getPlayer().setPlayerScore(playerScore);
             upgradeStore.saveGame();
-            System.out.println("Updated cost: " + Math.abs(baseCost));
-            System.out.println("Label text: " + value.getText().toString());
-
         }
     }
 

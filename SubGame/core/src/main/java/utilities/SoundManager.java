@@ -12,8 +12,19 @@ public class SoundManager {
 
     private SubGame subGame;
 
-    private Sound torpedoHitSound, torpedoHitSound1, depthChargeHit, depthChargeFar,
-            explodedShort , launchTorpedo, launchTorpedo1, loudPing, ping, ping2, torpedoMiss, alarm, check;
+    private Sound torpedoHitSound;
+    private Sound torpedoHitSound1;
+    private Sound depthChargeHit;
+    private Sound depthChargeFar;
+    private Sound explodedShort;
+    private Sound launchTorpedo;
+    private Sound launchTorpedo1;
+    private Sound explosion;
+    private Sound ping;
+    private Sound ping2;
+    private Sound torpedoMiss;
+    private Sound detected;
+    private Sound check;
 
     private float volume;
 
@@ -25,12 +36,12 @@ public class SoundManager {
     explodedShort = Gdx.audio.newSound(Gdx.files.internal("audio/explodedshort.mp3"));
     launchTorpedo = Gdx.audio.newSound(Gdx.files.internal("audio/launchtorpedo.mp3"));
     launchTorpedo1 = Gdx.audio.newSound(Gdx.files.internal("audio/launchtorpedo1.mp3"));
-    //loudPing= Gdx.audio.newSound(Gdx.files.internal("audio/loudping.mp3"));
+    explosion = Gdx.audio.newSound(Gdx.files.internal("audio/explosion.mp3"));
     //ping = Gdx.audio.newSound(Gdx.files.internal("audio/ping.mp3"));
     //ping2 = Gdx.audio.newSound(Gdx.files.internal("audio/ping2.mp3"));
     torpedoMiss = Gdx.audio.newSound(Gdx.files.internal("audio/torpedomiss.mp3"));
     check = Gdx.audio.newSound(Gdx.files.internal("audio/check.mp3"));
-    //alarm = Gdx.audio.newSound(Gdx.files.internal("audio/alarm.mp3"));
+    detected = Gdx.audio.newSound(Gdx.files.internal("audio/detected.mp3"));
 
     this.subGame = subGame;
 
@@ -79,8 +90,12 @@ public class SoundManager {
         explodedShort.play(subGame.getOptions().getVolume());
     }
 
-    public void alarm(){
-        alarm.play(subGame.getOptions().getVolume());
+    public void playExplode1(){
+        explosion.play(subGame.getOptions().getVolume());
+    }
+
+    public void detected(){
+        detected.play(subGame.getOptions().getVolume());
     }
 
 
@@ -90,11 +105,6 @@ public class SoundManager {
 
     public void launchTorpedo1(){
         launchTorpedo1.play(subGame.getOptions().getVolume());
-    }
-
-
-    public void loudPing(){
-        loudPing.play(subGame.getOptions().getVolume());
     }
 
     public void ping(){
@@ -113,16 +123,6 @@ public class SoundManager {
         check.play(subGame.getOptions().getVolume());
     }
 
-
-    public void sunkRnd() {
-        boolean randomBit = MathUtils.randomBoolean() ? true : false;
-        if (randomBit) {
-            playExplode();
-        } else {
-            playExplode();
-            //alarm();
-        }
-    }
 
 
     public void playTorpedoHitRnd() {
@@ -151,14 +151,24 @@ public class SoundManager {
         }
     }
 
+    public void sunkRnd() {
+        boolean randomBit = MathUtils.randomBoolean() ? true : false;
+        if (randomBit) {
+            playExplode();
+        } else {
+            playExplode1();
+        }
+    }
+
     public void exit() {
         torpedoHitSound.dispose();
         torpedoHitSound1.dispose();
         depthChargeHit.dispose();
         depthChargeFar.dispose();
         explodedShort.dispose();
+        explosion.dispose();
         launchTorpedo.dispose();
-        loudPing.dispose();
+        launchTorpedo1.dispose();
         ping.dispose();
         ping2.dispose();
         torpedoMiss.dispose();

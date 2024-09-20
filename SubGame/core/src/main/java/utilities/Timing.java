@@ -63,6 +63,10 @@ public class Timing {
     }
 
     public void setDuration(float duration) {
-        this.duration = duration;
+        this.duration = Math.max(0, duration);
+    }
+
+    public boolean isTimeUp() {
+        return timeRemaining <= 0;
     }
 }

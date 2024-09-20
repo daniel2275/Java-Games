@@ -69,8 +69,8 @@ public class ObjectManager implements Pausable {
          }
     }
 
-    public void dropCharge(Enemy enemy) {
-        if (enemy.getChargeDeployer().deployAttack() && enemy.isAggro() && !enemy.isDying()) {
+    public void enemyAttack(Enemy enemy) {
+        if (enemy.getBulletControl().deployAttack() && enemy.isAggro() && !enemy.isDying()) {
             float enemyX = enemy.getEnemyActor().getX();
             float enemyY = enemy.getEnemyActor().getY();
 
@@ -107,7 +107,7 @@ public class ObjectManager implements Pausable {
                         torpedoIterator.remove();
                     }
                 } else {
-                    if (gameScreen.checkCollision(torpedo.getTorpedoActor(), torpedo.getTorpedoActor().getDamage())) {
+                    if (gameScreen.getEnemyManager().checkCollision(torpedo.getTorpedoActor(), torpedo.getTorpedoActor().getDamage())) {
                         torpedo.setExplode(true);
                         soundManager.playTorpedoHitRnd();
                         torpedo.updatePos();

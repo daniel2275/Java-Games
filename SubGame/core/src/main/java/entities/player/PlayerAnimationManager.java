@@ -9,13 +9,15 @@ import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
 import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
 
 public class PlayerAnimationManager  {
-    private final TextureRegion[][] uBoatSprites = new TextureRegion[6][6];
+    private final TextureRegion[][] uBoatSprites = new TextureRegion[8][8];
     private Animation<TextureRegion> idleAnimations;
     private Animation<TextureRegion> movingAnimations;
     private Animation<TextureRegion> upAnimations;
     private Animation<TextureRegion> downAnimations;
     private Animation<TextureRegion> hitAnimations;
     private Animation<TextureRegion> sunkAnimations;
+    private Animation<TextureRegion> surfacingAnimation;
+    private Animation<TextureRegion> turningAnimation;
 
     public PlayerAnimationManager(String sprites) {
         loadAnimations(sprites);
@@ -24,17 +26,19 @@ public class PlayerAnimationManager  {
     private void loadAnimations(String sprites) {
         Texture uBoatAtlas = new Texture(sprites);
 
-        for (int i = 0; i <= 5; i++) {
-            for (int j = 0; j <= 5; j++) {
+        for (int i = 0; i <= 7; i++) {
+            for (int j = 0; j <= 7; j++) {
                 uBoatSprites[i][j] = new TextureRegion(uBoatAtlas, j * 64, i * 16, PLAYER_WIDTH, PLAYER_HEIGHT);
             }
         }
         idleAnimations = LoadSave.boatAnimation(0, 5, uBoatSprites, 2.0f);
         movingAnimations = LoadSave.boatAnimation(1, 3, uBoatSprites, 0.055f);
-        upAnimations = LoadSave.boatAnimation(2, 3, uBoatSprites, 0.7f);
-        downAnimations = LoadSave.boatAnimation(3, 3, uBoatSprites, 0.7f);
+        upAnimations = LoadSave.boatAnimation(2, 3, uBoatSprites, 1f);
+        downAnimations = LoadSave.boatAnimation(3, 3, uBoatSprites, 1f);
         hitAnimations = LoadSave.boatAnimation(4, 1, uBoatSprites, 0.3f);
         sunkAnimations = LoadSave.boatAnimation(5, 1, uBoatSprites, 0.7f);
+        surfacingAnimation = LoadSave.boatAnimation(6, 5, uBoatSprites, 0.2f);
+        turningAnimation = LoadSave.boatAnimation(7, 5, uBoatSprites,0.2f);
     }
 
     public Animation<TextureRegion> getIdleAnimations() {
@@ -59,6 +63,14 @@ public class PlayerAnimationManager  {
 
     public Animation<TextureRegion> getSunkAnimations() {
         return sunkAnimations;
+    }
+
+    public Animation<TextureRegion> getSurfacingAnimation() {
+        return surfacingAnimation;
+    }
+
+    public Animation<TextureRegion> getTurningAnimation() {
+        return turningAnimation;
     }
 }
 

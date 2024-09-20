@@ -29,6 +29,7 @@ public class DepthCharge {
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoExplodeAnimation(),
+                animationManager.getTorpedoUpAnimation(),
             0,
             1,
                 DPC_WIDTH,
@@ -36,6 +37,7 @@ public class DepthCharge {
                 x,
                 y,
             false);
+        depthChargeActor.toBack();
     }
 
     public void update() {

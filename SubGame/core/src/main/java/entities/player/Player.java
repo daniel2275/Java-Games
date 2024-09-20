@@ -42,6 +42,8 @@ public class Player {
                 playerAnimationManager.getDownAnimations(),
                 playerAnimationManager.getHitAnimations(),
                 playerAnimationManager.getSunkAnimations(),
+                playerAnimationManager.getSurfacingAnimation(),
+                playerAnimationManager.getTurningAnimation(),
                 reload,
                 playerHealthManager.getMaxHealth(),
                 PLAYER_WIDTH,
@@ -114,6 +116,7 @@ public class Player {
 
     public void setPlayerSpeed(float playerSpeed) {
         playerMovement.setPlayerSpeed(playerSpeed);
+        playerActor.setMoveSpeed(playerSpeed);
     }
 
     public void setReload(float reload) {

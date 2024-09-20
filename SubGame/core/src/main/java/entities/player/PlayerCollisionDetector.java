@@ -2,6 +2,7 @@ package entities.player;
 
 import Components.HitNumberActor;
 import UI.game.GameScreen;
+import com.badlogic.gdx.Gdx;
 import objects.depthChage.DepthCharge;
 import objects.torpedo.Torpedo;
 
@@ -19,7 +20,7 @@ public class PlayerCollisionDetector {
     }
 
     public void checkCollision() {
-        if (gameScreen.checkCollision(player.getPlayerActor(), collisionDamage)) {
+        if (gameScreen.getEnemyManager().checkCollision(player.getPlayerActor(), collisionDamage)) {
             if (player.getPlayerActor().getCurrentHealth() > 0) {
                 player.getPlayerActor().setHit(true, collisionDamage);
                 player.getPlayerActor().setCollision(true);
@@ -28,7 +29,8 @@ public class PlayerCollisionDetector {
             }
 
             if (player.getPlayerActor().getCurrentHealth() <= 0) {
-                System.out.println("Game Over Collided");
+
+                Gdx.app.log( "Game Over","Collided");
                 // game over
                 gameOver();
             }
@@ -38,11 +40,11 @@ public class PlayerCollisionDetector {
     public void playerHit(Torpedo torpedo) {
         player.getPlayerActor().setHit(true,torpedo.getTorpedoActor().getDamage());
         // display hit values
-        HitNumberActor hitNumberActor = new HitNumberActor(player.getPlayerActor().getX() , player.getPlayerActor().getY(), (int) torpedo.getTorpedoActor().getDamage());
+        HitNumberActor hitNumberActor = new HitNumberActor(player.getPlayerActor().getX() , player.getPlayerActor().getY(), String.valueOf((int) torpedo.getTorpedoActor().getDamage()));
         gameScreen.getGameStage().getStage().addActor(hitNumberActor);
 
         if (player.getPlayerActor().getCurrentHealth() <= 0) {
-            System.out.println("Game Over Torpedoed");
+            Gdx.app.log( "Game Over","Torpedoed");
             gameOver();
         }
     }
@@ -51,12 +53,12 @@ public class PlayerCollisionDetector {
         playerHealthManager.setPlayerHealth(playerHealthManager.getPlayerHealth() - depthCharge.getDpcDamage());
         player.getPlayerActor().setHit(true, depthCharge.getDpcDamage());
         // display hit values
-        HitNumberActor hitNumberActor = new HitNumberActor(player.getPlayerActor().getX()  , player.getPlayerActor().getY(), depthCharge.getDpcDamage());
+        HitNumberActor hitNumberActor = new HitNumberActor(player.getPlayerActor().getX()  , player.getPlayerActor().getY(), String.valueOf((int) depthCharge.getDpcDamage()));
         gameScreen.getGameStage().getStage().addActor(hitNumberActor);
 
         if (player.getPlayerActor().getCurrentHealth() <= 0) {
               player.getPlayerActor().isSunk(true);
-            System.out.println("Game Over Torpedoed");
+            Gdx.app.log( "Game Over","Depth Charge");
             gameOver();
         }
     }

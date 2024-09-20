@@ -1,7 +1,7 @@
 package UI.game;
 
 import Components.CrossHairActor;
-import Components.CustomActor;
+import Components.BackgroundActor;
 import Components.ParallaxLayer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -32,8 +32,8 @@ public class GameStageManager {
     private Label scoreLabel1;
     private Label scoreLabel2;
     private Label scoreLabel3;
-    private CustomActor underSea;
-    private CustomActor skyLine;
+    private BackgroundActor underSea;
+    private BackgroundActor skyLine;
     private Sprite pauseSprite;
     private SubGame subGame;
     private GameScreen gameScreen;
@@ -158,8 +158,8 @@ public class GameStageManager {
         Animation<TextureRegion> skyAnimation = boatAnimation(0, 1, new TextureRegion[][]{{new TextureRegion(skyBackgroundAtlas, 770, 290)}}, 0.2f);
 
         androidCrossHair =  new CrossHairActor(crossHairAnimation);
-        skyLine = new CustomActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15);
-        underSea = new CustomActor(seaAnimation, 0, -SKY_SIZE + 45);
+        skyLine = new BackgroundActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15);
+        underSea = new BackgroundActor(seaAnimation, 0, -SKY_SIZE + 45);
     }
 
     private Animation<TextureRegion> createAnimation(TextureAtlas atlas, String regionName, int frames, float frameDuration) {
@@ -249,11 +249,11 @@ public class GameStageManager {
         return scoreLabel3;
     }
 
-    public CustomActor getSkyLine() {
+    public BackgroundActor getSkyLine() {
         return skyLine;
     }
 
-    public CustomActor getUndersea() {
+    public BackgroundActor getUndersea() {
         return underSea;
     }
 

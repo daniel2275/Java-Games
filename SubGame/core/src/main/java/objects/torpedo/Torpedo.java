@@ -50,6 +50,7 @@ public class Torpedo {
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoExplodeAnimation(),
+                animationManager.getTorpedoUpAnimation(),
             0,
             1,
             TORPEDO_WIDTH,
@@ -120,10 +121,10 @@ public class Torpedo {
             torpedoActor.setAngle(angle);
             calculateVector = true;
 
-            // Log values for debugging
-            System.out.println("Normalized Direction: " + direction);
-            System.out.println("Velocity: " + velocity);
-            System.out.println("Angle: " + angle);
+//            // Log values for debugging
+//            System.out.println("Normalized Direction: " + direction);
+//            System.out.println("Velocity: " + velocity);
+//            System.out.println("Angle: " + angle);
         }
 
         // Update the position of the torpedo actor

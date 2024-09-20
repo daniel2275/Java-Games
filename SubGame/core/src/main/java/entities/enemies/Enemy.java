@@ -3,10 +3,13 @@ package entities.enemies;
 import Components.AnimatedActor;
 import Components.HitNumberActor;
 import UI.game.GameScreen;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
-import io.github.daniel2275.subgame.SubGame;
 import entities.player.Player;
+import io.github.daniel2275.subgame.SubGame;
 import objects.BulletControl;
 import utilities.Constants;
 import utilities.HelpMethods;
@@ -14,8 +17,7 @@ import utilities.SoundManager;
 import utilities.Timing;
 
 import static io.github.daniel2275.subgame.SubGame.pause;
-import static utilities.Constants.Game.VIRTUAL_HEIGHT;
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
+import static utilities.Constants.Game.*;
 
 public class Enemy {
     private int enemyWidth;
@@ -27,7 +29,8 @@ public class Enemy {
     private boolean dying = false;
     private final String spriteAtlas;
     private long delay;
-    private int flipX, flipY;
+    private int flipX;
+    //    private int flipY;
     //private String direction;
     private float xOffset = enemyWidth;
     private boolean aggro;
@@ -46,6 +49,13 @@ public class Enemy {
     private float enemyDamage;
     BulletControl bulletControl;
     private boolean isActivated = false;
+
+    private boolean isChasingPlayer = false;
+    private float randomMoveTimer = 0;
+    private float randomMoveInterval = 10.0f;
+    private float randomDirectionX = 0;
+    private float randomDirectionY = 0;
+//    private boolean movingRight = true;
 
     public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int spawnPosY, int flipX,
                  String spriteAtlas, float moveSpeed, boolean aggro, int maxHealth, boolean sub,
@@ -82,21 +92,27 @@ public class Enemy {
         this.bulletControl = new BulletControl();
 
         // Set default values for direction and flipY
-      //  this.direction = "";
-        this.flipY = 1;
+//        this.flipY = 1;
 
         // Initialize enemy actor and add to game stage
         initializeEnemyActor();
         gameScreen.getGmStage().addActor(enemyActor);
 
         // Initially, set the enemy to invisible or inactive
-        enemyActor.setVisible(false);  // Make it invisible initially
+        enemyActor.setVisible(false);
+
+        bulletControl.pauseDeployment(true);
 
         // Use a timer to delay the activation
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 activateEnemy();
+                if (sub) {
+                    enemyActor.toBack();
+                } else {
+                    enemyActor.toFront();
+                }
             }
         }, delay); // delay is in seconds
     }
@@ -104,36 +120,37 @@ public class Enemy {
     private void activateEnemy() {
         isActivated = true;
         enemyActor.setVisible(true); // Make the enemy visible
-        // Perform any other setup necessary to activate the enemy
     }
 
     private void initializeEnemyActor() {
         enemyActor = new AnimatedActor(
-                name,
-                enemyAnimationManager.getIdleAnimations(),
-                enemyAnimationManager.getMovingAnimations(),
-                enemyAnimationManager.getUpAnimations(),
-                enemyAnimationManager.getDownAnimations(),
-                enemyAnimationManager.getHitAnimations(),
-                enemyAnimationManager.getSunkAnimations(),
-                -1,
-                currentHealth,
-                enemyWidth,
-                enemyHeight,
-                spawnPosX,
-                spawnPosY,
-                sub);
+            name,
+            enemyAnimationManager.getIdleAnimations(),
+            enemyAnimationManager.getMovingAnimations(),
+            enemyAnimationManager.getUpAnimations(),
+            enemyAnimationManager.getDownAnimations(),
+            enemyAnimationManager.getHitAnimations(),
+            enemyAnimationManager.getSunkAnimations(),
+            enemyAnimationManager.getSunkAnimations(),
+            enemyAnimationManager.getTurnAnimations(),
+            -1,
+            currentHealth,
+            enemyWidth,
+            enemyHeight,
+            spawnPosX,
+            spawnPosY,
+            sub);
         enemyActor.setMoveSpeed(moveSpeed);
     }
 
     public void update(Player player) {
         if (!isActivated) return;
-        bulletControl.pauseDeployment(gameScreen.isPaused());
-        if ((aggro) && (!dying)) {
-            turnTowardsPlayer(player);
-        }
+
         if (!dying) {
             scheduleAnimation(player);
+        }
+        if (gameScreen.isPaused()) {
+            bulletControl.pauseDeployment(gameScreen.isPaused());
         }
     }
 
@@ -144,77 +161,29 @@ public class Enemy {
         }
 
         // Reset direction
-        //direction = "";
-
-        // Handle movement based on direction and position
-        if (flipX == -1) {
-            if (enemyActor.getX() <= VIRTUAL_WIDTH) {
-                handleHorizontalMovement(player, true);
-            } else {
-                flipX = 1; // Flip direction if out of bounds
+        if (aggro && !dying && playerInRange(player)) {
+            if (!isChasingPlayer) {
+                HitNumberActor hitNumberActor = new HitNumberActor(enemyActor.getX() + enemyActor.getWidth() / 2, enemyActor.getY() + 5, "!", Color.RED);
+                gameScreen.getGameStage().getStage().addActor(hitNumberActor);
+                soundManager.detected();
+                float chaseSpeed = enemyActor.getMoveSpeed() + 6;
+                enemyActor.setMoveSpeed(chaseSpeed);
             }
-        } else if (flipX == 1) {
-            if (enemyActor.getX() >= -enemyActor.getWidth()) {
-                handleHorizontalMovement(player, false);
-            } else {
-                handleOutOfBounds();
-            }
-        }
-
-        // Handle sub-movement
-        if (sub) {
-            enemyActor.toBack();
-            handleSubMovement(player);
+            isChasingPlayer = true;
+            bulletControl.pauseDeployment(false);
+            turnTowardsPlayer(player);  // Chase the player
         } else {
-            enemyActor.toFront();
-        }
-
-        // Default direction if not set
-//        if (direction.isEmpty()) {
-//            direction = (flipX == -1) ? "left" : "right";
-//        }
-    }
-
-    private void handleHorizontalMovement(Player player, boolean movingRight) {
-        if (Math.abs(player.getPlayerActor().getX() - enemyActor.getX()) > 5 || !sub) {
-            if (movingRight) {
-                enemyActor.moveRight(enemyActor.getMoveSpeed());
-            } else {
-                enemyActor.moveLeft(enemyActor.getMoveSpeed());
+            if (isChasingPlayer) {
+                bulletControl.pauseDeployment(true);
+                float normalSpeed = enemyActor.getMoveSpeed() - 6;
+                enemyActor.setMoveSpeed(normalSpeed);
             }
-        }
-        xOffset = movingRight ? enemyWidth : 0;
-//        direction = movingRight ? "right" : "left";
-    }
-
-    private void handleOutOfBounds() {
-        if (!aggro) {
-            enemyPoints *= 0.9; // Decrease points by 10% if not aggressive
-        }
-        flipX = -1; // Flip direction
-    }
-
-    private void handleSubMovement(Player player) {
-        float playerY = player.getPlayerActor().getY();
-        float enemyY = enemyActor.getY();
-        if (enemyY > playerY) {
-            enemyActor.moveDown(enemyActor.getMoveSpeed()); // Move down
-//            if (direction.isEmpty() || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
-//                direction = "down";
-//            } else if (Math.abs(enemyY - playerY) > 100) {
-//                direction += "&down";
-//            }
-        } else if (enemyY < player.getHitbox().getY()) {
-            enemyActor.moveUp(enemyActor.getMoveSpeed()); // Move up
-//            if (direction.isEmpty() || Math.abs(enemyActor.getX() - player.getPlayerActor().getX()) < 15) {
-//                direction = "up";
-//            } else if (Math.abs(enemyY - playerY) > 100) {
-//                direction += "&up";
-//            }
+            isChasingPlayer = false;
+            randomMovement();  // Move randomly
         }
     }
 
-    public void turnTowardsPlayer(Player player) {
+    private boolean playerInRange(Player player) {
         float playerX = player.getPlayerActor().getX();
         float playerY = player.getPlayerActor().getY();
         float enemyX = enemyActor.getX();
@@ -225,47 +194,155 @@ public class Enemy {
         float playerDistY = Math.abs(playerY - enemyY);
 
         // Check if player is within radar range
-        boolean playerInRange = playerDistX < 180 && playerDistY < 180;
+        return playerDistX < 180 && playerDistY < 180;
+    }
 
-        // Adjust enemy behavior based on player proximity
-        if (playerInRange || sub) {
-            // Stop near player if submarine and player is close
-            if (sub && playerDistX < 80 && playerDistY < 60) {
-                enemyActor.setParked(true);
+    private void randomMovement() {
+        // Update the timer for random movement
+        randomMoveTimer += Gdx.graphics.getDeltaTime();
+        if (randomMoveTimer >= randomMoveInterval) {
+            randomMoveTimer = 0;
+
+            // Get player's position relative to the enemy
+            float playerX = gameScreen.getPlayer().getPlayerActor().getX();
+            float playerY = gameScreen.getPlayer().getPlayerActor().getY();
+            float enemyX = enemyActor.getX();
+            float enemyY = enemyActor.getY();
+
+            // Bias X direction towards the player
+            if (sub) {
+                randomDirectionX = (MathUtils.randomBoolean(0.7f) && Math.abs(playerX - enemyX) > 10)
+                    ? (playerX > enemyX ? 1 : -1)
+                    : MathUtils.random(-1, 1);  // -1 for left, 1 for right, 0 for no movement
+
+                // Bias Y direction towards the player
+                randomDirectionY = (MathUtils.randomBoolean(0.7f) && Math.abs(playerY - enemyY) > 10)
+                    ? (playerY > enemyY ? 1 : -1)
+                    : MathUtils.random(-1, 1);  // -1 for down, 1 for up, 0 for no movement
             } else {
-                enemyActor.setParked(false);
+                // Non-sub enemies move only horizontally, with a bias towards the player
+                randomDirectionX = (MathUtils.randomBoolean(0.7f) && Math.abs(playerX - enemyX) > 10)
+                    ? (playerX > enemyX ? 1 : -1)
+                    : MathUtils.randomBoolean() ? 1 : -1;  // -1 for left, 1 for right
+                randomDirectionY = 0;  // No vertical movement for non-sub enemies
             }
 
-            // Patrol behavior if player is within range, or it's a submarine
-            if ((playerDistX > 70 || sub) && playerDistX > 2) {
-                adjustPatrolDirection(playerX, enemyX);
+            // Ensure randomDirectionX or randomDirectionY is active if a sub
+            if (sub && randomDirectionX == 0 && randomDirectionY == 0) {
+                randomDirectionX = MathUtils.random(-1, 1);  // Reassign X direction
+                randomDirectionY = MathUtils.random(-1, 1);  // Reassign Y direction
+            }
+        }
+
+        // Move horizontally based on randomDirectionX
+        if (randomDirectionX == -1) {
+            enemyActor.moveLeft(enemyActor.getMoveSpeed());
+        } else if (randomDirectionX == 1) {
+            enemyActor.moveRight(enemyActor.getMoveSpeed());
+        }
+
+        // Move vertically based on randomDirectionY (only if sub is true)
+        if (sub) {
+            if (randomDirectionY == -1) {
+                enemyActor.moveDown(enemyActor.getMoveSpeed());
+            } else if (randomDirectionY == 1) {
+                enemyActor.moveUp(enemyActor.getMoveSpeed());
+            }
+        }
+
+        // Ensure the enemy doesn't move off-screen horizontally
+        if (enemyActor.getX() < 0) {
+            randomDirectionX = 1;  // Move right if out of bounds
+        } else if (enemyActor.getX() > VIRTUAL_WIDTH - enemyWidth) {
+            randomDirectionX = -1; // Move left if out of bounds
+        }
+
+        // Ensure the enemy doesn't move off-screen vertically (only if sub is true)
+        if (sub) {
+            if (enemyActor.getY() < 0) {
+                randomDirectionY = 1;  // Move up if out of bounds
+            } else if (enemyActor.getY() > VIRTUAL_HEIGHT - enemyHeight - SKY_SIZE) {
+                randomDirectionY = -1; // Move down if out of bounds
             }
         }
     }
 
-    private void adjustPatrolDirection(float playerX, float enemyX) {
-        // Adjust enemy direction based on player position
-        if (playerX > enemyX) {
-            flipX = -1; // Face left
-            xOffset = enemyWidth;
-        } else {
-            flipX = 1; // Face right
-            xOffset = 0;
+    public void turnTowardsPlayer(Player player) {
+        float playerX = player.getPlayerActor().getX();
+        float playerY = player.getPlayerActor().getY();
+        float enemyX = enemyActor.getX();
+        float enemyY = enemyActor.getY();
+
+        // Calculate distances between enemy and player
+        float playerDistX = playerX - enemyX;
+        float playerDistY = Math.abs(playerY - enemyY);
+
+        // Define a dead zone to prevent bouncing
+        float deadZoneX = 20;  // Horizontal tolerance
+        float deadZoneY = 15;  // Vertical tolerance
+
+        // Check if player is within range
+        boolean playerInRange = playerInRange(player);
+
+        if (playerInRange || sub) {
+            // If the enemy is a submarine and close to the player, stop near the player
+            if (sub && Math.abs(playerDistX) < 80 && playerDistY < 60) {
+                enemyActor.setParked(true); // Stop close to the player
+            } else {
+                enemyActor.setParked(false); // Continue moving
+            }
+
+            // Move horizontally towards the player (non-submarine movement)
+            if (!sub) {
+                // If moving right and the distance is less than 80, turn left
+                if (enemyActor.getHorizontalDirection().equals("R")) {
+                    if (playerDistX <= -80) {
+                        enemyActor.moveLeft(enemyActor.getMoveSpeed());  // Turn left when player is to the left
+                    } else {  // Avoid bouncing back and forth
+                        enemyActor.moveRight(enemyActor.getMoveSpeed()); // Keep moving right
+                    }
+                }
+                // If moving left and the distance is greater than 80, turn right
+                else if (enemyActor.getHorizontalDirection().equals("L")) {
+                    if (playerDistX >= 80) {
+                        enemyActor.moveRight(enemyActor.getMoveSpeed());  // Turn right when player is to the right
+                    } else  {  // Avoid bouncing back and forth
+                        enemyActor.moveLeft(enemyActor.getMoveSpeed());   // Keep moving left
+                    }
+                }
+            }
+
+            // Horizontal and vertical movement for submarines
+            if (sub) {
+                // Horizontal movement towards the player
+                if (Math.abs(playerDistX) > deadZoneX) {
+                    if (playerDistX > 0) {
+                        enemyActor.moveRight(enemyActor.getMoveSpeed());
+                    } else if (playerDistX < 0) {
+                        enemyActor.moveLeft(enemyActor.getMoveSpeed());
+                    }
+                }
+
+                // Vertical movement towards the player
+                if (Math.abs(playerY - enemyY) > deadZoneY) {
+                    if (playerY > enemyY) {
+                        enemyActor.moveUp(enemyActor.getMoveSpeed());
+                    } else if (playerY < enemyY) {
+                        enemyActor.moveDown(enemyActor.getMoveSpeed());
+                    }
+                }
+            }
         }
     }
 
-//    public boolean chargeDeployer() {
-//        java.util.Random rnd = new java.util.Random();
-//        int launch = rnd.nextInt(3000);
-//        return launch < 10;
-//    }
+
 
     public boolean checkHit(AnimatedActor actor, float damage) {
         boolean collision = enemyActor.collidesWith(actor);
         if (collision && !dying) {
             // display hit values for enemies
-            HitNumberActor hitNumberActor = new HitNumberActor(enemyActor.getX() + actor.getWidth(), enemyActor.getY(), (int) damage);
-            enemyActor.setHit(true,damage);
+            HitNumberActor hitNumberActor = new HitNumberActor(enemyActor.getX() + actor.getWidth(), enemyActor.getY(), String.valueOf((int) damage));
+            enemyActor.setHit(true, damage);
             if (gameScreen != null) {
                 gameScreen.getGameStage().getStage().addActor(hitNumberActor);
             }
@@ -293,9 +370,9 @@ public class Enemy {
         return sub;
     }
 
-    public void setFlipY(int flipY) {
-        this.flipY = flipY;
-    }
+//    public void setFlipY(int flipY) {
+//        this.flipY = flipY;
+//    }
 
     public int getEnemyPoints() {
         return enemyPoints;
@@ -356,15 +433,11 @@ public class Enemy {
         this.fadingAnimation = fadingAnimation;
     }
 
-    public void exit() {
-//        explodeSound.dispose();
-    }
-
     public AnimatedActor getEnemyActor() {
         return enemyActor;
     }
 
-    public BulletControl getChargeDeployer() {
+    public BulletControl getBulletControl() {
         return bulletControl;
     }
 

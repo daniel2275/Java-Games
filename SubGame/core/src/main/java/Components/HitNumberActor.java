@@ -15,6 +15,7 @@ import static utilities.Constants.UIConstants.SKIN_FILE_PATH;
 public class HitNumberActor extends Group {
         private Label label;
         private Skin skin; // = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
+        private  Color color = Color.WHITE;
 
 
     private void loadSkin() {
@@ -30,13 +31,15 @@ public class HitNumberActor extends Group {
             // Modify existing styles to use the new font
             Label.LabelStyle labelStyle = skin.get(Label.LabelStyle.class);
             labelStyle.font = FontManager.getFont();
+            labelStyle.fontColor = color;
             skin.add("default", labelStyle);
         } catch (Exception e) {
-            Gdx.app.error("MainMenu", "Error loading skin file", e);
+            Gdx.app.error("HitNumberActor", "Error loading skin file", e);
         }
     }
 
-        public HitNumberActor(float x, float y , int value) {
+        public HitNumberActor(float x, float y , String value, Color color) {
+            this.color = color;
             loadSkin();
             // Set the position of the hit number
             setPosition(x, y);
@@ -58,6 +61,10 @@ public class HitNumberActor extends Group {
                     Actions.removeActor()
             ));
         }
+
+    public HitNumberActor(float x, float y , String value) {
+        this(x,y,value, Color.WHITE);
+    }
 
     @Override
         public void draw(Batch batch, float parentAlpha) {

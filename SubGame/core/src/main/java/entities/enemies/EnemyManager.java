@@ -1,11 +1,13 @@
 package entities.enemies;
 
+import Components.AnimatedActor;
 import UI.game.GameScreen;
 import entities.player.Player;
 import objects.ObjectManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static io.github.daniel2275.subgame.SubGame.pause;
 
@@ -37,15 +39,27 @@ public class EnemyManager {
                 enemyIterator.remove();
             } else if (enemy.isQuit()) {
                 enemy.setQuit(false);
-                //enemy.getEnemyActor().dispose();
                 enemyIterator.remove();
             } else {
                 enemy.update(player);
-                avoidEnemies();
-                objectManager.dropCharge(enemy);
+                //avoidEnemies();
+                objectManager.enemyAttack(enemy);
             }
         }
+    }
 
+    public boolean checkCollision(AnimatedActor actor, float damage) {
+        Optional<Enemy> deadEnemy = getListOfEnemies().stream()
+            .filter(enemy -> {
+                boolean isHit = enemy.checkHit(actor, damage);
+                if (isHit && enemy.getEnemyActor().getCurrentHealth() <= 0) {
+                    enemy.setDying(true);
+                }
+                return isHit;
+            })
+            .findFirst();
+
+        return deadEnemy.isPresent();
     }
 
     // avoid overlapping of submarine enemies
@@ -66,7 +80,16 @@ public class EnemyManager {
                 }
 
                 // Check for overlapping bounding rectangles and flip Y axis if necessary
-                enemyB.setFlipY(enemyA.getEnemyActor().getBounding().overlaps(enemyB.getEnemyActor().getBounding()) ? -1 : 1);
+                if (enemyA.getEnemyActor().getBounding().overlaps(enemyB.getEnemyActor().getBounding())) {
+                    int setFlipY = -1;  // Default to -1 when overlapping
+
+                    // Decide movement based on the overlap result
+                    if (setFlipY == 1) {
+                        enemyB.getEnemyActor().moveUp(enemyB.getEnemyActor().getMoveSpeed());
+                    } else {
+                        enemyB.getEnemyActor().moveDown(enemyB.getEnemyActor().getMoveSpeed());
+                    }
+                }
             }
         }
     }

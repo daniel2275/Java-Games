@@ -1,6 +1,5 @@
 package UI.game;
 
-import Components.AnimatedActor;
 import Components.Pausable;
 import UI.gameover.GameOver;
 import UI.upgrades.UpgradeStore;
@@ -15,16 +14,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import entities.enemies.Enemy;
 import entities.enemies.EnemyManager;
 import entities.player.Player;
 import io.github.daniel2275.subgame.SubGame;
 import levels.LevelManager;
 import objects.ObjectManager;
 
-import java.util.Optional;
-
-import static utilities.Constants.Game.*;
+import static utilities.Constants.Game.VIRTUAL_HEIGHT;
+import static utilities.Constants.Game.VIRTUAL_WIDTH;
 import static utilities.Constants.UIConstants.FONT_GAME_SIZE;
 
 public class GameScreen implements Screen {
@@ -65,18 +62,15 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
 
         gmStage.addActor(player.getPlayerActor());
+        player.getPlayerActor().toBack();
 
     }
-
 
     public void updateCrosshairPosition(int screenX, int screenY) {
         Vector2 stageCoords = gmStage.screenToStageCoordinates(new Vector2(screenX, screenY));
         crossHairActor = gameStageManager.getAndroidCrossHairActor();
         crossHairActor.setPosition(stageCoords.x - crossHairActor.getWidth() / 2, stageCoords.y - crossHairActor.getHeight() /  2 );
     }
-
-
-
 
     @Override
     public void show() {
@@ -93,6 +87,13 @@ public class GameScreen implements Screen {
         // Optionally, set the camera's initial position or other properties
         camera.position.set(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, 0);
         camera.update();
+
+        //adjust background image
+        gameStageManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
+        gameStageManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
+
+        gameStageManager.getSkyLine().toBack();
+        gameStageManager.getSkyLine().toBack();
     }
 
     private void initClasses() {
@@ -113,7 +114,6 @@ public class GameScreen implements Screen {
         if (!paused) {
             player.update();
 
-
             gameStageManager.getScoreLabel().setText("Enemies remaining:" + getEnemyManager().getListOfEnemies().size());
             gameStageManager.getScoreLabel1().setText("Score:" + getPlayer().getPlayerScore());
             gameStageManager.getScoreLabel2().setText("Level:" + getLevelManager().getLevel().getTotalLevels());
@@ -125,10 +125,6 @@ public class GameScreen implements Screen {
             gameStageManager.getScoreLabel3().setFontScale(FONT_GAME_SIZE);
 
             upgradeStore.setPlayerScore(getPlayer().getPlayerScore());
-
-            //adjust background image
-            gameStageManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
-            gameStageManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
 
             objectManager.update();
             enemyManager.update(player, objectManager);
@@ -144,6 +140,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0f, 51f / 255f, 102f / 255f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
@@ -152,11 +149,12 @@ public class GameScreen implements Screen {
 
         update();
 
-        if (player.getPlayerActor().getY() > VIRTUAL_HEIGHT - SKY_SIZE - 55) {
-            player.getPlayerActor().toFront();
-        } else {
-            player.getPlayerActor().toBack();
-        }
+//        if (player.getPlayerActor().getY() > VIRTUAL_HEIGHT - SKY_SIZE - 55) {
+//            player.getPlayerActor().toFront();
+//            //player.getPlayerActor().setSurfacingAnimation(true);
+//        } else {
+//            player.getPlayerActor().toBack();
+//        }
 
     }
 
@@ -188,8 +186,8 @@ public class GameScreen implements Screen {
                 ((Pausable) actor).setPaused(false);
             }
         }
-        getGameUIManager().getSkyLine().toBack();
-        getGameUIManager().getUndersea().toBack();
+        //getGameUIManager().getSkyLine().toBack();
+        //getGameUIManager().getUndersea().toBack();
     }
 
     @Override
@@ -197,19 +195,7 @@ public class GameScreen implements Screen {
 
     }
 
-    public boolean checkCollision(AnimatedActor actor, float damage) {
-        Optional<Enemy> deadEnemy = enemyManager.getListOfEnemies().stream()
-                .filter(enemy -> {
-                    boolean isHit = enemy.checkHit(actor, damage);
-                    if (isHit && enemy.getEnemyActor().getCurrentHealth() <= 0) {
-                        enemy.setDying(true);
-                    }
-                    return isHit;
-                })
-                .findFirst();
 
-        return deadEnemy.isPresent();
-    }
 
     public void reset() {
         objectManager.reset();

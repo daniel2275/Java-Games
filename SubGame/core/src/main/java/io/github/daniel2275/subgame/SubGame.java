@@ -21,8 +21,10 @@ public class SubGame extends Game {
 	private Options options;
 	private GameScreen gameScreen;
 
+    @SuppressWarnings("SuspiciousIndentation")
     @Override
 	public void create() {
+
         FontManager.loadFont(24);
 //		if(Gdx.graphics.supportsDisplayModeChange()) {
 //			Graphics.Monitor currMonitor = Gdx.graphics.getMonitor();
@@ -34,9 +36,7 @@ public class SubGame extends Game {
 
 		// Set the screen resolution
 		Gdx.graphics.setWindowedMode((int) screenWidth, (int) screenHeight);
-
 		menuScreen = new MenuScreen(this);
-
         SoundManager.getInstance(this);
 		options = new Options(this);
 		gameScreen = new GameScreen(Gdx.graphics.getDeltaTime(), this);

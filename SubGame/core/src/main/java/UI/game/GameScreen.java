@@ -74,6 +74,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
+        batch.setProjectionMatrix(camera.combined);
         // Set up InputMultiplexer
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(gmStage);
@@ -88,12 +89,6 @@ public class GameScreen implements Screen {
         camera.position.set(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, 0);
         camera.update();
 
-        //adjust background image
-        gameStageManager.getSkyLine().setPlayerX(player.getPlayerActor().getX());
-        gameStageManager.getUndersea().setPlayerX(player.getPlayerActor().getX());
-
-        gameStageManager.getSkyLine().toBack();
-        gameStageManager.getSkyLine().toBack();
     }
 
     private void initClasses() {
@@ -137,14 +132,17 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0f, 51f / 255f, 102f / 255f, 1f);
+        //Gdx.gl.glClearColor(0f, 51f / 255f, 102f / 255f, 1f);
+        //Gdx.gl.glClearColor(0f, 128f / 255f, 128f / 255f, 1f);
+        Gdx.gl.glClearColor(0f, 105f / 255f, 148f / 255f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        gmStage.act(Gdx.graphics.getDeltaTime());
+        gmStage.act(delta);
         gmStage.draw();
 
         update();
@@ -168,6 +166,7 @@ public class GameScreen implements Screen {
     public void pause() {
         paused = true;
         // Pause your actors
+        gameStageManager.getUndersea().setPaused(true);
         objectManager.setPaused(true);
         for (Actor actor : gmStage.getActors()) {
             if (actor instanceof Pausable) {
@@ -180,14 +179,13 @@ public class GameScreen implements Screen {
     public void resume() {
         paused = false;
         // Pause your actors
+        gameStageManager.getUndersea().setPaused(false);
         objectManager.setPaused(false);
         for (Actor actor : gmStage.getActors()) {
             if (actor instanceof Pausable) {
                 ((Pausable) actor).setPaused(false);
             }
         }
-        //getGameUIManager().getSkyLine().toBack();
-        //getGameUIManager().getUndersea().toBack();
     }
 
     @Override

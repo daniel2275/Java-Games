@@ -1,7 +1,7 @@
 package UI.game;
 
-import Components.CrossHairActor;
 import Components.BackgroundActor;
+import Components.CrossHairActor;
 import Components.ParallaxLayer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -19,10 +20,8 @@ import com.badlogic.gdx.utils.Array;
 import io.github.daniel2275.subgame.SubGame;
 
 import static io.github.daniel2275.subgame.SubGame.pause;
-import static utilities.Constants.Game.SKY_SIZE;
-import static utilities.Constants.Game.VIRTUAL_HEIGHT;
-import static utilities.Constants.UIConstants.FONT_GAME_SIZE;
-import static utilities.Constants.UIConstants.SKIN_FILE_PATH;
+import static utilities.Constants.Game.*;
+import static utilities.Constants.UIConstants.*;
 import static utilities.LoadSave.boatAnimation;
 
 public class GameStageManager {
@@ -41,6 +40,7 @@ public class GameStageManager {
     private Button upgradesButton;
     private Button pauseButton;
     private Button menuButton;
+    private Table buttonTable;
     private Actor androidCrossHair;
 
     public GameStageManager(GameScreen gameScreen) {
@@ -89,22 +89,40 @@ public class GameStageManager {
         setupAnimations();
         setupBackground();
         setupScoreboard();
+
+
+        //gmStage.addActor(skyLine);
+        //gmStage.addActor(underSea);
+
+        Group backgroundGroup = new Group();
+        backgroundGroup.addActor(underSea);
+        backgroundGroup.addActor(skyLine);
+        gmStage.addActor(backgroundGroup);
+
         setupParallaxLayers();
 
-        gmStage.addActor(underSea);
-        gmStage.addActor(skyLine);
-        gmStage.addActor(upgradesButton);
-        gmStage.addActor(pauseButton);
-        gmStage.addActor(menuButton);
+//        gmStage.addActor(upgradesButton);
+//        gmStage.addActor(pauseButton);
+//        gmStage.addActor(menuButton);
         gmStage.addActor(tile);
+        gmStage.addActor(buttonTable);
+
         gmStage.addActor(androidCrossHair);
         androidCrossHair.setVisible(false);
     }
 
     private void setupButtons() {
-        upgradesButton = createTextButton("Upgrades", 712, 445);
-        pauseButton = createTextButton("Pause", 651, 445);
-        menuButton = createTextButton("Menu", 595, 445);
+        TextButton upgradesButton = createTextButton("UPGRADES");
+        TextButton pauseButton = createTextButton("PAUSE");
+        TextButton menuButton = createTextButton("MENU");
+
+        // Create a table for the buttons and align it to the top-right
+        buttonTable = new Table();
+        buttonTable.setFillParent(true);
+        buttonTable.top().right();
+        buttonTable.add(upgradesButton).pad(5);
+        buttonTable.add(pauseButton).pad(5);
+        buttonTable.add(menuButton).pad(5);
 
         menuButton.addListener(new ClickListener() {
             @Override
@@ -137,15 +155,31 @@ public class GameStageManager {
         });
     }
 
-    private TextButton createTextButton(String text, float x, float y) {
+    private TextButton createTextButton(String text) {
         TextButton button = new TextButton(text, gameSkin);
         button.getLabel().setFontScale(FONT_GAME_SIZE);
         button.getLabel().setColor(0f, 0f, 0f, 0.5f);
-        button.setPosition(x, y);
         Color color = button.getColor();
         button.setColor(color.r, color.g, color.b, 0.5f);
         return button;
     }
+
+//    private void setupAnimations() {
+//        TextureAtlas seaAtlas = new TextureAtlas(Gdx.files.internal("seanim/seanim.atlas"));
+//        Animation<TextureRegion> seaAnimation = createAnimation(seaAtlas, "Wateranim", 4, 0.6f);
+//
+//        TextureAtlas crossHairAtlas = new TextureAtlas(Gdx.files.internal("androidcrosshair/acrosshair.atlas"));
+//        Animation<TextureRegion> crossHairAnimation = createAnimation(crossHairAtlas, "acrosshair", 5, 0.1f);
+//
+//        Texture skyBackgroundAtlas = new Texture("skyline.png");
+//        Animation<TextureRegion> skyAnimation = boatAnimation(0, 1, new TextureRegion[][]{{new TextureRegion(skyBackgroundAtlas, 770, 290)}}, 0.2f);
+//
+//
+//        androidCrossHair = new CrossHairActor(crossHairAnimation);
+//        skyLine = new BackgroundActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15, false);
+//        underSea = new BackgroundActor(seaAnimation, 0, -SKY_SIZE + 45, true);
+//    }
+
 
     private void setupAnimations() {
         TextureAtlas seaAtlas = new TextureAtlas(Gdx.files.internal("seanim/seanim.atlas"));
@@ -157,10 +191,36 @@ public class GameStageManager {
         Texture skyBackgroundAtlas = new Texture("skyline.png");
         Animation<TextureRegion> skyAnimation = boatAnimation(0, 1, new TextureRegion[][]{{new TextureRegion(skyBackgroundAtlas, 770, 290)}}, 0.2f);
 
-        androidCrossHair =  new CrossHairActor(crossHairAnimation);
-        skyLine = new BackgroundActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15);
-        underSea = new BackgroundActor(seaAnimation, 0, -SKY_SIZE + 45);
+        // Create actors
+        androidCrossHair = new CrossHairActor(crossHairAnimation);
+        skyLine = new BackgroundActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15, false);
+        underSea = new BackgroundActor(seaAnimation, 0, -SKY_SIZE + 45, true);
+
+        // Adjust initial positions and sizes
+        updateBackgroundPositions(gmStage.getViewport().getWorldWidth(), VIRTUAL_HEIGHT);
     }
+
+    // Update positions and sizes based on screen size, filling the screen width
+    public void updateBackgroundPositions(float screenWidth, float screenHeight) {
+        // Adjust world dimensions to viewport's screen size
+
+        // Set specific height percentages
+        float skyHeightPercentage = 0.10f; // sky slightly below sea to hide vertex black spots in the seam
+        float seaHeightPercentage = 0.93f;
+
+        // Calculate the desired heights as a percentage of the screen height
+        float skyHeight = screenHeight * skyHeightPercentage;
+        float seaHeight = screenHeight * seaHeightPercentage;
+
+        // Set sizes with fixed height percentages
+        skyLine.setSize(screenWidth, skyHeight);
+        underSea.setSize(screenWidth, seaHeight);
+
+        // Position skyline at the top and undersea below
+        skyLine.setPosition(0, screenHeight - skyHeight);
+        underSea.setPosition(0, 0);
+    }
+
 
     private Animation<TextureRegion> createAnimation(TextureAtlas atlas, String regionName, int frames, float frameDuration) {
         Array<TextureAtlas.AtlasRegion> regions = new Array<>();
@@ -175,27 +235,35 @@ public class GameStageManager {
 
     private void setupBackground() {
         pauseSprite = new Sprite(new Texture(Gdx.files.internal("paused.png")));
-        pauseSprite.setPosition(Gdx.graphics.getWidth() / 2f - 100f, 500);
+        pauseSprite.setPosition(Gdx.graphics.getWidth() / 2f - 100f, Gdx.graphics.getHeight() / 2f);
         pauseSprite.setSize(200f, 80f);
     }
 
     private void setupScoreboard() {
         tile = new Table(gameSkin);
-        tile.setSize(224, 70);
-        tile.setPosition(10, 410);
+        tile.top().left();
+        //tile.setSize(BUTTON_WIDTH, Gdx.graphics.getHeight());
+        //tile.setPosition(10, Gdx.graphics.getHeight() - SKY_SIZE / 1.19f);
+        tile.setFillParent(false);
+        //tile.setBackground("tooltip");
+
         Color color = tile.getColor();
         tile.setColor(color.r, color.g, color.b, 0.5f);
-        tile.setBackground("tooltip");
+
 
         scoreLabel = createLabel("Enemies remaining:");
         scoreLabel1 = createLabel("Score:");
         scoreLabel2 = createLabel("Level:");
         scoreLabel3 = createLabel("Health:");
 
-        tile.add(scoreLabel).row();
-        tile.add(scoreLabel1).row();
-        tile.add(scoreLabel2).row();
-        tile.add(scoreLabel3).row();
+        tile.add(scoreLabel).pad(10);
+        tile.add(scoreLabel1).pad(10);
+        tile.add(scoreLabel2).pad(10);
+        tile.add(scoreLabel3).pad(10);
+
+        tile.pack();
+        tile.setWidth(300);
+        tile.setPosition(10, Gdx.graphics.getHeight() - tile.getHeight() - 10);
     }
 
     private Label createLabel(String text) {
@@ -205,9 +273,9 @@ public class GameStageManager {
     }
 
     private void setupParallaxLayers() {
-        ParallaxLayer layer1 = createParallaxLayer("clouds.png", 8, 150, 415);
-        ParallaxLayer layer2 = createParallaxLayer("clouds2.png", 11, 500, 415);
-        ParallaxLayer layer3 = createParallaxLayer("clouds3.png", 15, 800, 400);
+        ParallaxLayer layer1 = createParallaxLayer("clouds.png", 8, 150, Gdx.graphics.getHeight() - SKY_SIZE / 1.4f);
+        ParallaxLayer layer2 = createParallaxLayer("clouds2.png", 11, 500, Gdx.graphics.getHeight() - SKY_SIZE / 1.3f);
+        ParallaxLayer layer3 = createParallaxLayer("clouds3.png", 15, 800, Gdx.graphics.getHeight() - SKY_SIZE / 1.2f);
 
         gmStage.addActor(layer1);
         gmStage.addActor(layer2);

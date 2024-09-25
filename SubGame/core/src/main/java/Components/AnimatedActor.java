@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -13,27 +14,42 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import utilities.SoundManager;
 
-import java.util.Objects;
-
 import static utilities.Constants.Game.*;
 
 public class AnimatedActor extends Actor implements Pausable {
     private static final float FADE_DURATION = 6f;
     private float moveSpeed = 10.5f;
     private float damage = 0;
-
     private final String name;
-    private Animation<TextureRegion> idleAnimation;
-    private Animation<TextureRegion> moveAnimation;
-    private Animation<TextureRegion> upAnimation;
-    private Animation<TextureRegion> downAnimation;
-    private Animation<TextureRegion> hitAnimation;
-    private Animation<TextureRegion> sunkAnimation;
+
+    // Left-facing animations
+    private Animation<TextureRegion> idleAnimationLeft;
+    private Animation<TextureRegion> moveAnimationLeft;
+    private Animation<TextureRegion> upAnimationLeft;
+    private Animation<TextureRegion> downAnimationLeft;
+    private Animation<TextureRegion> hitAnimationLeft;
+    private Animation<TextureRegion> sunkAnimationLeft;
+    private Animation<TextureRegion> surfacingAnimationLeft;
+    private Animation<TextureRegion> turningAnimationLeft;
+
+    // Right-facing animations
+    private Animation<TextureRegion> idleAnimationRight;
+    private Animation<TextureRegion> moveAnimationRight;
+    private Animation<TextureRegion> upAnimationRight;
+    private Animation<TextureRegion> downAnimationRight;
+    private Animation<TextureRegion> hitAnimationRight;
+    private Animation<TextureRegion> sunkAnimationRight;
+    private Animation<TextureRegion> surfacingAnimationRight;
+    private Animation<TextureRegion> turningAnimationRight;
+
+    // Current and temporary animations
     private Animation<TextureRegion> currentAnimation;
-    private Animation<TextureRegion> surfacingAnimation;
-    private Animation<TextureRegion> turningAnimation;
     private Animation<TextureRegion> tempAnimation;
+
+    // Health bar texture
     private TextureRegion healthBarTextureRegion;
+
+    // Movement and state tracking
     private float stateTime;
     private float previousX;
     private float previousY;
@@ -43,63 +59,77 @@ public class AnimatedActor extends Actor implements Pausable {
     private float currentHealth;
     private float deltaTime = 0;
     private boolean isHit;
-
     private boolean sunk;
-    private String horizontalDirection;
     private boolean paused = false;
     private boolean parked = false;
     private float angle;
 
+    // Override animation
     private boolean overrideActive = false;
     private Animation<TextureRegion> overrideAnimation = null;
+
     private final boolean isSub;
     private boolean hasReloadCompleted = false;
 
+    // Surfacing and reversing flags
     private boolean surfaceAnimationPlayed = false;
     private boolean reversed = false;
-    private float triggerUp = VIRTUAL_HEIGHT - SKY_SIZE - 45;
-    private float triggerDown = VIRTUAL_HEIGHT - SKY_SIZE - 45;
+    private float triggerSurfaceDive = VIRTUAL_HEIGHT - SKY_SIZE - 35;
 
+    // Direction tracking
     private String previousHorizontalDirection;
     private boolean isTurning = false;
     private boolean isChangingDepth = false;
-
     private String newHorizontalDirection;
-
     private String previousVerticalDirection;
-    private String verticalDir;
+    private String horizontalDirection;
+    private String verticalDirection;
 
-
-    // collision
+    // Collision state
     private boolean collision;
 
-//    private ShapeRenderer shapeRenderer;
+    private ShapeRenderer shapeRenderer;
 
-    public AnimatedActor(String name,
-                         Animation<TextureRegion> idleAnimation,
-                         Animation<TextureRegion> moveAnimation,
-                         Animation<TextureRegion> upAnimation,
-                         Animation<TextureRegion> downAnimation,
-                         Animation<TextureRegion> hitAnimation,
-                         Animation<TextureRegion> sunkAnimation,
-                         Animation<TextureRegion> surfacingAnimation,
-                         float reload,
-                         float maxHealth,
-                         float frameWidth,
-                         float frameHeight,
-                         float spawnPosX,
-                         float spawnPosY,
-                         boolean isSub
+    // Constructor
+    public AnimatedActor(
+        String name,
+        Animation<TextureRegion> idleAnimationLeft,
+        Animation<TextureRegion> moveAnimationLeft,
+        Animation<TextureRegion> upAnimationLeft,
+        Animation<TextureRegion> downAnimationLeft,
+        Animation<TextureRegion> hitAnimationLeft,
+        Animation<TextureRegion> sunkAnimationLeft,
+        Animation<TextureRegion> surfacingAnimationLeft,
+        float reload,
+        float maxHealth,
+        float frameWidth,
+        float frameHeight,
+        float spawnPosX,
+        float spawnPosY,
+        boolean isSub
     ) {
         this.name = name;
         setName(name);
-        this.idleAnimation = idleAnimation;
-        this.moveAnimation = moveAnimation;
-        this.upAnimation = upAnimation;
-        this.downAnimation = downAnimation;
-        this.hitAnimation = hitAnimation;
-        this.sunkAnimation = sunkAnimation;
-        this.surfacingAnimation = surfacingAnimation;
+
+        // Assign left-facing animations
+        this.idleAnimationLeft = idleAnimationLeft;
+        this.moveAnimationLeft = moveAnimationLeft;
+        this.upAnimationLeft = upAnimationLeft;
+        this.downAnimationLeft = downAnimationLeft;
+        this.hitAnimationLeft = hitAnimationLeft;
+        this.sunkAnimationLeft = sunkAnimationLeft;
+        this.surfacingAnimationLeft = surfacingAnimationLeft;
+
+        // Generate right-facing animations by flipping left-facing animations
+        this.idleAnimationRight = invertHorizontal(idleAnimationLeft);
+        this.moveAnimationRight = invertHorizontal(moveAnimationLeft);
+        this.upAnimationRight = invertHorizontal(upAnimationLeft);
+        this.downAnimationRight = invertHorizontal(downAnimationLeft);
+        this.hitAnimationRight = invertHorizontal(hitAnimationLeft);
+        this.sunkAnimationRight = invertHorizontal(sunkAnimationLeft);
+        this.surfacingAnimationRight = invertHorizontal(surfacingAnimationLeft);
+
+        // Reload and health setup
         this.reload = reload;
         this.maxHealth = maxHealth;
         this.isSub = isSub;
@@ -107,45 +137,47 @@ public class AnimatedActor extends Actor implements Pausable {
 
         this.isHit = false;
         this.sunk = false;
-
         this.reloadSpeed = 0;
-
         this.angle = 0;
 
+        // Set frame dimensions and position
         setWidth(frameWidth);
         setHeight(frameHeight);
-
-        // Set initial position
         setPosition(spawnPosX, spawnPosY);
         this.previousX = getX();
         this.previousY = getY();
+
+        // Initialize directions and animations
         this.horizontalDirection = "L";
         this.previousHorizontalDirection = this.horizontalDirection;
         this.previousVerticalDirection = "idle";
+        this.tempAnimation = idleAnimationLeft;
+        this.currentAnimation = idleAnimationLeft;
 
-        // Set the initial animation
-        tempAnimation = idleAnimation;
-        currentAnimation = idleAnimation;
-
-        // Set collision initial state
+        // Collision state
         collision = false;
-//        shapeRenderer = new ShapeRenderer();
+
+        // Initialize health bar
         healthBarTextureRegion = new TextureRegion(new Texture("health_bar.png"));
         healthBarTextureRegion.setRegionWidth((int) frameWidth);
-        if (name == "Player") {
+
+        shapeRenderer = new ShapeRenderer();
+
+        // Set player to the back
+        if (name.equals("Player")) {
             toBack();
         }
     }
 
     public AnimatedActor(String name,
-                         Animation<TextureRegion> idleAnimation,
-                         Animation<TextureRegion> moveAnimation,
-                         Animation<TextureRegion> upAnimation,
-                         Animation<TextureRegion> downAnimation,
-                         Animation<TextureRegion> hitAnimation,
-                         Animation<TextureRegion> sunkAnimation,
-                         Animation<TextureRegion> surfacingAnimation,
-                         Animation<TextureRegion> turningAnimation,
+                         Animation<TextureRegion> idleAnimationLeft,
+                         Animation<TextureRegion> moveAnimationLeft,
+                         Animation<TextureRegion> upAnimationLeft,
+                         Animation<TextureRegion> downAnimationLeft,
+                         Animation<TextureRegion> hitAnimationLeft,
+                         Animation<TextureRegion> sunkAnimationLeft,
+                         Animation<TextureRegion> surfacingAnimationLeft,
+                         Animation<TextureRegion> turningAnimationLeft,
                          float reload,
                          float maxHealth,
                          float frameWidth,
@@ -154,8 +186,9 @@ public class AnimatedActor extends Actor implements Pausable {
                          float spawnPosY,
                          boolean isSub
     ) {
-        this(name, idleAnimation, moveAnimation, upAnimation, downAnimation, hitAnimation, sunkAnimation, surfacingAnimation, reload, maxHealth, frameWidth, frameHeight, spawnPosX, spawnPosY, isSub);
-        this.turningAnimation = turningAnimation;
+        this(name, idleAnimationLeft, moveAnimationLeft, upAnimationLeft, downAnimationLeft, hitAnimationLeft, sunkAnimationLeft, surfacingAnimationLeft, reload, maxHealth, frameWidth, frameHeight, spawnPosX, spawnPosY, isSub);
+        this.turningAnimationLeft = turningAnimationLeft;
+        this.turningAnimationRight = invertHorizontal(turningAnimationLeft);
     }
 
     @Override
@@ -250,14 +283,14 @@ public class AnimatedActor extends Actor implements Pausable {
             newHorizontalDirection = "L";
         }
 
-        previousVerticalDirection = verticalDir;
+        previousVerticalDirection = verticalDirection;
 
         if (getY() > previousY) {
-            verticalDir = "up";
+            verticalDirection = "up";
         } else if (getY() < previousY) {
-            verticalDir = "down";
+            verticalDirection = "down";
         } else {
-            verticalDir = "idle";
+            verticalDirection = "idle";
         }
 
         if (!name.equals("torpedo") && !name.equals("depthCharge")) {
@@ -269,11 +302,11 @@ public class AnimatedActor extends Actor implements Pausable {
 
                 // Set the turning animation, invert if turning right
                 if (horizontalDirection.equals("L")) {
-                    tempAnimation = invertHorizontal(turningAnimation);
-                    stateTime = 0;
+                    tempAnimation = turningAnimationRight;
+                    // stateTime = 0;
                 } else {
-                    tempAnimation = turningAnimation;
-                   stateTime = 0;
+                    tempAnimation = turningAnimationLeft;
+                    // stateTime = 0;
                 }
                 // Set overrideAnimation to tempAnimation
                 setOverrideAnimation(tempAnimation);
@@ -282,50 +315,49 @@ public class AnimatedActor extends Actor implements Pausable {
             }
         }
 
-
-//        if (!this.name.equals("Player")) {
-//            if (getX() > previousX ) {
-//                //horizontalDirection = "R";
-//                tempAnimation = moveAnimation;
-//            } else if (getX() < previousX) {
-//                //horizontalDirection = "L";
-//                tempAnimation = moveAnimation;
-//            } else if (getX() == previousX && getY() == previousY) {
-//                tempAnimation = idleAnimation;
-//            }
-//
-//            if (verticalDir.equals("up") && !previousVerticalDirection.equals(verticalDir)) {
-//                tempAnimation = upAnimation;
-//                stateTime = 0;
-//            } else if (verticalDir.equals("down") && !previousVerticalDirection.equals(verticalDir)) {
-//                tempAnimation = downAnimation;
-//                stateTime = 0;
-//            }
-//
-//            if (isHit) {
-//                tempAnimation = hitAnimation;
-//            } else if (currentHealth == 0) {
-//                tempAnimation = sunkAnimation;
-//            }
-//        } else {
         if (!isTurning && !isChangingDepth) {
-            if (getX() > previousX || getX() < previousX) {
-                tempAnimation = moveAnimation;
-            } else if (getX() == previousX && getY() == previousY) {
-                tempAnimation = idleAnimation;
+            if (horizontalDirection == "L") {
+                if (getX() > previousX || getX() < previousX) {
+                    tempAnimation = moveAnimationLeft;
+                } else if (getX() == previousX && getY() == previousY) {
+                    tempAnimation = idleAnimationLeft;
+                }
+            } else {
+                if (getX() > previousX || getX() < previousX) {
+                    tempAnimation = moveAnimationRight;
+                } else if (getX() == previousX && getY() == previousY) {
+                    tempAnimation = idleAnimationRight;
+                }
             }
 
-            if (verticalDir.equals("up") && !previousVerticalDirection.equals(verticalDir)) {
-                tempAnimation = upAnimation;
-            } else if (verticalDir.equals("down") && !previousVerticalDirection.equals(verticalDir)) {
-                tempAnimation = downAnimation;
+            if (horizontalDirection == "L") {
+                if (verticalDirection.equals("up") && !previousVerticalDirection.equals(verticalDirection)) {
+                    tempAnimation = upAnimationLeft;
+                } else if (verticalDirection.equals("down") && !previousVerticalDirection.equals(verticalDirection)) {
+                    tempAnimation = downAnimationLeft;
+                }
+            } else {
+                if (verticalDirection.equals("up") && !previousVerticalDirection.equals(verticalDirection)) {
+                    tempAnimation = upAnimationRight;
+                } else if (verticalDirection.equals("down") && !previousVerticalDirection.equals(verticalDirection)) {
+                    tempAnimation = downAnimationRight;
+                }
             }
 
-            if (isHit) {
-                tempAnimation = hitAnimation;
-            } else if (currentHealth == 0) {
-                tempAnimation = sunkAnimation;
+            if (horizontalDirection == "L") {
+                if (isHit) {
+                    tempAnimation = hitAnimationLeft;
+                } else if (currentHealth == 0) {
+                    tempAnimation = sunkAnimationLeft;
+                }
+            } else {
+                if (isHit) {
+                    tempAnimation = hitAnimationRight;
+                } else if (currentHealth == 0) {
+                    tempAnimation = sunkAnimationRight;
+                }
             }
+
         }
 //        }
         previousHorizontalDirection = horizontalDirection; // Update previousDirection
@@ -346,13 +378,15 @@ public class AnimatedActor extends Actor implements Pausable {
             updateAnimationSpeedBasedOnMoveSpeed();
             if (reversed) {
                 overrideAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+            } else {
+                overrideAnimation.setPlayMode(Animation.PlayMode.NORMAL);
             }
             if (currentAnimation.isAnimationFinished(stateTime)) {
                 overrideActive = false;
                 overrideAnimation = null;
                 isTurning = false;
                 isChangingDepth = false;
-                //updateMovementState(); // Ensure the movement state gets reflected correctly after override
+                reversed = false;
                 if (reversed) {
                     toBack();
                 }
@@ -360,15 +394,9 @@ public class AnimatedActor extends Actor implements Pausable {
         } else {
             if (tempAnimation == null)
                 return;
-            if (horizontalDirection.equals("R") && (!name.equals("torpedo") && !name.equals("depthCharge") && (!Objects.equals(currentAnimation, tempAnimation)))) {
-                tempAnimation = invertHorizontal(tempAnimation);
+            if (currentAnimation != tempAnimation) {
                 currentAnimation = tempAnimation;
-                if (name.equals("Player"))
-                    stateTime = 0;
-            } else if (currentAnimation != tempAnimation) {
-                currentAnimation = tempAnimation;
-                if (name.equals("Player"))
-                    stateTime = 0;
+                stateTime = 0;
             }
         }
     }
@@ -389,17 +417,16 @@ public class AnimatedActor extends Actor implements Pausable {
         // Define looping animation
         boolean loops;
         if (isSub) {
-            loops = (tempAnimation != sunkAnimation && tempAnimation != hitAnimation && tempAnimation != surfacingAnimation && tempAnimation != turningAnimation && tempAnimation != upAnimation && tempAnimation != downAnimation);
+            loops = (tempAnimation == idleAnimationLeft || tempAnimation == idleAnimationRight
+                || tempAnimation == moveAnimationLeft || tempAnimation == moveAnimationRight);
         } else {
-            loops = (tempAnimation == idleAnimation || tempAnimation == moveAnimation || horizontalDirection == "R");
-            if (name.equals("enemy1"))
-                System.out.println(loops);
+            loops = (tempAnimation == idleAnimationLeft || tempAnimation == idleAnimationRight ||
+                tempAnimation == moveAnimationLeft || tempAnimation == moveAnimationRight);
         }
 
 
-
-
         batch.draw(currentAnimation.getKeyFrame(stateTime, loops), getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), 1f, 1f, angle);
+
 
         if (name != "torpedo" && name != "depthCharge") {
             drawHealthBar(batch);
@@ -414,37 +441,39 @@ public class AnimatedActor extends Actor implements Pausable {
         // Reset the batch color to fully opaque
         batch.setColor(1, 1, 1, 1);
 
-//        // Draw bounding rectangle for debugging
-//        batch.end();
-//
-//        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        shapeRenderer.setColor(Color.RED);
-//
-//        Rectangle boundingRectangle = getBounding();
-//        shapeRenderer.rect(boundingRectangle.x, boundingRectangle.y, boundingRectangle.width, boundingRectangle.height);
-//
-//        shapeRenderer.end();
-//        batch.begin();
+        // Draw bounding rectangle for debugging
+        batch.end();
+
+        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.RED);
+
+        Rectangle boundingRectangle = getBounding();
+        shapeRenderer.rect(boundingRectangle.x, boundingRectangle.y, boundingRectangle.width, boundingRectangle.height);
+
+        shapeRenderer.end();
+        batch.begin();
     }
 
-
     public void surface() {
-        if ((previousY < triggerUp && getY() >= triggerUp) && !surfaceAnimationPlayed) {
+        if ((previousY < triggerSurfaceDive && getY() >= triggerSurfaceDive) && !surfaceAnimationPlayed) {
             //surfacingAnimation.setFrameDuration(surfacingAnimation.getAnimationDuration() / (moveSpeed - 5f));
-            surfacingAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+//            if (horizontalDirection == "L") {
+//                surfacingAnimationLeft.setPlayMode(Animation.PlayMode.NORMAL);
+//            } else {
+//                surfacingAnimationRight.setPlayMode(Animation.PlayMode.NORMAL);
+//            }
             stateTime = 0;
             setSurfacingAnimation();
             surfaceAnimationPlayed = true; // Ensure the animation only plays once per crossing
             reversed = false;
             toFront();
-        } else if ((previousY > triggerDown && getY() <= triggerDown) && !surfaceAnimationPlayed) {
-            //surfacingAnimation.setFrameDuration(surfacingAnimation.getAnimationDuration() / (moveSpeed - 5f));
-            // surfacingAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+        } else if ((previousY > triggerSurfaceDive && getY() <= triggerSurfaceDive) && !surfaceAnimationPlayed) {
             stateTime = 0;
             setSurfacingAnimation();
             surfaceAnimationPlayed = true; // Ensure the animation only plays once per crossing
             reversed = true;
+            toBack();
         }
     }
 
@@ -528,21 +557,20 @@ public class AnimatedActor extends Actor implements Pausable {
             currentHealth = 0;
         }
 
-        if (hitAnimation != null && name != "torpedo") {
+        if (hitAnimationLeft != null && name != "torpedo") {
             if (horizontalDirection == "R") {
-                setOverrideAnimation(invertHorizontal(hitAnimation));
+                setOverrideAnimation(hitAnimationRight);
             } else {
-                setOverrideAnimation(hitAnimation);
+                setOverrideAnimation(hitAnimationLeft);
             }
         }
     }
 
     public void setSurfacingAnimation() {
         if (horizontalDirection == "R") {
-            currentAnimation = invertHorizontal(surfacingAnimation);
-            setOverrideAnimation(currentAnimation);
+            setOverrideAnimation(surfacingAnimationRight);
         } else {
-            setOverrideAnimation(surfacingAnimation);
+            setOverrideAnimation(surfacingAnimationLeft);
         }
         stateTime = 0;
     }
@@ -558,8 +586,14 @@ public class AnimatedActor extends Actor implements Pausable {
         // Create and return the bounding rectangle
         if (name == "torpedo") {
             return new Rectangle(x + 5, y, width - 10, height - 1);
+        } else if (name.equals("Player")) {
+            return new Rectangle(x, y, width, height - 5);
+        } else if (isSub) {
+            return new Rectangle(x, y + 9, width, height - 20);
+        } else if (name == "depthCharge") {
+            return new Rectangle(x + 4, y + 5, width - 8 , height - 10 );
         } else {
-            return new Rectangle(x, y, width, height);
+            return new Rectangle(x, y, width, height - 15);
         }
     }
 
@@ -651,7 +685,7 @@ public class AnimatedActor extends Actor implements Pausable {
     public void setPosition(Vector2 movementVector) {
         // Apply the movement
         float deltaTime = Gdx.graphics.getDeltaTime();
-        setX(getX() + movementVector.x * moveSpeed * deltaTime);  // Multiply by speed and delta to adjust movement speed
+        setX(getX() + movementVector.x * moveSpeed * deltaTime);
         setY(getY() + movementVector.y * moveSpeed * deltaTime);
     }
 
@@ -705,19 +739,19 @@ public class AnimatedActor extends Actor implements Pausable {
     public void dispose() {
         if (this.name == "Player")
             return;
-        if (idleAnimation != null) disposeAnimation(idleAnimation);
-        if (moveAnimation != null) disposeAnimation(moveAnimation);
-        if (upAnimation != null) disposeAnimation(upAnimation);
-        if (downAnimation != null) disposeAnimation(downAnimation);
-        if (hitAnimation != null) disposeAnimation(hitAnimation);
-        if (sunkAnimation != null) disposeAnimation(sunkAnimation);
+        if (idleAnimationLeft != null) disposeAnimation(idleAnimationLeft);
+        if (moveAnimationLeft != null) disposeAnimation(moveAnimationLeft);
+        if (upAnimationLeft != null) disposeAnimation(upAnimationLeft);
+        if (downAnimationLeft != null) disposeAnimation(downAnimationLeft);
+        if (hitAnimationLeft != null) disposeAnimation(hitAnimationLeft);
+        if (sunkAnimationLeft != null) disposeAnimation(sunkAnimationLeft);
 
-        idleAnimation = null;
-        moveAnimation = null;
-        upAnimation = null;
-        downAnimation = null;
-        hitAnimation = null;
-        sunkAnimation = null;
+        idleAnimationLeft = null;
+        moveAnimationLeft = null;
+        upAnimationLeft = null;
+        downAnimationLeft = null;
+        hitAnimationLeft = null;
+        sunkAnimationLeft = null;
 
         if (healthBarTextureRegion != null && healthBarTextureRegion.getTexture() != null) {
             healthBarTextureRegion.getTexture().dispose();

@@ -76,16 +76,25 @@ public class ObjectManager implements Pausable {
 
             if (enemy.isSub()) {
                 if (checkBounds(enemy)) {
-                    float targetX = gameScreen.getPlayer().getPlayerActor().getX();
-                    float targetY = gameScreen.getPlayer().getPlayerActor().getY();
-                    float torpedoX = enemyX + (enemy.getEnemyWidth() / 2f);
-                    float torpedoY = enemyY + (enemy.getEnemyHeight() / 2f);
-                    torpedoes.add(new Torpedo(gameScreen, torpedoX, torpedoY, true, targetX, targetY, enemy.getEnemyDamage()));
+                    Torpedo newTorpedo = createEnemyTorpedo(enemy, enemyX, enemyY);
+                    torpedoes.add(newTorpedo);
                 }
             } else {
-                depthCharges.add(new DepthCharge(gameScreen, enemyX, enemyY));
+                DepthCharge newDepthCharge = new DepthCharge(gameScreen,enemyX,enemyY);
+                newDepthCharge.setMaxDistance(enemy.getOrdinanceRange());
+                depthCharges.add(newDepthCharge);
             }
         }
+    }
+
+    private Torpedo createEnemyTorpedo(Enemy enemy, float enemyX, float enemyY) {
+        float targetX = gameScreen.getPlayer().getPlayerActor().getX();
+        float targetY = gameScreen.getPlayer().getPlayerActor().getY();
+        float torpedoX = enemyX + (enemy.getEnemyWidth() / 2f);
+        float torpedoY = enemyY + (enemy.getEnemyHeight() / 2f);
+        Torpedo newTorpedo = new Torpedo(gameScreen, torpedoX, torpedoY, true, targetX, targetY, enemy.getEnemyDamage());
+        newTorpedo.setMaxDistance(enemy.getOrdinanceRange());
+        return newTorpedo;
     }
 
     public void update() {
@@ -94,6 +103,7 @@ public class ObjectManager implements Pausable {
 
     private void handleTorpedo() {
         Iterator<Torpedo> torpedoIterator = torpedoes.iterator();
+        System.out.println(torpedoes.size());
         while (torpedoIterator.hasNext()) {
             Torpedo torpedo = torpedoIterator.next();
             if (!checkProjectileLimit(torpedoIterator, torpedo)) {
@@ -161,9 +171,19 @@ public class ObjectManager implements Pausable {
         if (torpedo == null || torpedoIterator == null || torpedo.getTorpedoActor() == null) {
             return false;
         }
-        if (torpedo.getTorpedoActor().getY() >= VIRTUAL_HEIGHT - Constants.Game.SKY_SIZE - (Torpedo.TORPEDO_HEIGHT - 3) || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
-                torpedo.getTorpedoActor().remove();
+
+        float distanceTraveled = (float) Math.sqrt(Math.pow(torpedo.getTorpedoActor().getX() - torpedo.getStartX(), 2) +
+                                                   Math.pow(torpedo.getTorpedoActor().getY() - torpedo.getStartY(), 2));
+
+        if (distanceTraveled >= torpedo.getMaxDistance() || torpedo.getTorpedoActor().getY() >= VIRTUAL_HEIGHT - Constants.Game.SKY_SIZE - (Torpedo.TORPEDO_HEIGHT - 3) || torpedo.isAtTarget() || !checkBoundsT(torpedo)) {
+            soundManager.playDepthChargeFar();
+                torpedo.setExplode(true);
+                torpedo.updatePos();
+                torpedo.getTorpedoActor().setCurrentHealth(0);
                 torpedoIterator.remove();
+
+            //torpedo.getTorpedoActor().remove();
+                //torpedoIterator.remove();
                 return true;
             }
 
@@ -171,10 +191,17 @@ public class ObjectManager implements Pausable {
     }
 
     public boolean checkDpcLimit(Iterator<DepthCharge> depthChargeIterator, DepthCharge depthCharge) {
-        if (depthCharge.getDepthChargeActor().getY() <= 0) {
+        float distanceTraveled = Math.abs(depthCharge.getDepthChargeActor().getY() - depthCharge.getStartY());
+
+        if (distanceTraveled >= depthCharge.getMaxDistance() || depthCharge.getDepthChargeActor().getY() <= 0) {
+
+            depthCharge.setExplode(true);
             soundManager.playDepthChargeFar();
-            depthCharge.getDepthChargeActor().remove();
+            depthCharge.getDepthChargeActor().setCurrentHealth(0);
             depthChargeIterator.remove();
+
+//            depthCharge.getDepthChargeActor().remove();
+  //          depthChargeIterator.remove();
             return true;
         }
         return false;

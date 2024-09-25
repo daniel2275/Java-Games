@@ -36,10 +36,10 @@ public class EnemyAnimationManager {
         }
 
         idleAnimations = boatAnimation(0, 1, boatSprites, 0.2f);
-        movingAnimations = boatAnimation(0, 5, boatSprites, 0.2f);
+        movingAnimations = boatAnimation(0, 5, boatSprites, 0.4f);
         upAnimations = boatAnimation(3, 3, boatSprites, 0.7f);
         downAnimations = boatAnimation(4, 3, boatSprites, 0.7f);
-        hitAnimations = boatAnimation(1, 3, boatSprites, 0.2f);
+        hitAnimations = boatAnimation(1, 3, boatSprites, 0.3f);
         sunkAnimations = boatAnimation(1, 5, boatSprites, 0.5f);
         turnAnimations = boatAnimation(2, 5, boatSprites, 0.2f);
     }

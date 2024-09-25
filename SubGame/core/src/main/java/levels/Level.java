@@ -28,6 +28,7 @@ public class Level {
     private float enemyDamage = 10;
 
 
+
     public Level(EnemyManager enemyManager, GameScreen gameScreen) {
         this.enemyManager = enemyManager;
         this.gameScreen = gameScreen;
@@ -74,7 +75,7 @@ public class Level {
         enemyManager.addEnemy(enemy);
     }
 
-    private Enemy createEnemy(String name, int spawnPosX, int spawnPosY, long delay, boolean flipX, String spriteAtlas, float speed, boolean aggro, boolean sub, int healthMultiplier, int points) {
+    private Enemy createEnemy(String name, int spawnPosX, int spawnPosY, long delay, boolean flipX, String spriteAtlas, float speed, boolean aggro, boolean sub, int healthMultiplier, int points, float ordinanceRange) {
         return new EnemyBuilder(gameScreen)
                 .withName(name)
                 .withSpawnPosX(spawnPosX)
@@ -90,6 +91,7 @@ public class Level {
                 .withEnemyWidth(64)
                 .withEnemyHeight(32)
                 .withEnemyDamage(enemyDamage)
+                .withOrdinanceRange(ordinanceRange)
                 .build();
     }
 
@@ -116,65 +118,65 @@ public class Level {
         LEVEL1 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 3, true, "tanker-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy6", -65, 0, 4, true, "tanker-atlas.png", 20f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy3", (int) VIRTUAL_WIDTH + 65, 20, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy4", (int) VIRTUAL_WIDTH + 65, 50, 13, false, "enemy-sub1.png", 13f, true, true, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 80, 20, false, "enemy-sub1.png", 13f, true, true, 1, 10));
+                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 3, true, "tanker-atlas.png", 10f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy6", -65, 0, 4, true, "tanker-atlas.png", 20f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10, 200));
+                level.addEnemyToManager(level.createEnemy("enemy3", (int) VIRTUAL_WIDTH + 65, 20, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
+                level.addEnemyToManager(level.createEnemy("enemy4", (int) VIRTUAL_WIDTH + 65, 50, 13, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
+                level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 80, 20, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
             }
 
         },
         LEVEL2 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker2-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "tanker-atlas.png", 10f, false, false, 1, 10));
+                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker2-atlas.png", 10f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "tanker-atlas.png", 10f, false, false, 1, 10, 150));
             }
         },
         LEVEL3 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10));
+                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10,150));
+                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10,150));
             }
         },
         LEVEL4 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "tanker2-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy3", (int) VIRTUAL_WIDTH + 64, 0, 15, false, "destroyer-atlas.png", 15f, true, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy4", -65, 64, 20, true, "destroyer-atlas.png", 15f, true, false, 1, 10));
+                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "tanker2-atlas.png", 10f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy3", (int) VIRTUAL_WIDTH + 64, 0, 15, false, "destroyer-atlas.png", 15f, true, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy4", -65, 64, 20, true, "destroyer-atlas.png", 15f, true, false, 1, 10, 150));
             }
         },
         LEVEL5 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 65, 30, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy3", -65, 40, 14, true, "enemy-sub1.png", 13f, true, true, 1, 10));
+                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 65, 30, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy3", -65, 40, 14, true, "enemy-sub1.png", 13f, true, true, 1, 10, 150));
             }
         },
         LEVEL6 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy3", -65, 60, 15, true, "enemy-sub1.png", 13f, true, true, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy4", -65, 0, 25, true, "destroyer-atlas.png", 15f, true, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 20, 30, false, "enemy-sub1.png", 13f, true, true, 1, 10));
+                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy3", -65, 60, 15, true, "enemy-sub1.png", 13f, true, true, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy4", -65, 0, 25, true, "destroyer-atlas.png", 15f, true, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 20, 30, false, "enemy-sub1.png", 13f, true, true, 1, 10, 150));
             }
         },
         LEVEL7 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy2", -65, 10, 10, true, "enemy-sub1.png", 13f, true, true, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy3", (int) VIRTUAL_WIDTH + 65, 0, 20, false, "destroyer-atlas.png", 15f, true, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy4", -65, 0, 30, true, "destroyer-atlas.png", 15f, true, false, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 35, 40, false, "enemy-sub1.png", 13f, true, true, 1, 10));
-                level.addEnemyToManager(level.createEnemy("enemy6", -65, 0, 45, true, "tanker2-atlas.png", 10f, false, false, 1, 10));
+                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 0, true, "tanker-atlas.png", 10f, false, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy2", -65, 10, 10, true, "enemy-sub1.png", 13f, true, true, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy3", (int) VIRTUAL_WIDTH + 65, 0, 20, false, "destroyer-atlas.png", 15f, true, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy4", -65, 0, 30, true, "destroyer-atlas.png", 15f, true, false, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 35, 40, false, "enemy-sub1.png", 13f, true, true, 1, 10, 150));
+                level.addEnemyToManager(level.createEnemy("enemy6", -65, 0, 45, true, "tanker2-atlas.png", 10f, false, false, 1, 10, 150));
             }
         },
         RANDOMIZED {
@@ -196,9 +198,10 @@ public class Level {
                     boolean sub = enemyType.equals("enemy-sub1.png");
                     int healthMultiplier = 1 + random.nextInt(3); // Random health multiplier between 1 and 3
                     int points = 10 * healthMultiplier;
+                    float ordinanceRange = 150f + random.nextFloat() * 500f;
 
                     level.addEnemyToManager(level.createEnemy(
-                        "enemy" + (i + 1), spawnPosX, spawnPosY, delay, flipX, enemyType, speed, aggro, sub, healthMultiplier, points
+                        "enemy" + (i + 1), spawnPosX, spawnPosY, delay, flipX, enemyType, speed, aggro, sub, healthMultiplier, points, ordinanceRange
                     ));
                 }
             }

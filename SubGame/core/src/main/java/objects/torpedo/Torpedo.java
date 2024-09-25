@@ -29,17 +29,23 @@ public class Torpedo {
     private float worldY;
     private Vector2 velocity = new Vector2();
 
-    private TorpedoAnimationManager animationManager;
+    private float startX;
+    private float startY;
+    private float maxDistance = 150;
 
+    private TorpedoAnimationManager animationManager;
     private AnimatedActor torpedoActor;
 
     public Torpedo(GameScreen gameScreen, float x, float y, float damage) {
         animationManager = new TorpedoAnimationManager(new Texture("torpedo-atlas.png"));
         this.gameScreen = gameScreen;
+        this.startX = x;
+        this.startY = y;
         initializeTorpedo(x,y);
         this.damage = damage;
         torpedoActor.setDamage(damage);
         gameScreen.getGmStage().addActor(torpedoActor);
+        torpedoActor.toBack();
     }
 
     public void initializeTorpedo(float x,float y) {
@@ -120,11 +126,6 @@ public class Torpedo {
             // Set the angle and mark vector as calculated
             torpedoActor.setAngle(angle);
             calculateVector = true;
-
-//            // Log values for debugging
-//            System.out.println("Normalized Direction: " + direction);
-//            System.out.println("Velocity: " + velocity);
-//            System.out.println("Angle: " + angle);
         }
 
         // Update the position of the torpedo actor
@@ -133,6 +134,13 @@ public class Torpedo {
     }
 
 
+    public float getStartX() {
+        return startX;
+    }
+
+    public float getStartY() {
+        return startY;
+    }
 
     public void setExplode(boolean explode) {
         if(explode) {
@@ -179,6 +187,14 @@ public class Torpedo {
 
     public AnimatedActor getTorpedoActor() {
         return torpedoActor;
+    }
+
+    public void setMaxDistance(float maxDistance) {
+        this.maxDistance = maxDistance;
+    }
+
+    public float getMaxDistance() {
+        return maxDistance;
     }
 }
 

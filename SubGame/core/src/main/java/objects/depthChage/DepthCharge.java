@@ -14,9 +14,13 @@ public class DepthCharge {
     private DepthChargeAnimationManager animationManager;
     private AnimatedActor depthChargeActor;
 
+    private float startY;
+    private float maxDistance = 150;
+
     public DepthCharge(GameScreen gameScreen, float x, float y) {
         animationManager = new DepthChargeAnimationManager(new Texture("dephtcharge-atlas.png"));
         this.gameScreen = gameScreen;
+        this.startY = y;
         initializeDepthCharge(x,y);
         gameScreen.getGmStage().addActor(depthChargeActor);
     }
@@ -78,4 +82,18 @@ public class DepthCharge {
     public AnimatedActor getDepthChargeActor() {
         return depthChargeActor;
     }
+
+    public float getStartY() {
+        return startY;
+    }
+
+    public void setMaxDistance(float maxDistance) {
+        this.maxDistance = maxDistance;
+    }
+
+    public float getMaxDistance() {
+        return maxDistance;
+    }
+
+
 }

@@ -21,6 +21,7 @@ public class EnemyBuilder {
     private int enemyWidth = 64;
     private int enemyHeight = 32;
     private float enemyDamage;
+    private float ordinanceRange;
     private SubGame subGame;
 
     private GameScreen gameScreen;
@@ -98,8 +99,13 @@ public class EnemyBuilder {
         return this;
     }
 
+    public EnemyBuilder withOrdinanceRange(float ordinanceRange) {
+        this.ordinanceRange = ordinanceRange;
+        return this;
+    }
+
     public Enemy build() {
-        Enemy enemy = new Enemy(gameScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, enemyDamage, subGame);
+        Enemy enemy = new Enemy(gameScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, enemyDamage, ordinanceRange, subGame);
         enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
         enemy.setFadeDelay(new Timing(7));
         return enemy;

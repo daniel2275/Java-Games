@@ -55,11 +55,11 @@ public class Enemy {
     private float randomMoveInterval = 10.0f;
     private float randomDirectionX = 0;
     private float randomDirectionY = 0;
-//    private boolean movingRight = true;
+    private float ordinanceRange = 150;
 
     public Enemy(GameScreen gameScreen, String name, long delay, int spawnPosX, int spawnPosY, int flipX,
                  String spriteAtlas, float moveSpeed, boolean aggro, int maxHealth, boolean sub,
-                 int enemyPoints, int enemyWidth, int enemyHeight, float enemyDamage, SubGame subGame) {
+                 int enemyPoints, int enemyWidth, int enemyHeight, float enemyDamage, float ordinanceRange, SubGame subGame) {
 
         // Assign basic properties
         this.name = name;
@@ -74,6 +74,7 @@ public class Enemy {
         this.enemyPoints = enemyPoints;
         this.sub = sub;
         this.enemyDamage = enemyDamage;
+        this.ordinanceRange = ordinanceRange;
 
         // Initialize SoundManager
         this.soundManager = SoundManager.getInstance(subGame);
@@ -443,6 +444,11 @@ public class Enemy {
 
     public float getEnemyDamage() {
         return enemyDamage;
+    }
+
+
+    public float getOrdinanceRange() {
+        return ordinanceRange;
     }
 }
 

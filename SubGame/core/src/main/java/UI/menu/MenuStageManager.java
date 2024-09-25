@@ -3,6 +3,8 @@ package UI.menu;
 import UI.game.FontManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -24,9 +26,17 @@ public class MenuStageManager {
     private SubGame subGame;
     private boolean alternate = false;
 
+    private Texture texture;
+
     public MenuStageManager(SubGame subGame) {
         uiStage = new Stage(new ScreenViewport());
         this.subGame = subGame;
+        loadTextures();
+    }
+
+    private void loadTextures() {
+        texture = new Texture(Gdx.files.internal("hugeship.png"), true);
+        texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
     }
 
     public Stage build() {
@@ -61,15 +71,14 @@ public class MenuStageManager {
             arcadeStyle.font = FontManager.getFont();
             uiSkin.add("default", arcadeStyle);
 
-
         } catch (Exception e) {
             Gdx.app.error("MainMenu", "Error loading skin file", e);
         }
     }
 
     public void hideEverything() {
-        for (Actor actor : uiTable.getChildren()) {
-            actor.setVisible(false);
+        for (Actor subTitleActor : uiTable.getChildren()) {
+            subTitleActor.setVisible(false);
         }
         uiTable.setVisible(false); // Optionally hide the entire table
     }
@@ -82,6 +91,29 @@ public class MenuStageManager {
     private void createUIElements() {
 //        uiTable.setFillParent(true); // Makes the table take the whole stage
 //        uiStage.addActor(uiTable);
+
+
+        Actor subTitle = new Actor() {
+            @Override
+            public void draw(Batch batch, float parentAlpha) {
+                super.draw(batch, parentAlpha);
+                batch.draw(texture, getX(), getY(), getWidth(), getHeight());
+            }
+        };
+
+        float originalWidth = texture.getWidth();
+        float originalHeight = texture.getHeight();
+
+        // Target dimensions
+        float targetWidth = 128f;
+        float targetHeight = 64f;
+
+        float scaleFactor = Math.min(targetWidth / originalWidth, targetHeight / originalHeight);
+
+        subTitle.setSize(originalWidth * scaleFactor, originalHeight * scaleFactor);
+
+        // SubTexture
+        uiTable.add(subTitle).padBottom(BUTTON_PADDING).row();
 
         Label menuTitle = createMenuTitle();
         uiTable.add(menuTitle).padBottom(BUTTON_PADDING).row();
@@ -149,7 +181,7 @@ public class MenuStageManager {
                 float delay = 0f; // Initialize local variable for delay
 
                 for (Actor actor : uiTable.getChildren()) {
-                    if (actor instanceof TextButton || actor instanceof Slider || actor instanceof Label) {
+                    //if (actor instanceof TextButton || actor instanceof Slider || actor instanceof Label || actor instanceof Actor) {
 
                         float finalX = actor.getX();
                         float finalY = actor.getY();
@@ -168,7 +200,7 @@ public class MenuStageManager {
 
                         delay += delayIncrement;
                     }
-                }
+              //  }
 
                 // Re-enable layout and force an update after the animations
                 uiStage.addAction(Actions.sequence(
@@ -186,6 +218,9 @@ public class MenuStageManager {
     public void dispose() {
         if (uiSkin != null) {
             uiSkin.dispose();
+        }
+        if (texture != null) {
+            texture.dispose();
         }
         if (uiStage != null) {
             uiStage.dispose();

@@ -3,7 +3,6 @@ package entities.enemies;
 
 import UI.game.GameScreen;
 import io.github.daniel2275.subgame.SubGame;
-import utilities.HelpMethods;
 import utilities.Timing;
 
 public class EnemyBuilder {
@@ -22,6 +21,7 @@ public class EnemyBuilder {
     private int enemyHeight = 32;
     private float enemyDamage;
     private float ordinanceRange;
+    private boolean randomMovement;
     private SubGame subGame;
 
     private GameScreen gameScreen;
@@ -104,9 +104,15 @@ public class EnemyBuilder {
         return this;
     }
 
+    public EnemyBuilder withRandomMovement(boolean randomMovement) {
+        this.randomMovement = randomMovement;
+        return this;
+    }
+
+
     public Enemy build() {
-        Enemy enemy = new Enemy(gameScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, enemyDamage, ordinanceRange, subGame);
-        enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
+        Enemy enemy = new Enemy(gameScreen, name, delay, spawnPosX, spawnPosY, flipX, spriteAtlas, speed, aggro, maxHealth, sub, enemyPoints, enemyWidth, enemyHeight, enemyDamage, ordinanceRange, subGame, randomMovement);
+       // enemy.setFadingAnimation(new HelpMethods.FadingAnimation(200));
         enemy.setFadeDelay(new Timing(7));
         return enemy;
     }

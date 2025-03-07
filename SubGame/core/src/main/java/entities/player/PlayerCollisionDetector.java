@@ -4,6 +4,7 @@ import Components.HitNumberActor;
 import UI.game.GameScreen;
 import com.badlogic.gdx.Gdx;
 import objects.depthChage.DepthCharge;
+import objects.mine.Mine;
 import objects.torpedo.Torpedo;
 
 public class PlayerCollisionDetector {
@@ -59,6 +60,20 @@ public class PlayerCollisionDetector {
         if (player.getPlayerActor().getCurrentHealth() <= 0) {
               player.getPlayerActor().isSunk(true);
             Gdx.app.log( "Game Over","Depth Charge");
+            gameOver();
+        }
+    }
+
+    public void playerHit(Mine mine) {
+        playerHealthManager.setPlayerHealth(playerHealthManager.getPlayerHealth() - mine.getMineDamage());
+        player.getPlayerActor().setHit(true, mine.getMineDamage());
+        // display hit values
+        HitNumberActor hitNumberActor = new HitNumberActor(player.getPlayerActor().getX()  , player.getPlayerActor().getY(), String.valueOf(mine.getMineDamage()));
+        gameScreen.getGameStage().getStage().addActor(hitNumberActor);
+
+        if (player.getPlayerActor().getCurrentHealth() <= 0) {
+            player.getPlayerActor().isSunk(true);
+            Gdx.app.log( "Game Over","Mine");
             gameOver();
         }
     }

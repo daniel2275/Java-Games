@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 
-import static utilities.Constants.UIConstants.SKIN_FILE_PATH;
+import static utilities.Settings.UIConstants.SKIN_FILE_PATH;
 
 public class HitNumberActor extends Group {
         private Label label;

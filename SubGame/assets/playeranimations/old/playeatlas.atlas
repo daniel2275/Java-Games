@@ -1,0 +1,15 @@
+playeatlas.png
+size:1024,32
+repeat:none
+playeratlas1
+bounds:132,2,128,23
+playeratlas2
+bounds:652,2,128,23
+playeratlas3
+bounds:392,2,128,23
+playeratlas4
+bounds:2,2,128,23
+playeratlas5
+bounds:522,2,128,23
+playeratlas6
+bounds:262,2,128,23

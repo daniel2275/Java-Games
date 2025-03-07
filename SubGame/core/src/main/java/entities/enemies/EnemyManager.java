@@ -1,6 +1,6 @@
 package entities.enemies;
 
-import Components.AnimatedActor;
+import Components.BaseActor;
 import UI.game.GameScreen;
 import entities.player.Player;
 import objects.ObjectManager;
@@ -48,7 +48,7 @@ public class EnemyManager {
         }
     }
 
-    public boolean checkCollision(AnimatedActor actor, float damage) {
+    public boolean checkCollision(BaseActor actor, float damage) {
         Optional<Enemy> deadEnemy = getListOfEnemies().stream()
             .filter(enemy -> {
                 boolean isHit = enemy.checkHit(actor, damage);
@@ -134,11 +134,8 @@ public class EnemyManager {
     }
 
 
-    public void toFront() {
-        listOfEnemies.forEach(enemyA -> {
-            enemyA.getEnemyActor().toFront();
-        });
 
-    }
+
+
 
 }

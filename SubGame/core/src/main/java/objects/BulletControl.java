@@ -8,7 +8,9 @@ public class BulletControl {
     private Random random;
     private static final int LAUNCH_PROBABILITY_THRESHOLD = 700;
     private static final int LAUNCH_PROBABILITY_MAX = 1400;
-    private static final int TIMING_INTERVAL_SECONDS = 2; // Define interval duration for flexibility
+    private static final int TIMING_INTERVAL_SECONDS = 2; // Define interval
+
+
 
     public BulletControl() {
         timing = new Timing(TIMING_INTERVAL_SECONDS); // Initialize Timing
@@ -16,7 +18,7 @@ public class BulletControl {
         timing.start(); // Start the timing
     }
 
-
+    // When deployAttack is called and returns true, the timing is RESET
     public boolean deployAttack() {
         if (!timing.isPaused()) {
             timing.update(); // Update the timer if it's not paused
@@ -36,5 +38,7 @@ public class BulletControl {
     public void pauseDeployment(boolean pause) {
         timing.pause(pause); // Pause or resume the timing
     }
+
+
 }
 

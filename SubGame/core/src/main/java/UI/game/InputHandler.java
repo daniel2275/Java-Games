@@ -267,4 +267,8 @@ public class InputHandler implements InputProcessor {
             touchpadController.dispose();
         }
     }
+
+    public TouchpadController getTouchpadController() {
+        return touchpadController;
+    }
 }

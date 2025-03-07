@@ -20,9 +20,9 @@ import io.github.daniel2275.subgame.SubGame;
 import levels.LevelManager;
 import objects.ObjectManager;
 
-import static utilities.Constants.Game.VIRTUAL_HEIGHT;
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
-import static utilities.Constants.UIConstants.FONT_GAME_SIZE;
+import static utilities.Settings.Game.VIRTUAL_HEIGHT;
+import static utilities.Settings.Game.VIRTUAL_WIDTH;
+import static utilities.Settings.UIConstants.FONT_GAME_SIZE;
 
 public class GameScreen implements Screen {
     private Player player;
@@ -41,8 +41,9 @@ public class GameScreen implements Screen {
     private boolean paused = false;
     private GameOver gameOver;
     private Actor crossHairActor;
-//    public Image crosshairImage;
-//    private Texture crosshairTexture;
+    private boolean zIndexChanged = true;
+    // If an actor is added or removed dynamically, set the flag to true
+
 
     public GameScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
@@ -62,14 +63,15 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
 
         gmStage.addActor(player.getPlayerActor());
-        player.getPlayerActor().toBack();
+        //player.getPlayerActor().toBack();
+        player.getPlayerActor().setZIndex(0);
 
     }
 
     public void updateCrosshairPosition(int screenX, int screenY) {
         Vector2 stageCoords = gmStage.screenToStageCoordinates(new Vector2(screenX, screenY));
         crossHairActor = gameStageManager.getAndroidCrossHairActor();
-        crossHairActor.setPosition(stageCoords.x - crossHairActor.getWidth() / 2, stageCoords.y - crossHairActor.getHeight() /  2 );
+        crossHairActor.setPosition(stageCoords.x - crossHairActor.getWidth() / 2, stageCoords.y - crossHairActor.getHeight() / 2);
     }
 
     @Override
@@ -82,13 +84,10 @@ public class GameScreen implements Screen {
 
         Gdx.input.setInputProcessor(inputMultiplexer);
 
-        // Ensure the viewport is correctly initialized
         gmStage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
-        // Optionally, set the camera's initial position or other properties
         camera.position.set(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, 0);
         camera.update();
-
     }
 
     private void initClasses() {
@@ -99,6 +98,8 @@ public class GameScreen implements Screen {
         levelManager = new LevelManager(this);
         upgradeStore = new UpgradeStore(this);
         inputHandler = new InputHandler(this, gmStage);
+
+
     }
 
     public Player getPlayer() {
@@ -127,17 +128,26 @@ public class GameScreen implements Screen {
 
             // Update and draw the touchpad
             inputHandler.update();
+
+//            gameStageManager.getSkyLine().setZIndex(0);
+//            gameStageManager.getUndersea().setZIndex(2);
+
+
+            //System.out.println("Skyline : " + gameStageManager.getSkyLine().getZIndex());
+            //System.out.println("Undersea : " + gameStageManager.getUndersea().getZIndex());
+//            System.out.println("Player : " + getPlayer().getPlayerActor().getZIndex());
         }
     }
 
     @Override
     public void render(float delta) {
-        //Gdx.gl.glClearColor(0f, 51f / 255f, 102f / 255f, 1f);
-        //Gdx.gl.glClearColor(0f, 128f / 255f, 128f / 255f, 1f);
         Gdx.gl.glClearColor(0f, 105f / 255f, 148f / 255f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        if (zIndexChanged) {
+            maintainDrawOrder();
+            zIndexChanged = false; // Reset flag after adjusting z-index
+        }
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -147,14 +157,40 @@ public class GameScreen implements Screen {
 
         update();
 
-//        if (player.getPlayerActor().getY() > VIRTUAL_HEIGHT - SKY_SIZE - 55) {
-//            player.getPlayerActor().toFront();
-//            //player.getPlayerActor().setSurfacingAnimation(true);
-//        } else {
-//            player.getPlayerActor().toBack();
-//        }
+    }
+
+    private void maintainDrawOrder() {
+        gameStageManager.getSkyLine().setZIndex(1);
+        getPlayer().getPlayerActor().setZIndex(2);
+
+
+        enemyManager.getListOfEnemies().forEach(enemy -> {
+            enemy.getEnemyActor().setZIndex(2);
+        });
+
+        gameStageManager.getUndersea().setZIndex(1000);
+
+        if (Gdx.app.getType() == com.badlogic.gdx.Application.ApplicationType.Android) {
+            inputHandler.getTouchpadController().getLeftTouchpad().toFront();
+            inputHandler.getTouchpadController().getRightTouchpad().toFront();
+
+        }
+//        System.out.println("Order-----------------------------");
+//        System.out.println("Skyline : " + gameStageManager.getSkyLine().getZIndex());
+//
+//        enemyManager.getListOfEnemies().forEach(enemy -> {
+//            System.out.print("Z index " + enemy.getEnemyActor().getZIndex() + " ");
+//            System.out.println(enemy.getEnemyActor().getName());
+//        });
+//
+//
+//        System.out.println("Undersea : " + gameStageManager.getUndersea().getZIndex());
 
     }
+
+
+
+
 
     @Override
     public void resize(int width, int height) {
@@ -175,10 +211,10 @@ public class GameScreen implements Screen {
         }
     }
 
+
     @Override
     public void resume() {
         paused = false;
-        // Pause your actors
         gameStageManager.getUndersea().setPaused(false);
         objectManager.setPaused(false);
         for (Actor actor : gmStage.getActors()) {
@@ -192,7 +228,6 @@ public class GameScreen implements Screen {
     public void hide() {
 
     }
-
 
 
     public void reset() {
@@ -273,5 +308,11 @@ public class GameScreen implements Screen {
     public Actor getCrossHairActor() {
         return crossHairActor;
     }
+
+
+    public void onActorAddedOrRemoved() {
+        zIndexChanged = true;
+    }
+
 }
 

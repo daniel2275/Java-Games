@@ -18,7 +18,7 @@ import utilities.SoundManager;
 
 import java.util.Random;
 
-import static utilities.Constants.UIConstants.*;
+import static utilities.Settings.UIConstants.*;
 
 public class OptionsStageManager {
     private Stage opStage;

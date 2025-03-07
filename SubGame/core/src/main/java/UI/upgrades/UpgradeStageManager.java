@@ -13,9 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import static io.github.daniel2275.subgame.SubGame.pause;
-import static utilities.Constants.Game.VIRTUAL_HEIGHT;
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
-import static utilities.Constants.UIConstants.*;
+import static utilities.Settings.Game.VIRTUAL_HEIGHT;
+import static utilities.Settings.Game.VIRTUAL_WIDTH;
+import static utilities.Settings.UIConstants.*;
 
 
 public class UpgradeStageManager {

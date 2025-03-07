@@ -3,7 +3,6 @@ package Components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,6 +22,7 @@ public class BackgroundActor extends Actor implements Pausable {
     private String fragmentShader;
     private ShaderProgram shaderProgram;
     private boolean waves;
+    private TextureRegion fboRegion;
 
     public BackgroundActor(Animation<TextureRegion> animation, float x, float y, boolean waves) {
         //this.enemyManager = enemyManager;
@@ -31,15 +31,26 @@ public class BackgroundActor extends Actor implements Pausable {
         this.waves = waves;
 
         // Set initial position
-       // setPosition(x, y);
+        // setPosition(x, y);
 
         if (waves) {
-            vertexShader = Gdx.files.internal("shaders/vertex.glsl").readString();
-            fragmentShader = Gdx.files.internal("shaders/wavey.glsl").readString();
-            shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+            initializeWaveEffect();
+        }
+    }
 
+    private void initializeWaveEffect() {
+        vertexShader = Gdx.files.internal("shaders/vertex.glsl").readString();
+        fragmentShader = Gdx.files.internal("shaders/wavey.glsl").readString();
+        shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+
+        shaderProgram.begin();
+        shaderProgram.setUniformf("u_resolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shaderProgram.setUniformf("u_alphaValue", 0.4f);
+        shaderProgram.end();
+
+        if (fbo == null) {
             fbo = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-
+            fboRegion = new TextureRegion(fbo.getColorBufferTexture()); // Reuse this TextureRegion
         }
     }
 
@@ -52,6 +63,9 @@ public class BackgroundActor extends Actor implements Pausable {
         batch.flush();
 
         if (waves) {
+            // Ensure the framebuffer and shader are initialized
+            initializeWaveEffect();
+
             fbo.begin();
             batch.begin();
             super.draw(batch, parentAlpha);
@@ -60,21 +74,18 @@ public class BackgroundActor extends Actor implements Pausable {
             batch.flush();
             fbo.end();
 
+            // Update the framebuffer texture in case it changed
+            fboRegion.setTexture(fbo.getColorBufferTexture());
+
+            // Apply shader and draw the framebuffer texture with the shader effect
             batch.begin();
             batch.setShader(shaderProgram);
-
             shaderProgram.setUniformf("u_time", stateTime);
-            shaderProgram.setUniformf("u_resolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            shaderProgram.setUniformf("u_alphaValue", 0.5f);
-
-            Texture texture = fbo.getColorBufferTexture();
-            TextureRegion textureRegion = new TextureRegion(texture);
 
             // Draw the texture region from the frame buffer (with the shader effect applied)
-            batch.draw(textureRegion, getX(), getY(), getWidth(), getHeight());
+            batch.draw(fboRegion, getX(), getY(), getWidth(), getHeight());
 
-            // Reset the shader
-            batch.setShader(null);
+            batch.setShader(null);  // Reset shader
         } else {
             batch.begin();
             super.draw(batch, parentAlpha);
@@ -84,10 +95,9 @@ public class BackgroundActor extends Actor implements Pausable {
 
     @Override
     public void act(float delta) {
-        if (!paused) {
-            super.act(delta);
-            stateTime += delta;
-        }
+        if (paused) return;
+        stateTime += delta;
+        super.act(delta);
     }
 
     @Override
@@ -100,22 +110,18 @@ public class BackgroundActor extends Actor implements Pausable {
     }
 
     public void resize(int width, int height) {
-        // Dispose of the old frame buffer to prevent memory leaks
-        if (fbo != null) {
+        if (fbo != null && (fbo.getWidth() != width || fbo.getHeight() != height)) {
             fbo.dispose();
+            fbo = new FrameBuffer(Pixmap.Format.RGB888, width, height, true);
         }
 
-        // Recreate the frame buffer with the new screen dimensions
-        fbo = new FrameBuffer(Pixmap.Format.RGB888, width, height, true);
-
-        // Update the shader resolution uniform with the new screen dimensions
+        // Only update the shader resolution if the size has changed
         if (waves && shaderProgram != null) {
             shaderProgram.begin();
             shaderProgram.setUniformf("u_resolution", width, height);
             shaderProgram.end();
         }
     }
-
 
 }
 

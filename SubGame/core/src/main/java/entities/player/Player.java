@@ -1,11 +1,11 @@
 package entities.player;
 
-import Components.AnimatedActor;
+import Components.PlayerActor;
 import UI.game.GameScreen;
 import com.badlogic.gdx.math.Rectangle;
 
-import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
-import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
+import static utilities.Settings.PlayerConstants.PLAYER_HEIGHT;
+import static utilities.Settings.PlayerConstants.PLAYER_WIDTH;
 
 public class Player {
     private int playerScore = 0;
@@ -18,7 +18,7 @@ public class Player {
     private PlayerCollisionDetector playerCollisionDetector;
     private PlayerHealthManager playerHealthManager;
     private PlayerMovement playerMovement;
-    private AnimatedActor playerActor;
+    private PlayerActor playerActor;
     private GameScreen gameScreen;
 
     public Player(GameScreen gameScreen, float delta) {
@@ -34,35 +34,44 @@ public class Player {
     }
 
     private void initializePlayerActor() {
-        playerActor =  new AnimatedActor(
-                "Player",
-                playerAnimationManager.getIdleAnimations(),
-                playerAnimationManager.getMovingAnimations(),
-                playerAnimationManager.getUpAnimations(),
-                playerAnimationManager.getDownAnimations(),
-                playerAnimationManager.getHitAnimations(),
-                playerAnimationManager.getSunkAnimations(),
-                playerAnimationManager.getSurfacingAnimation(),
-                playerAnimationManager.getTurningAnimation(),
-                reload,
-                playerHealthManager.getMaxHealth(),
-                PLAYER_WIDTH,
-                PLAYER_HEIGHT,
-                playerMovement.getSPAWN_X(),
-                playerMovement.getSPAWN_Y(),
-                false
-            );
+        playerActor = new PlayerActor(
+            "Player",
+            playerAnimationManager.getAnimation("idleLeft"),
+            playerAnimationManager.getAnimation("movingLeft"),
+            playerAnimationManager.getAnimation("upLeft"),
+            playerAnimationManager.getAnimation("downLeft"),
+            playerAnimationManager.getAnimation("hitLeft"),
+            playerAnimationManager.getAnimation("sunkLeft"),
+            playerAnimationManager.getAnimation("surfacingLeft"),
+            playerAnimationManager.getAnimation("turningLeft"),
+            playerAnimationManager.getAnimation("idleRight"),
+            playerAnimationManager.getAnimation("movingRight"),
+            playerAnimationManager.getAnimation("upRight"),
+            playerAnimationManager.getAnimation("downRight"),
+            playerAnimationManager.getAnimation("hitRight"),
+            playerAnimationManager.getAnimation("sunkRight"),
+            playerAnimationManager.getAnimation("surfacingRight"),
+            playerAnimationManager.getAnimation("turningRight"),
+            reload,
+            playerHealthManager.getMaxHealth(),
+            PLAYER_WIDTH,
+            PLAYER_HEIGHT,
+            playerMovement.getSPAWN_X(),
+            playerMovement.getSPAWN_Y()
+        );
     }
 
     public void update() {
-          playerMovement.checkDirection();
-          playerCollisionDetector.checkCollision();
+        playerMovement.checkDirection();
+        playerCollisionDetector.checkCollision();
     }
 
     public void reset() {
         playerActor.remove();
         initializePlayerActor();
         gameScreen.getGmStage().addActor(playerActor);
+        gameScreen.onActorAddedOrRemoved();
+        getPlayerActor().toBack();
     }
 
     public Rectangle getHitbox() {
@@ -148,7 +157,7 @@ public class Player {
         return playerMovement;
     }
 
-    public AnimatedActor getPlayerActor() {
+    public PlayerActor getPlayerActor() {
         return playerActor;
     }
 

@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
+import static utilities.Settings.Game.VIRTUAL_WIDTH;
 
 public class TouchpadController {
     private TextureAtlas textureAtlas;
@@ -44,11 +44,11 @@ public class TouchpadController {
 
         // Create left Touchpad
         leftTouchpad = new Touchpad(10, touchpadStyle);
-        leftTouchpad.setBounds(15, 15, 100, 100);
+        leftTouchpad.setBounds(15, 15, 200, 200);
 
         // Create right Touchpad
         rightTouchpad = new Touchpad(10, touchpadStyle);
-        rightTouchpad.setBounds( VIRTUAL_WIDTH - 115, 15, 100, 100);
+        rightTouchpad.setBounds( VIRTUAL_WIDTH - 215, 15, 200, 200);
 
         // Add listeners to handle touchpad movement
         ChangeListener touchpadListener = new ChangeListener() {
@@ -167,6 +167,14 @@ public class TouchpadController {
 
     public void dispose() {
         textureAtlas.dispose();
+    }
+
+    public Touchpad getLeftTouchpad() {
+        return leftTouchpad;
+    }
+
+    public Touchpad getRightTouchpad() {
+        return rightTouchpad;
     }
 }
 

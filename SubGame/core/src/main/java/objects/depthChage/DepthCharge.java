@@ -1,6 +1,7 @@
 package objects.depthChage;
 
-import Components.AnimatedActor;
+import Components.BaseActor;
+import Components.DepthChargeActor;
 import UI.game.GameScreen;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -12,7 +13,7 @@ public class DepthCharge {
     private boolean explode;
     private GameScreen gameScreen;
     private DepthChargeAnimationManager animationManager;
-    private AnimatedActor depthChargeActor;
+    private DepthChargeActor depthChargeActor;
 
     private float startY;
     private float maxDistance = 150;
@@ -26,7 +27,7 @@ public class DepthCharge {
     }
 
     private void initializeDepthCharge(float x, float y) {
-        depthChargeActor = new AnimatedActor("depthCharge",
+        depthChargeActor = new DepthChargeActor("depthCharge",
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoUpAnimation(),
@@ -39,8 +40,7 @@ public class DepthCharge {
                 DPC_WIDTH,
                 DPC_HEIGHT,
                 x,
-                y,
-            false);
+                y);
         depthChargeActor.toBack();
     }
 
@@ -79,7 +79,7 @@ public class DepthCharge {
 //    }
 
 
-    public AnimatedActor getDepthChargeActor() {
+    public BaseActor getDepthChargeActor() {
         return depthChargeActor;
     }
 

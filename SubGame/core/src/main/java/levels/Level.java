@@ -1,6 +1,4 @@
 
-
-
 package levels;
 
 import UI.game.GameScreen;
@@ -9,7 +7,8 @@ import entities.enemies.EnemyBuilder;
 import entities.enemies.EnemyManager;
 import java.util.Random;
 
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
+import static utilities.Settings.Game.ATTACK_RANGE;
+import static utilities.Settings.Game.VIRTUAL_WIDTH;
 
 public class Level {
     private static final int HEALTH_INCREMENT = 5;
@@ -26,7 +25,7 @@ public class Level {
     private int levelCounter = 0;
     private final int damageIncrement = 10;
     private float enemyDamage = 10;
-
+    private boolean randomMovement;
 
 
     public Level(EnemyManager enemyManager, GameScreen gameScreen) {
@@ -92,10 +91,11 @@ public class Level {
                 .withEnemyHeight(32)
                 .withEnemyDamage(enemyDamage)
                 .withOrdinanceRange(ordinanceRange)
+                .withRandomMovement(randomMovement)
                 .build();
     }
 
-    private Enemy createEnemy(String name, int spawnPosX, int spawnPosY, int delay, boolean flipX, String spriteAtlas, float speed, boolean aggro, boolean sub, int healthMultiplier, int points, int width, int height) {
+    private Enemy createEnemy(String name, int spawnPosX, int spawnPosY, int delay, boolean flipX, String spriteAtlas, float speed, boolean aggro, boolean sub, int healthMultiplier, int points, int width, int height, float ordinanceRange, boolean randomMovement) {
         return new EnemyBuilder(gameScreen)
                 .withName(name)
                 .withSpawnPosX(spawnPosX)
@@ -111,6 +111,8 @@ public class Level {
                 .withEnemyWidth(width)
                 .withEnemyHeight(height)
                 .withEnemyDamage(enemyDamage)
+                .withOrdinanceRange(ordinanceRange)
+                .withRandomMovement(randomMovement)
                 .build();
     }
 
@@ -118,12 +120,105 @@ public class Level {
         LEVEL1 {
             @Override
             void initializeLevel(Level level) {
-                level.addEnemyToManager(level.createEnemy("enemy1", -65, 0, 3, true, "tanker-atlas.png", 10f, false, false, 1, 10, 150));
-                level.addEnemyToManager(level.createEnemy("enemy6", -65, 0, 4, true, "tanker-atlas.png", 20f, false, false, 1, 10, 150));
-                level.addEnemyToManager(level.createEnemy("enemy2", (int) VIRTUAL_WIDTH + 64, 0, 5, false, "destroyer-atlas.png", 15f, true, false, 1, 10, 200));
-                level.addEnemyToManager(level.createEnemy("enemy3", (int) VIRTUAL_WIDTH + 65, 20, 10, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
-                level.addEnemyToManager(level.createEnemy("enemy4", (int) VIRTUAL_WIDTH + 65, 50, 13, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
-                level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 80, 20, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
+//                level.addEnemyToManager(level.createEnemy(
+//                    "enemy1",
+//                    (int) VIRTUAL_WIDTH,
+//                    -10,
+//                    3,
+//                    true,
+//                    "animations/tankeratlas.atlas",
+//                    15f,
+//                    false,
+//                    false,
+//                    1,
+//                    10,
+//                    250,
+//                    58,
+//                    150));
+                level.addEnemyToManager(level.createEnemy("enemy2",
+                    -250,
+                    -10,
+                    5,
+                    true,
+                    "animations/tankeratlas.atlas",
+                    10f,
+                    false,
+                    false,
+                    1,
+                    10,
+                    250,
+                    58,
+                    ATTACK_RANGE,
+                    false));
+                level.addEnemyToManager(level.createEnemy(
+                    "enemy3",
+                    (int) VIRTUAL_WIDTH,
+                    0,
+                    20,
+                    false,
+                    "animations/destroyeratlas.atlas",
+                    15f,
+                    true,
+                    false,
+                    1,
+                    10,
+                    200,
+                    82,
+                    ATTACK_RANGE,
+                    true));
+              level.addEnemyToManager(level.createEnemy(
+                  "enemy4",
+                  (int) VIRTUAL_WIDTH + 160,
+                  120,
+                  10,
+                  false,
+                  "animations/enemysub.atlas",
+                  13f,
+                  true,
+                  true,
+                  1,
+                  10,
+                  160,
+                  32,
+                  ATTACK_RANGE,
+                  true));
+
+                level.addEnemyToManager(level.createEnemy(
+                    "mini",
+                    (int) VIRTUAL_WIDTH + 46,
+                    120,
+                    1,
+                    false,
+                    "animations/minisub.atlas",
+                    40f,
+                    false,
+                    true,
+                    1,
+                    10,
+                    46,
+                    12,
+                    ATTACK_RANGE,
+                    true));
+
+                level.addEnemyToManager(level.createEnemy(
+                    "enemy5",
+                    -160,
+                    320,
+                    10,
+                    false,
+                    "animations/enemysub.atlas",
+                    13f,
+                    true,
+                    true,
+                    1,
+                    10,
+                    160,
+                    32,
+                    ATTACK_RANGE,
+                    true));
+
+                //  level.addEnemyToManager(level.createEnemy("enemy4", (int) VIRTUAL_WIDTH + 65, 50, 13, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
+             //   level.addEnemyToManager(level.createEnemy("enemy5", (int) VIRTUAL_WIDTH + 65, 80, 20, false, "enemy-sub1.png", 13f, true, true, 1, 10, 200));
             }
 
         },

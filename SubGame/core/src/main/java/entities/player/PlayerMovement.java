@@ -2,12 +2,11 @@ package entities.player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import utilities.Constants;
+import utilities.Settings;
 
-import static utilities.Constants.Game.VIRTUAL_HEIGHT;
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
-import static utilities.Constants.PlayerConstants.PLAYER_HEIGHT;
-import static utilities.Constants.PlayerConstants.PLAYER_WIDTH;
+import static utilities.Settings.Game.*;
+import static utilities.Settings.PlayerConstants.PLAYER_HEIGHT;
+import static utilities.Settings.PlayerConstants.PLAYER_WIDTH;
 
 public class PlayerMovement {
     private float SPAWN_X ;
@@ -30,7 +29,7 @@ public class PlayerMovement {
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 
-        if (up && player.getHitbox().getY() + PLAYER_HEIGHT < VIRTUAL_HEIGHT - Constants.Game.SKY_SIZE + PLAYER_HEIGHT / 2.0f) {
+        if (up && player.getHitbox().getY() + PLAYER_HEIGHT < VIRTUAL_HEIGHT - Settings.Game.SKY_SIZE + PLAYER_HEIGHT / 2.0f - SURFACE_OFFSET) {
             player.getPlayerActor().moveUp(playerSpeed );
         }
 

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
+import static utilities.Settings.Game.VIRTUAL_WIDTH;
 
 public class ParallaxLayer extends Actor implements  Pausable{
     private Texture texture;

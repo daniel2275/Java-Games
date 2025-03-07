@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.daniel2275.subgame.SubGame;
-import utilities.Constants;
+import utilities.Settings;
 
 public class Options implements Screen {
     private Stage opStage;
@@ -26,7 +26,7 @@ public class Options implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Constants.UIConstants.BACKGROUND_COLOR);
+        ScreenUtils.clear(Settings.UIConstants.BACKGROUND_COLOR);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         opStage.act(delta);
         opStage.draw();

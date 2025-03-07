@@ -1,10 +1,12 @@
 package entities.enemies;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 
-import static utilities.LoadSave.boatAnimation;
+import java.util.HashMap;
 
 public class EnemyAnimationManager {
     private final TextureRegion[][] boatSprites = new TextureRegion[5][6];
@@ -15,6 +17,27 @@ public class EnemyAnimationManager {
     private Animation<TextureRegion> hitAnimations;
     private Animation<TextureRegion> sunkAnimations;
     private Animation<TextureRegion> turnAnimations;
+
+    private Animation<TextureRegion> idleAnimationsRight;
+    private Animation<TextureRegion> idleAnimationsLeft;
+    private Animation<TextureRegion> movingAnimationsRight;
+
+    private Animation<TextureRegion> upAnimationsRight;
+    private Animation<TextureRegion> upAnimationsLeft;
+
+    private Animation<TextureRegion> downAnimationsRight;
+    private Animation<TextureRegion> downAnimationsLeft;
+
+    private Animation<TextureRegion> movingAnimationsLeft;
+    private Animation<TextureRegion> turningAnimationsRight;
+    private Animation<TextureRegion> turningAnimationsLeft;
+    private Animation<TextureRegion> sunkAnimationsLeft;
+    private Animation<TextureRegion> sunkAnimationsRight;
+    private Animation<TextureRegion> hitAnimationsRight;
+    private Animation<TextureRegion> hitAnimationsLeft;
+
+    private HashMap<String, Animation<TextureRegion>> animations = new HashMap<>();
+
     private int enemyWidth;
     private int enemyHeight;
     private Enemy enemy;
@@ -27,21 +50,95 @@ public class EnemyAnimationManager {
     }
 
     private void loadAnimations(String sprites) {
-        Texture boatAtlas = new Texture(sprites);
+  //      Texture boatAtlas = new Texture(sprites);
+//
+//        for (int i = 0; i <= 4; i++) {
+//            for (int j = 0; j <= 4; j++) {
+//                boatSprites[i][j] = new TextureRegion(boatAtlas, enemyWidth * j, enemyHeight * i, enemyWidth, enemyHeight);
+//            }
+//        }
+//
+//        idleAnimations = boatAnimation(0, 1, boatSprites, 0.2f);
+//        movingAnimationsLeft = boatAnimation(0, 5, boatSprites, 0.4f);
+//        movingAnimationsRight = boatAnimation(0, 5, boatSprites, 0.4f);
+//        upAnimations = boatAnimation(3, 3, boatSprites, 0.7f);
+//        downAnimations = boatAnimation(4, 3, boatSprites, 0.7f);
+//        hitAnimations = boatAnimation(1, 3, boatSprites, 0.3f);
+//        sunkAnimations = boatAnimation(1, 5, boatSprites, 0.5f);
+//        turnAnimations = boatAnimation(2, 5, boatSprites, 0.2f);
+//
+//        if (sprites == "tanker-atlas.png") {
+//            TextureAtlas tankerAtlas = new TextureAtlas(Gdx.files.internal("animations/tankeratlas.atlas"));
 
-        for (int i = 0; i <= 4; i++) {
-            for (int j = 0; j <= 4; j++) {
-                boatSprites[i][j] = new TextureRegion(boatAtlas, enemyWidth * j, enemyHeight * i, enemyWidth, enemyHeight);
+        TextureAtlas animationAtlas = new TextureAtlas(Gdx.files.internal(sprites));
+
+        idleAnimationsRight = createAnimation(animationAtlas, "idle", 6, 0.5f, true, "LOOP");
+        idleAnimationsLeft = createAnimation(animationAtlas, "idle", 6, 0.5f, false, "LOOP");
+
+        movingAnimationsRight = createAnimation(animationAtlas, "mov", 6, 0.5f, true, "LOOP");
+        movingAnimationsLeft = createAnimation(animationAtlas, "mov", 6, 0.5f, false, "LOOP");
+
+        upAnimationsRight = createAnimation(animationAtlas, "mov", 6, 0.5f, true, "LOOP");
+        upAnimationsLeft = createAnimation(animationAtlas, "mov", 6, 0.5f, false, "LOOP");
+
+        downAnimationsRight = createAnimation(animationAtlas, "mov", 6, 0.5f, true, "LOOP");
+        downAnimationsLeft = createAnimation(animationAtlas, "mov", 6, 0.5f, false, "LOOP");
+
+        hitAnimationsRight = createAnimation(animationAtlas, "hit", 1, 0.3f, true, "NORMAL");
+        hitAnimationsLeft = createAnimation(animationAtlas, "hit", 1, 0.3f, false, "NORMAL");
+
+        sunkAnimationsRight = createAnimation(animationAtlas, "sunk", 6, 0.5f, true, "NORMAL");
+        sunkAnimationsLeft = createAnimation(animationAtlas, "sunk", 6, 0.5f, false, "NORMAL");
+
+        turningAnimationsRight = createAnimation(animationAtlas, "turn", 31, 0.07f, true, "NORMAL");
+        turningAnimationsLeft = createAnimation(animationAtlas, "turn", 31, 0.07f, false, "NORMAL");
+
+        addAnimations();
+//        }
+    }
+
+    private void addAnimations() {
+        animations.put("idleRight", idleAnimationsRight);
+        animations.put("idleLeft", idleAnimationsLeft);
+
+        animations.put("upRight", upAnimationsRight);
+        animations.put("upLeft", upAnimationsLeft);
+
+        animations.put("downRight", upAnimationsRight);
+        animations.put("downLeft", idleAnimationsLeft);
+
+        animations.put("hitRight", hitAnimationsRight);
+        animations.put("hitLeft", hitAnimationsLeft);
+
+        animations.put("movRight", movingAnimationsRight);
+        animations.put("movLeft", movingAnimationsLeft);
+
+        animations.put("turnRight", turningAnimationsRight);
+        animations.put("turnLeft", turningAnimationsLeft);
+
+        animations.put("sunkRight", sunkAnimationsRight);
+        animations.put("sunkLeft", sunkAnimationsLeft);
+    }
+
+
+    private Animation<TextureRegion> createAnimation(TextureAtlas atlas, String regionName, int frames, float frameDuration, boolean flipHorizontally, String playMode) {
+        Array<TextureAtlas.AtlasRegion> regions = new Array<>();
+        for (int i = 1; i <= frames; i++) {
+            TextureAtlas.AtlasRegion region = new TextureAtlas.AtlasRegion(atlas.findRegion(regionName + i));
+            if (flipHorizontally) {
+                region.flip(true, false);
             }
+            regions.add(region);
+        }
+        if (playMode.equals("LOOP")) {
+            return new Animation<>(frameDuration, regions, Animation.PlayMode.LOOP);
+        } else if (playMode.equals("REVERSED")) {
+            return new Animation<>(frameDuration, regions, Animation.PlayMode.REVERSED);
+        } else {
+            return new Animation<>(frameDuration, regions, Animation.PlayMode.NORMAL);
         }
 
-        idleAnimations = boatAnimation(0, 1, boatSprites, 0.2f);
-        movingAnimations = boatAnimation(0, 5, boatSprites, 0.4f);
-        upAnimations = boatAnimation(3, 3, boatSprites, 0.7f);
-        downAnimations = boatAnimation(4, 3, boatSprites, 0.7f);
-        hitAnimations = boatAnimation(1, 3, boatSprites, 0.3f);
-        sunkAnimations = boatAnimation(1, 5, boatSprites, 0.5f);
-        turnAnimations = boatAnimation(2, 5, boatSprites, 0.2f);
+
     }
 
     public Animation<TextureRegion> getIdleAnimations() {
@@ -70,6 +167,10 @@ public class EnemyAnimationManager {
 
     public Animation<TextureRegion> getTurnAnimations() {
         return turnAnimations;
+    }
+
+    public Animation<TextureRegion> getAnimation(String name) {
+        return animations.get(name);
     }
 }
 

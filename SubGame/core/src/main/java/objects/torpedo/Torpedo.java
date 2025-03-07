@@ -1,18 +1,17 @@
 package objects.torpedo;
 
-import Components.AnimatedActor;
+import Components.BaseActor;
+import Components.TorpedoActor;
 import UI.game.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
-import static io.github.daniel2275.subgame.SubGame.pause;
-
 public class Torpedo {
     // Torpedo default parameters
     private int speed = 100;
-    public static final int TORPEDO_WIDTH = 16 ;
-    public static final int TORPEDO_HEIGHT = 5 ;
+    public static final int TORPEDO_WIDTH = 32 ;
+    public static final int TORPEDO_HEIGHT = 16 ;
     private float damage = 20;
     private boolean enemy = false;
     private float stateTime;
@@ -22,8 +21,6 @@ public class Torpedo {
     private boolean atTarget;
     private float angle;
     private boolean calculateVector = false;
-    private float velocityX;
-    private float velocityY;
     private GameScreen gameScreen;
     private float worldX;
     private float worldY;
@@ -31,13 +28,14 @@ public class Torpedo {
 
     private float startX;
     private float startY;
-    private float maxDistance = 150;
+    private float maxDistance = 350;
 
     private TorpedoAnimationManager animationManager;
-    private AnimatedActor torpedoActor;
+    private TorpedoActor torpedoActor;
 
     public Torpedo(GameScreen gameScreen, float x, float y, float damage) {
-        animationManager = new TorpedoAnimationManager(new Texture("torpedo-atlas.png"));
+        animationManager = new TorpedoAnimationManager(new Texture("animations/torpedo-atlas.png"));
+     //   animationManager = new TorpedoAnimationManager("animations/torpedo.atlas");
         this.gameScreen = gameScreen;
         this.startX = x;
         this.startY = y;
@@ -49,7 +47,7 @@ public class Torpedo {
     }
 
     public void initializeTorpedo(float x,float y) {
-        torpedoActor = new AnimatedActor("torpedo",
+        torpedoActor = new TorpedoActor("torpedo",
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoUpAnimation(),
                 animationManager.getTorpedoUpAnimation(),
@@ -62,8 +60,8 @@ public class Torpedo {
             TORPEDO_WIDTH,
             TORPEDO_HEIGHT,
             x,
-            y,
-            false);
+            y
+            );
     }
 
     public Torpedo(GameScreen gameScreen, float x, float y, float damage, float worldX, float worldY) {
@@ -88,9 +86,9 @@ public class Torpedo {
 
     // Torpedo screen coordinates
     public void updatePos() {
-        if (!pause) {
-            stateTime += Gdx.graphics.getDeltaTime();
-        }
+//        if (!pause) {
+//            stateTime += Gdx.graphics.getDeltaTime();
+//        }
         getShotCoordinates();
     }
 
@@ -143,9 +141,9 @@ public class Torpedo {
     }
 
     public void setExplode(boolean explode) {
-        if(explode) {
-            stateTime = 0;
-        }
+//        if(explode) {
+//            stateTime = 0;
+//        }
         this.explode = explode;
     }
 
@@ -185,7 +183,7 @@ public class Torpedo {
         return angle;
     }
 
-    public AnimatedActor getTorpedoActor() {
+    public BaseActor getTorpedoActor() {
         return torpedoActor;
     }
 

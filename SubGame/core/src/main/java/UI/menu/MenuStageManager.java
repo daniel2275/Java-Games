@@ -11,13 +11,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.daniel2275.subgame.SubGame;
-import utilities.Constants;
+import utilities.Settings;
 
-import static utilities.Constants.UIConstants.*;
+import static utilities.Settings.UIConstants.*;
 
 public class MenuStageManager {
     private Stage uiStage;
@@ -147,7 +150,7 @@ public class MenuStageManager {
             TextButton.TextButtonStyle arcadeStyle = uiSkin.get("arcade", TextButton.TextButtonStyle.class);
             button.setStyle(arcadeStyle);
         }
-        button.getLabel().setFontScale(Constants.UIConstants.FONT_MENU_SIZE);
+        button.getLabel().setFontScale(Settings.UIConstants.FONT_MENU_SIZE);
         button.setColor(color);
         return button;
     }
@@ -241,10 +244,11 @@ public class MenuStageManager {
             switch ( buttonLabel ) {
                 case MENU_BUTTON_PLAY_TEXT:
                     // Handle play button click
-                    subGame.setScreen(subGame.gameScreen());
-                    if (subGame.gameScreen().isPaused()) {
-                        subGame.gameScreen().resume();
-                    }
+                    subGame.setScreen(subGame.mapScreen());
+   //                 subGame.setScreen(subGame.gameScreen());
+//                    if (subGame.gameScreen().isPaused()) {
+//                        subGame.gameScreen().resume();
+//                    }
                     break;
                 case MENU_BUTTON_OPTION_TEXT:
                     subGame.setScreen(subGame.getOptions());

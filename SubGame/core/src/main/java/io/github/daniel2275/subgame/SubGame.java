@@ -1,5 +1,6 @@
 package io.github.daniel2275.subgame;
 
+import UI.Map.MapScreen;
 import UI.game.FontManager;
 import UI.game.GameScreen;
 import UI.menu.MenuScreen;
@@ -10,13 +11,14 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import utilities.SoundManager;
 
-import static utilities.Constants.Game.VIRTUAL_HEIGHT;
-import static utilities.Constants.Game.VIRTUAL_WIDTH;
+import static utilities.Settings.Game.VIRTUAL_HEIGHT;
+import static utilities.Settings.Game.VIRTUAL_WIDTH;
 
 public class SubGame extends Game {
 
 	public static boolean pause = false;
 	private MenuScreen menuScreen;
+    private MapScreen mapScreen;
 
 	private Options options;
 	private GameScreen gameScreen;
@@ -37,6 +39,7 @@ public class SubGame extends Game {
 		// Set the screen resolution
 		Gdx.graphics.setWindowedMode((int) screenWidth, (int) screenHeight);
 		menuScreen = new MenuScreen(this);
+        mapScreen = new MapScreen(this);
         SoundManager.getInstance(this);
 		options = new Options(this);
 		gameScreen = new GameScreen(Gdx.graphics.getDeltaTime(), this);
@@ -69,5 +72,7 @@ public class SubGame extends Game {
 		return menuScreen;
 	}
 
-
+    public MapScreen mapScreen() {
+        return mapScreen;
+    }
 }

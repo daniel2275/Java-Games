@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -20,8 +19,10 @@ import com.badlogic.gdx.utils.Array;
 import io.github.daniel2275.subgame.SubGame;
 
 import static io.github.daniel2275.subgame.SubGame.pause;
-import static utilities.Constants.Game.*;
-import static utilities.Constants.UIConstants.*;
+import static utilities.Settings.Game.SKY_SIZE;
+import static utilities.Settings.Game.VIRTUAL_HEIGHT;
+import static utilities.Settings.UIConstants.FONT_GAME_SIZE;
+import static utilities.Settings.UIConstants.SKIN_FILE_PATH;
 import static utilities.LoadSave.boatAnimation;
 
 public class GameStageManager {
@@ -94,10 +95,15 @@ public class GameStageManager {
         //gmStage.addActor(skyLine);
         //gmStage.addActor(underSea);
 
-        Group backgroundGroup = new Group();
-        backgroundGroup.addActor(underSea);
-        backgroundGroup.addActor(skyLine);
-        gmStage.addActor(backgroundGroup);
+        //Group backgroundGroup = new Group();
+        //backgroundGroup.addActor(underSea);
+        //backgroundGroup.addActor(skyLine);
+        //gmStage.addActor(backgroundGroup);
+        gmStage.addActor(underSea);
+        gmStage.addActor(skyLine);
+
+
+
 
         setupParallaxLayers();
 
@@ -109,6 +115,10 @@ public class GameStageManager {
 
         gmStage.addActor(androidCrossHair);
         androidCrossHair.setVisible(false);
+
+        skyLine.setZIndex(0);
+        underSea.setZIndex(3);
+
     }
 
     private void setupButtons() {
@@ -158,9 +168,9 @@ public class GameStageManager {
     private TextButton createTextButton(String text) {
         TextButton button = new TextButton(text, gameSkin);
         button.getLabel().setFontScale(FONT_GAME_SIZE);
-        button.getLabel().setColor(0f, 0f, 0f, 0.5f);
+        button.getLabel().setColor(0f, 0f, 0f, 1f);
         Color color = button.getColor();
-        button.setColor(color.r, color.g, color.b, 0.5f);
+        button.setColor(color.r, color.g, color.b, 1f);
         return button;
     }
 
@@ -188,13 +198,18 @@ public class GameStageManager {
         TextureAtlas crossHairAtlas = new TextureAtlas(Gdx.files.internal("androidcrosshair/acrosshair.atlas"));
         Animation<TextureRegion> crossHairAnimation = createAnimation(crossHairAtlas, "acrosshair", 5, 0.1f);
 
-        Texture skyBackgroundAtlas = new Texture("skyline.png");
-        Animation<TextureRegion> skyAnimation = boatAnimation(0, 1, new TextureRegion[][]{{new TextureRegion(skyBackgroundAtlas, 770, 290)}}, 0.2f);
+        Texture skyBackgroundAtlas = new Texture("seanim/skyline.png");
+//        Animation<TextureRegion> skyAnimation = boatAnimation(0, 1, new TextureRegion[][]{{new TextureRegion(skyBackgroundAtlas, 770, 290)}}, 0.2f);
+
+        Animation<TextureRegion> skyAnimation = boatAnimation(0, 1, new TextureRegion[][]{{new TextureRegion(skyBackgroundAtlas, 770, 400)}}, 0.2f);
+
 
         // Create actors
         androidCrossHair = new CrossHairActor(crossHairAnimation);
-        skyLine = new BackgroundActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15, false);
-        underSea = new BackgroundActor(seaAnimation, 0, -SKY_SIZE + 45, true);
+        //skyLine = new BackgroundActor(skyAnimation, 0, VIRTUAL_HEIGHT - SKY_SIZE + 15, false);
+        //underSea = new BackgroundActor(seaAnimation, 0, -SKY_SIZE + 45, true);
+        skyLine = new BackgroundActor(skyAnimation, 0, VIRTUAL_HEIGHT , false);
+        underSea = new BackgroundActor(seaAnimation, 0, -SKY_SIZE , true);
 
         // Adjust initial positions and sizes
         updateBackgroundPositions(gmStage.getViewport().getWorldWidth(), VIRTUAL_HEIGHT);
@@ -205,8 +220,8 @@ public class GameStageManager {
         // Adjust world dimensions to viewport's screen size
 
         // Set specific height percentages
-        float skyHeightPercentage = 0.10f; // sky slightly below sea to hide vertex black spots in the seam
-        float seaHeightPercentage = 0.93f;
+        float skyHeightPercentage = 0.18f; // sky slightly below sea to hide vertex black spots in the seam
+        float seaHeightPercentage = 0.82f;
 
         // Calculate the desired heights as a percentage of the screen height
         float skyHeight = screenHeight * skyHeightPercentage;

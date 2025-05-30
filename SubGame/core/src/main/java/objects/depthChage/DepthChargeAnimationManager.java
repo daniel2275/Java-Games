@@ -8,8 +8,10 @@ import utilities.LoadSave;
 public class DepthChargeAnimationManager {
     private Animation<TextureRegion> depthChargeUpAnimation;
     private Animation<TextureRegion> depthChargeExplode;
+    private Texture texture; // Hold a reference for disposal
 
     public DepthChargeAnimationManager(Texture texture) {
+        this.texture = texture;
         loadAnimations(texture);
     }
 
@@ -30,5 +32,12 @@ public class DepthChargeAnimationManager {
 
     public Animation<TextureRegion> getTorpedoExplodeAnimation() {
         return depthChargeExplode;
+    }
+
+    public void dispose() {
+        if (texture != null) {
+            texture.dispose();
+            texture = null;
+        }
     }
 }

@@ -20,7 +20,9 @@ public class LevelManager {
         } else if (gameScreen.getEnemyManager().getListOfEnemies().isEmpty()) {
             level.setCurrentScreen(level.getCurrentScreen() + 1);
             level.setTotalLevels(level.getTotalLevels() + 1);
+            gameScreen.getUpgradeStore().saveGame();
             level.levelSelector();
+            gameScreen.getObjectManager().reset(); // reset Objects, mines torpedoes, etc
         }
     }
 

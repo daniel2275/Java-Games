@@ -39,6 +39,8 @@ public class BulletControl {
         timing.pause(pause); // Pause or resume the timing
     }
 
+    public void dispose() {
+    }
 
 }
 

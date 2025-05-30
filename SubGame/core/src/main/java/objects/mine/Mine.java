@@ -83,5 +83,13 @@ public class Mine {
         this.explode = explode;
     }
 
+    public void dispose() {
+        if (animationManager != null) {
+            animationManager.dispose();
+            animationManager = null;
+        }
+    }
+
+
 
 }

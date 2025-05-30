@@ -8,19 +8,18 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
 
-public class MineAnimationManager  {
+public class MineAnimationManager {
     private Animation<TextureRegion> mineAnimation;
     private Animation<TextureRegion> mineExplode;
     private HashMap<String, Animation<TextureRegion>> animations = new HashMap<>();
-
+    private TextureAtlas animationAtlas;
 
     public MineAnimationManager(String sprites) {
         loadAnimations(sprites);
     }
 
     private void loadAnimations(String sprites) {
-        TextureAtlas animationAtlas = new TextureAtlas(Gdx.files.internal(sprites));
-
+        animationAtlas = new TextureAtlas(Gdx.files.internal(sprites));
         mineAnimation = createAnimation(animationAtlas, "idle", 8, 0.3f, true, "LOOP");
         mineExplode = createAnimation(animationAtlas, "explode", 6, 0.5f, false, "NORMAL");
         addAnimations();
@@ -35,15 +34,12 @@ public class MineAnimationManager  {
             }
             regions.add(region);
         }
-        if (playMode.equals("LOOP")) {
-            return new Animation<>(frameDuration, regions, Animation.PlayMode.LOOP);
-        } else if (playMode.equals("REVERSED")) {
-            return new Animation<>(frameDuration, regions, Animation.PlayMode.REVERSED);
-        } else {
-            return new Animation<>(frameDuration, regions, Animation.PlayMode.NORMAL);
+
+        switch (playMode) {
+            case "LOOP": return new Animation<>(frameDuration, regions, Animation.PlayMode.LOOP);
+            case "REVERSED": return new Animation<>(frameDuration, regions, Animation.PlayMode.REVERSED);
+            default: return new Animation<>(frameDuration, regions, Animation.PlayMode.NORMAL);
         }
-
-
     }
 
     private void addAnimations() {
@@ -51,9 +47,14 @@ public class MineAnimationManager  {
         animations.put("explode", mineExplode);
     }
 
-
     public Animation<TextureRegion> getAnimation(String name) {
         return animations.get(name);
     }
 
+    public void dispose() {
+        if (animationAtlas != null) {
+            animationAtlas.dispose();
+            animationAtlas = null;
+        }
+    }
 }

@@ -95,5 +95,15 @@ public class DepthCharge {
         return maxDistance;
     }
 
+    public void dispose() {
+        if (animationManager != null) {
+            animationManager.dispose();
+        }
+        if (depthChargeActor != null) {
+            depthChargeActor.remove(); // Remove it from the stage
+        }
+    }
+
+
 
 }

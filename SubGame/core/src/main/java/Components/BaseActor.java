@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -13,8 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import utilities.SoundManager;
 
-import static utilities.Settings.Game.*;
 import static utilities.LoadSave.invertHorizontal;
+import static utilities.Settings.Game.*;
 
 public abstract class BaseActor extends Actor implements Pausable {
     private static final float FADE_DURATION = 6f;
@@ -24,6 +25,8 @@ public abstract class BaseActor extends Actor implements Pausable {
     private float damage = 0;
     private String name;
     private boolean aggroed = false;
+    private ParticleEffect hitEffect;
+    private boolean showHitEffect = false;
 
     // Left-facing animations
     private Animation<TextureRegion> idleAnimationLeft;
@@ -184,7 +187,9 @@ public abstract class BaseActor extends Actor implements Pausable {
         healthBarTextureRegion.setRegionWidth((int) frameWidth);
 
 
-        //  shapeRenderer = new ShapeRenderer();
+       //   shapeRenderer = new ShapeRenderer();
+
+        hitEffect = new ParticleEffect(EffectManager.baseHitEffect);
     }
 
     // Enemies Constructor
@@ -262,6 +267,8 @@ public abstract class BaseActor extends Actor implements Pausable {
         // Set random movement
         this.randomMovement = randomMovement;
         // shapeRenderer = new ShapeRenderer();
+
+        hitEffect = new ParticleEffect(EffectManager.baseHitEffect);
     }
 
     // depth charge constructor
@@ -330,6 +337,8 @@ public abstract class BaseActor extends Actor implements Pausable {
         collision = false;
 
         //shapeRenderer = new ShapeRenderer();
+
+        hitEffect = new ParticleEffect(EffectManager.baseHitEffect);
     }
 
 
@@ -361,6 +370,16 @@ public abstract class BaseActor extends Actor implements Pausable {
                 handleSinking();
             }
 
+            if (showHitEffect) {
+                float centerX = getX() + getWidth() / 2f;
+                float centerY = getY() + getHeight() / 2f;
+                hitEffect.setPosition(centerX, centerY);
+                hitEffect.update(delta);
+                if (hitEffect.isComplete()) {
+                    showHitEffect = false;
+                }
+            }
+
         }
     }
 
@@ -386,6 +405,9 @@ public abstract class BaseActor extends Actor implements Pausable {
         batch.draw(currentAnimation.getKeyFrame(stateTime), getX(), getY(),
             getOriginX(), getOriginY(), getWidth(), getHeight(), 1f, 1f, angle);
 
+        if (showHitEffect) {
+            hitEffect.draw(batch);
+        }
 
         drawHealthBar(batch);
         drawReloadBar(batch);
@@ -531,43 +553,11 @@ public abstract class BaseActor extends Actor implements Pausable {
             }
 
         }
-        previousHorizontalDirection = horizontalDirection; // Update previousDirection
+        previousHorizontalDirection = horizontalDirection;
     }
-
-//    public boolean directionChanged() {
-//        // Calculate the horizontal movement distance
-//        float movementDistance = Math.abs(getX() - previousX);
-//        // Check if the movement exceeds the buffer zone
-//        if (movementDistance < TURN_BUFFER) {
-//            return false; // Don't trigger the turn if the movement is within the buffer
-//        }
-//
-//        // Check if the direction has changed
-//        if (!overrideActive) {
-//            if (!newHorizontalDirection.equals(previousHorizontalDirection)) {
-//                // Direction has changed, play turning animation
-//                isTurning = true;
-//                horizontalDirection = newHorizontalDirection;
-//
-//                // Set the turning animation
-//                if (horizontalDirection.equals("L")) {
-//                    tempAnimation = turningAnimationRight;
-//                } else {
-//                    tempAnimation = turningAnimationLeft;
-//                }
-//                // Set overrideAnimation to tempAnimation
-//                stateTime = 0;
-//                setOverrideAnimation(tempAnimation);
-//                previousHorizontalDirection = horizontalDirection; // Update previousDirection
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
 
     // To store the initial position where direction changed
-
     public boolean directionChanged() {
         // Check if the direction has changed
         if (!overrideActive) {
@@ -754,6 +744,12 @@ public abstract class BaseActor extends Actor implements Pausable {
     public void setHit(boolean hit, float damage) {
         isHit = hit;
 
+        if (hit) {
+            hitEffect.setPosition(getX() , getY() );
+            hitEffect.start();
+            showHitEffect = true;
+        }
+
         currentHealth -= damage;
         if (currentHealth < 0) {
             currentHealth = 0;
@@ -761,6 +757,11 @@ public abstract class BaseActor extends Actor implements Pausable {
 
         hitDirection();
     }
+
+
+
+
+
 
     public void hitDirection() {
         if (horizontalDirection == "R") {
@@ -790,50 +791,6 @@ public abstract class BaseActor extends Actor implements Pausable {
         // Create and return the bounding rectangle
         return new Rectangle(x, y, width, height - 15);
     }
-
-
-//    public Rectangle rotate() {
-////        float centerX = getX() + getWidth() / 2;
-////        float centerY = getY() + getHeight() / 2;
-////
-////        setOriginX(getWidth() / 2);
-////        setOriginY(getHeight() / 2);
-////
-////        float x = centerX - getOriginX();
-////        float y = centerY - getOriginY();
-////
-////        Vector3 transformedPosition = new Vector3(x, y, 0);
-////
-////        setX(transformedPosition.x);
-////        setY(transformedPosition.y);
-//        setOrigin(getWidth() / 2, getHeight() / 2);
-//
-//        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
-//        Rectangle boundingRect = new Rectangle(
-//            getX(),               // The x-position of the actor
-//            getY(),               // The y-position of the actor
-//            currentFrame.getRegionWidth(),
-//            currentFrame.getRegionHeight()
-//        );
-//
-//        Polygon polygon = new Polygon(new float[]{
-//            0, 0,                                            // bottom-left
-//            currentFrame.getRegionWidth(), 0,                // bottom-right
-//            currentFrame.getRegionWidth(), currentFrame.getRegionHeight(),  // top-right
-//            0, currentFrame.getRegionHeight()                // top-left
-//        });
-//
-//// Set the position of the polygon to match the actor's position
-//        polygon.setPosition(getX(), getY());
-//
-//// Set the origin of the polygon (usually the center for rotation)
-//        polygon.setOrigin(currentFrame.getRegionWidth() / 2f, currentFrame.getRegionHeight() / 2f);
-//
-//// Apply rotation in degrees
-//        polygon.setRotation(angle); // rotationAngle is in degrees
-//
-//        return polygon.getBoundingRectangle();
-//    }
 
 
     public Rectangle rotate() {
@@ -988,31 +945,6 @@ public abstract class BaseActor extends Actor implements Pausable {
         return super.remove();
     }
 
-    //   public void dispose() {
-//        if (idleAnimationLeft != null) disposeAnimation(idleAnimationLeft);
-//        if (moveAnimationLeft != null) disposeAnimation(moveAnimationLeft);
-//        if (upAnimationLeft != null) disposeAnimation(upAnimationLeft);
-//        if (downAnimationLeft != null) disposeAnimation(downAnimationLeft);
-//        if (hitAnimationLeft != null) disposeAnimation(hitAnimationLeft);
-//        if (sunkAnimationLeft != null) disposeAnimation(sunkAnimationLeft);
-//
-//        idleAnimationLeft = null;
-//        moveAnimationLeft = null;
-//        upAnimationLeft = null;
-//        downAnimationLeft = null;
-//        hitAnimationLeft = null;
-//        sunkAnimationLeft = null;
-//
-//        if (healthBarTextureRegion != null && healthBarTextureRegion.getTexture() != null) {
-//            healthBarTextureRegion.getTexture().dispose();
-//            healthBarTextureRegion = null;
-//        }
-//
-////        if (shapeRenderer != null) {
-////            shapeRenderer.dispose();
-////            shapeRenderer = null;
-////        }
-//    }
 
 
     public void setCollision(boolean state) {
@@ -1026,14 +958,6 @@ public abstract class BaseActor extends Actor implements Pausable {
     public boolean isAggroed() {
         return aggroed;
     }
-
-//    private void disposeAnimation(Animation<TextureRegion> animation) {
-//        for (TextureRegion frame : animation.getKeyFrames()) {
-//            if (frame.getTexture() != null) {
-//                frame.getTexture().dispose();
-//            }
-//        }
-
 
 }
 

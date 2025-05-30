@@ -194,5 +194,19 @@ public class Torpedo {
     public float getMaxDistance() {
         return maxDistance;
     }
+
+
+    public void dispose() {
+        if (animationManager != null) {
+            animationManager.dispose();
+            animationManager = null;
+        }
+
+        if (torpedoActor != null) {
+            torpedoActor.remove();
+            torpedoActor = null;
+        }
+    }
+
 }
 

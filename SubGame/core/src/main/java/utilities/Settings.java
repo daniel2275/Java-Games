@@ -13,6 +13,7 @@ public class Settings {
     public static final float FONT_PERCENT_MENU = 0.001f;
     public static final float FONT_PERCENT_GAME = 0.002f;
 
+
     // UI-related constants
     public static final float BUTTON_WIDTH = Gdx.graphics.getWidth() * BUTTON_WIDTH_PERCENT;
     public static final float BUTTON_HEIGHT = Gdx.graphics.getHeight() * BUTTON_HEIGHT_PERCENT;
@@ -87,6 +88,21 @@ public class PlayerConstants {
         public static final float ATTACK_RANGE = 400;
     }
 
+    public class LevelConstants {
+        public static final int DESTROYER_WIDTH = 200;
+        public static final int DESTROYER_HEIGHT = 82;
+        public static final int TANKER_WIDTH = 250;
+        public static final int TANKER_HEIGHT = 58;
+        public static final int ENEMY_SUB_WIDTH = 160;
+        public static final int ENEMY_SUB_HEIGHT = 32;
+        public static final int MINI_SUB_WIDTH = 46;
+        public static final int MINI_SUB_HEIGHT = 12;
+
+        public static final String DESTROYER_ATLAS = "animations/destroyeratlas.atlas";
+        public static final String TANKER_ATLAS = "animations/tankeratlas.atlas";
+        public static final String ENEMY_SUB_ATLAS = "animations/enemysub.atlas";
+        public static final String MINI_SUB_ATLAS = "animations/minisub.atlas";
+    }
 
     private Settings() {
     }

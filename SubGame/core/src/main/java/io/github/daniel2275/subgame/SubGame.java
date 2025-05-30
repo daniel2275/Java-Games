@@ -1,5 +1,6 @@
 package io.github.daniel2275.subgame;
 
+import Components.EffectManager;
 import UI.Map.MapScreen;
 import UI.game.FontManager;
 import UI.game.GameScreen;
@@ -39,10 +40,12 @@ public class SubGame extends Game {
 		// Set the screen resolution
 		Gdx.graphics.setWindowedMode((int) screenWidth, (int) screenHeight);
 		menuScreen = new MenuScreen(this);
-        mapScreen = new MapScreen(this);
+
+        EffectManager.load();
         SoundManager.getInstance(this);
 		options = new Options(this);
 		gameScreen = new GameScreen(Gdx.graphics.getDeltaTime(), this);
+        mapScreen = new MapScreen(this);
 		setScreen(menuScreen);
 
 		// set up mouse cross-hair

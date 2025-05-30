@@ -5,12 +5,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Disposable;
 
-public class BackgroundActor extends Actor implements Pausable {
+import static utilities.Settings.Game.*;
+
+public class BackgroundActor extends Actor implements Pausable, Disposable {
     private Animation<TextureRegion> animation;
     private float stateTime;
     private float playerX;
@@ -24,18 +28,34 @@ public class BackgroundActor extends Actor implements Pausable {
     private boolean waves;
     private TextureRegion fboRegion;
 
+    private ParticleEffect bubbleEffect;
+
     public BackgroundActor(Animation<TextureRegion> animation, float x, float y, boolean waves) {
         //this.enemyManager = enemyManager;
         this.animation = animation;
-        this.stateTime = 0f;
+        //this.stateTime = 0f;
         this.waves = waves;
 
         // Set initial position
-        // setPosition(x, y);
+        //setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //setPosition(x, y);
+
+        bubbleEffect = new ParticleEffect(EffectManager.backgroundBubbles);
 
         if (waves) {
             initializeWaveEffect();
+
+            //bubbleEffect.setPosition(getX() + getWidth() / 2f, getY() + getHeight() / 2f);
+            bubbleEffect.setPosition(VIRTUAL_WIDTH /2f, (VIRTUAL_HEIGHT / 2f) - SKY_SIZE -100);
+
+            float scaleX = VIRTUAL_WIDTH / 1280f;
+            float scaleY = VIRTUAL_HEIGHT / 700f;
+            //bubbleEffect.scaleEffect(Math.min(scaleX, scaleY));
+            System.out.println(" X:" + VIRTUAL_WIDTH + "  Y:" + VIRTUAL_HEIGHT);
+            bubbleEffect.start();
         }
+
+
     }
 
     private void initializeWaveEffect() {
@@ -56,15 +76,13 @@ public class BackgroundActor extends Actor implements Pausable {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+
         // Get the current frame of the animation
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, true);
-
         batch.end();
         batch.flush();
 
         if (waves) {
-            // Ensure the framebuffer and shader are initialized
-            initializeWaveEffect();
 
             fbo.begin();
             batch.begin();
@@ -86,6 +104,8 @@ public class BackgroundActor extends Actor implements Pausable {
             batch.draw(fboRegion, getX(), getY(), getWidth(), getHeight());
 
             batch.setShader(null);  // Reset shader
+
+            bubbleEffect.draw(batch);
         } else {
             batch.begin();
             super.draw(batch, parentAlpha);
@@ -98,6 +118,8 @@ public class BackgroundActor extends Actor implements Pausable {
         if (paused) return;
         stateTime += delta;
         super.act(delta);
+
+        bubbleEffect.update(delta);
     }
 
     @Override
@@ -122,6 +144,26 @@ public class BackgroundActor extends Actor implements Pausable {
             shaderProgram.end();
         }
     }
+
+
+    @Override
+    public void dispose() {
+        if (fbo != null) {
+            fbo.dispose();
+            fbo = null;
+        }
+
+        if (shaderProgram != null) {
+            shaderProgram.dispose();
+            shaderProgram = null;
+        }
+
+        if (bubbleEffect != null) {
+            bubbleEffect.dispose();
+            bubbleEffect = null;
+        }
+    }
+
 
 }
 

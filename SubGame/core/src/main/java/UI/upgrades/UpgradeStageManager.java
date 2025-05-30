@@ -417,7 +417,4 @@ public class UpgradeStageManager {
         damageCost.setText("" + upgradeStore.getUpgradeManager().getUpgrade("Damage").getCost());
 
     }
-
-
 }
-

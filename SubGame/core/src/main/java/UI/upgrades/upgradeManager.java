@@ -1,14 +1,12 @@
 package UI.upgrades;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.google.gson.Gson;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-class UpgradeManager implements Serializable {
+public class UpgradeManager implements Serializable {
     private static final long serialVersionUID = 1L;
     private transient Preferences preferences;
 
@@ -22,11 +20,83 @@ class UpgradeManager implements Serializable {
     }
 
     public SaveGame getSaveGame(String name) {
-        return saveGames.get(name);
+        SaveGame save = saveGames.get(name);
+        if (save == null) {
+            Gdx.app.log("getSaveGame", "No save found for: " + name);
+        }
+        return save;
     }
 
-    public void addOrUpdateSaveGame(String name, int playerScore, int playerHealth, int level, float volume) {
-        saveGames.put(name, new SaveGame(playerScore, playerHealth, level, volume));
+//    public void addOrUpdateSaveGame(String name, int playerScore, int playerHealth,  float volume) {
+//        saveGames.put(name, new SaveGame(playerScore, playerHealth,  volume));
+//    }
+
+    public void addOrUpdateSaveGame(String name, int playerScore, int playerHealth, float volume) {
+        SaveGame existingSave = saveGames.get(name);
+
+        if (existingSave != null) {
+            // Update existing save instead of replacing it
+            existingSave.updateSave(playerScore, playerHealth, volume);
+        } else {
+            // Create a new save if one doesn't exist
+            saveGames.put(name, new SaveGame(playerScore, playerHealth, volume));
+        }
+    }
+
+    // Advance level in a specific stage
+    public void advanceLevel(String saveName, int stageId) {
+        SaveGame save = saveGames.get(saveName);
+        if (save != null) {
+            int newLevel = save.getStageLevel(stageId) + 1;
+            save.setStageLevel(stageId, newLevel);
+            Gdx.app.log("Advance Level", "Stage: " + stageId + ", Level: " + newLevel);
+            saveToPrefs();
+        }
+    }
+
+
+    public void setStageLevel(String saveName, int stageId, int level) {
+        SaveGame save = saveGames.get(saveName);
+        if (save != null) {
+            save.setStageLevel(stageId, level);
+            Gdx.app.log("Set Stage Level", "Stage " + stageId + " set to Level " + level);
+            saveToPrefs();
+        } else {
+            Gdx.app.log("Set Stage Level", "Save not found: " + saveName);
+        }
+    }
+
+
+    // Get the highest level reached in a stage
+    public int getStageLevel(String saveName, int stageId) {
+        SaveGame save = saveGames.get(saveName);
+        return (save != null) ? save.getStageLevel(stageId) : 1;
+    }
+
+    public Map<Integer, Integer> getAllStageLevels(String saveName) {
+        SaveGame save = saveGames.get(saveName);
+        return (save != null) ? save.getStageLevels() : new HashMap<>();
+    }
+
+    public void resetAllStages(String saveName) {
+        SaveGame save = saveGames.get(saveName);
+        if (save != null) {
+            for (Integer stageId : save.getStageLevels().keySet()) {
+                save.resetStageLevel(stageId);
+            }
+            Gdx.app.log("Reset All Stages", "All stages reset to Level 1 for save: " + saveName);
+            saveToPrefs();
+        } else {
+            Gdx.app.log("Reset All Stages", "Save not found: " + saveName);
+        }
+    }
+
+    public void resetStage(String saveName, int stageId) {
+        SaveGame save = saveGames.get(saveName);
+        if (save != null) {
+            save.resetStageLevel(stageId);
+            Gdx.app.log("Reset Stage", "Stage " + stageId + " reset to Level 1");
+        }
     }
 
     public Upgrade getUpgrade(String name) {
@@ -88,17 +158,24 @@ class UpgradeManager implements Serializable {
     }
 }
 
-class SaveGame {
-    private final int playerScore;
-    private final int playerHealth;
-    private final int level;
-    private final float volume;
+class SaveGame implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private int playerScore;
+    private int playerHealth;
+    private float volume;
+    private Map<Integer, Integer> stageLevels;
 
-    public SaveGame(int playerScore, int playerHealth, int level, float volume) {
+
+    public SaveGame(int playerScore, int playerHealth, float volume) {
         this.playerScore = playerScore;
         this.playerHealth = playerHealth;
-        this.level = level;
         this.volume = volume;
+        this.stageLevels = new HashMap<>();
+
+        // Initialize all stages to level 1
+        for (int i = 1; i <= 4; i++) {
+            this.stageLevels.put(i , 0);
+        }
     }
 
     public int getPlayerScore() {
@@ -109,12 +186,37 @@ class SaveGame {
         return playerHealth;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
     public float getVolume() {
         return volume;
+    }
+
+    public int getStageLevel(int stageId) {
+        return stageLevels.getOrDefault(stageId, 1);
+    }
+
+//    public void setStageLevel(int stageId, int level) {
+//        stageLevels.put(stageId, Math.max(stageLevels.getOrDefault(stageId, 1), level));
+//    }
+
+    public void setStageLevel(int stageId, int level) {
+        int currentLevel = stageLevels.getOrDefault(stageId, 1);
+        if (level > currentLevel) {
+            stageLevels.put(stageId, level);
+        }
+    }
+
+    public Map<Integer, Integer> getStageLevels() {
+        return stageLevels;
+    }
+
+    public void resetStageLevel(int stageId) {
+        stageLevels.put(stageId, 0);
+    }
+
+    public void updateSave(int playerScore, int playerHealth, float volume) {
+        this.playerScore = playerScore;
+        this.playerHealth = playerHealth;
+        this.volume = volume;
     }
 }
 

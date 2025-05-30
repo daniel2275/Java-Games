@@ -42,8 +42,8 @@ public class GameScreen implements Screen {
     private GameOver gameOver;
     private Actor crossHairActor;
     private boolean zIndexChanged = true;
+    private int stage;
     // If an actor is added or removed dynamically, set the flag to true
-
 
     public GameScreen(float delta, SubGame subGame) {
         this.subGame = subGame;
@@ -92,14 +92,11 @@ public class GameScreen implements Screen {
 
     private void initClasses() {
         player = new Player(this, stateTime);
-
         objectManager = new ObjectManager(this);
         enemyManager = new EnemyManager(this);
         levelManager = new LevelManager(this);
         upgradeStore = new UpgradeStore(this);
         inputHandler = new InputHandler(this, gmStage);
-
-
     }
 
     public Player getPlayer() {
@@ -128,14 +125,6 @@ public class GameScreen implements Screen {
 
             // Update and draw the touchpad
             inputHandler.update();
-
-//            gameStageManager.getSkyLine().setZIndex(0);
-//            gameStageManager.getUndersea().setZIndex(2);
-
-
-            //System.out.println("Skyline : " + gameStageManager.getSkyLine().getZIndex());
-            //System.out.println("Undersea : " + gameStageManager.getUndersea().getZIndex());
-//            System.out.println("Player : " + getPlayer().getPlayerActor().getZIndex());
         }
     }
 
@@ -175,21 +164,7 @@ public class GameScreen implements Screen {
             inputHandler.getTouchpadController().getRightTouchpad().toFront();
 
         }
-//        System.out.println("Order-----------------------------");
-//        System.out.println("Skyline : " + gameStageManager.getSkyLine().getZIndex());
-//
-//        enemyManager.getListOfEnemies().forEach(enemy -> {
-//            System.out.print("Z index " + enemy.getEnemyActor().getZIndex() + " ");
-//            System.out.println(enemy.getEnemyActor().getName());
-//        });
-//
-//
-//        System.out.println("Undersea : " + gameStageManager.getUndersea().getZIndex());
-
     }
-
-
-
 
 
     @Override
@@ -301,6 +276,9 @@ public class GameScreen implements Screen {
         return upgradeStore;
     }
 
+
+
+
     public GameOver getGameOver() {
         return gameOver;
     }
@@ -312,6 +290,14 @@ public class GameScreen implements Screen {
 
     public void onActorAddedOrRemoved() {
         zIndexChanged = true;
+    }
+
+    public int getStage(){
+         return stage;
+    }
+
+    public void setStage(int stage){
+        this.stage = stage;
     }
 
 }

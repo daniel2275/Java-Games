@@ -263,12 +263,28 @@ public class ObjectManager implements Pausable {
 
     public void dispose() {
         for (DepthCharge depthCharge : depthCharges) {
-            depthCharge.getDepthChargeActor().remove();
+            if (depthCharge != null) {
+                depthCharge.dispose();
+            }
         }
+
         for (Torpedo torpedo : torpedoes) {
-            torpedo.getTorpedoActor().remove();
+            if (torpedo != null) {
+                torpedo.dispose();
+            }
         }
+
+        for (Mine mine : mines) {
+            if (mine != null) {
+                mine.dispose();
+            }
+        }
+
+        torpedoes.clear();
+        depthCharges.clear();
+        mines.clear();
     }
+
 
 
     @Override

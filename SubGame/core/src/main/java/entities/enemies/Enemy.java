@@ -232,6 +232,7 @@ public class Enemy {
             }
             isChasingPlayer = false;
             if (enemyActor.getName() == "mini") {
+                currentHealth = 1;
                 bulletControl.pauseDeployment(false);
             }
             randomMovement();  // Move randomly
@@ -407,14 +408,16 @@ public class Enemy {
         }
     }
 
-
-
     public boolean checkHit(BaseActor actor, float damage) {
         boolean collision = enemyActor.collidesWith(actor);
-        if (collision && !dying) {
+        if (collision && !dying &&
+            (!"mini".equals(enemyActor.getName()) ||
+                ("mini".equals(enemyActor.getName()) && "torpedo".equals(actor.getName())))) { // Disable collision detection for mini sub unless is hit by a torpedo
+
             // display hit values for enemies
             HitNumberActor hitNumberActor = new HitNumberActor(enemyActor.getX() + actor.getWidth(), enemyActor.getY(), String.valueOf((int) damage));
             enemyActor.setHit(true, damage);
+
             if (gameScreen != null) {
                 gameScreen.getGameStage().getStage().addActor(hitNumberActor);
             }
@@ -525,6 +528,36 @@ public class Enemy {
 
     public float getOrdinanceRange() {
         return ordinanceRange;
+    }
+
+
+    public void dispose() {
+        // Dispose actor if it exists
+        if (enemyActor != null) {
+            enemyActor.remove(); // Remove from stage
+            enemyActor.clear();  // Clear actions and listeners
+            enemyActor = null;
+        }
+
+        // Dispose the animation manager
+        if (enemyAnimationManager != null) {
+            enemyAnimationManager.dispose();
+            enemyAnimationManager = null;
+        }
+
+        // Dispose BulletControl if it has disposable resources
+        if (bulletControl != null) {
+            bulletControl.dispose();
+            bulletControl = null;
+        }
+
+        // SoundManager is a singleton, don't dispose it here
+        soundManager = null;
+
+        // Clear any references to large objects
+        gameScreen = null;
+        fadingAnimation = null;
+        fadeDelay = null;
     }
 }
 
